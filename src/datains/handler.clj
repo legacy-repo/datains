@@ -1,4 +1,5 @@
 (ns datains.handler
+  "App entrypoint when app is deployed as a servlet on an app server such as Tomcat"
   (:require
    [datains.middleware :as middleware]
    [datains.routes :refer [service-routes]]

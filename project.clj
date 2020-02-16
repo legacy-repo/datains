@@ -30,6 +30,7 @@
                  [ring/ring-core "1.8.0"]
                  [ring/ring-defaults "0.3.2"]
                  [ring/ring-servlet "1.7.1"]
+                 [luminus-jetty "0.1.7"]
                  [selmer "1.12.17"]]
 
   :repositories [["central" "https://maven.aliyun.com/repository/central"]
@@ -60,14 +61,16 @@
 
    :project/dev  {:jvm-opts ["-Dconf=dev-config.edn"]
                   :dependencies [[directory-naming/naming-java "0.8"]
-                                 [luminus-jetty "0.1.7"]
                                  [pjstadig/humane-test-output "0.10.0"]
                                  [prone "2019-07-08"]
                                  [ring/ring-devel "1.8.0"]
                                  [ring/ring-mock "0.4.0"]]
                   :plugins      [[com.jakemccrary/lein-test-refresh "0.24.1"]
                                  [jonase/eastwood "0.3.6"]
-                                 [cider/cider-nrepl "0.22.0"]]
+                                 [cider/cider-nrepl "0.22.0"]
+                                 [nubank/lein-jupyter "0.1.18"]]
+
+                  :jupyter-options {:jupyter-path "jupyter"}
 
                   :source-paths ["env/dev"]
                   :resource-paths ["env/dev/resources"]

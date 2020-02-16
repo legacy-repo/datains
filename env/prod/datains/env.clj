@@ -4,8 +4,8 @@
 (def defaults
   {:init
    (fn []
-     (log/info "\n-=[datains started successfully]=-"))
+     (log/info "*****-=[datains started successfully]=-*****"))
    :stop
    (fn []
-     (log/info "\n-=[datains has shut down successfully]=-"))
+     (log/info "*****-=[datains has shut down successfully]=-*****"))
    :middleware identity})

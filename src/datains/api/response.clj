@@ -1,4 +1,4 @@
-(ns datains.routes.response
+(ns datains.api.response
   (:require
    [ring.util.http-response :refer [ok not-found]]))
 

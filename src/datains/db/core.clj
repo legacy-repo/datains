@@ -24,7 +24,7 @@
              *db*))
   :stop (conman/disconnect! *db*))
 
-(conman/bind-connection *db* "sql/app-store.sql")
+(conman/bind-connection *db* "sql/choppy_app.sql" "sql/tag.sql" "sql/schema.sql")
 
 
 (extend-protocol jdbc/IResultSetReadColumn

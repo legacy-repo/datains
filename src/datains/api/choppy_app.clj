@@ -1,11 +1,11 @@
-(ns datains.routes.groups.appstore
+(ns datains.api.choppy_app
   (:require
    [ring.util.http-response :refer [ok created no-content]]
    [datains.db.handler :as db-handler]
    [datains.db.core :as db]
-   [datains.routes.spec :as db-spec]
+   [datains.api.spec :as db-spec]
    [clojure.tools.logging :as log]
-   [datains.routes.response :as response]))
+   [datains.api.response :as response]))
 
 (def app
   [""
@@ -18,19 +18,24 @@
                                    :page pos-int?
                                    :per-page pos-int?
                                    :data any?}}}
-           :handler (fn [{{{:keys [page per-page query-str]} :query} :parameters}]
-                      (log/debug "page: " page, "per-page: " per-page, "query-str: " query-str)
-                      (ok (db-handler/get-apps query-str page per-page)))}
+           :handler (fn [{{{:keys [page per-page name query-map]} :query} :parameters}]
+                      (log/debug "page: " page, "per-page: " per-page, "name: " name, "query-map: " query-map)
+                      (ok (db-handler/get-apps query-map 
+                                               (if name 
+                                                 {:name (str "%" name "%")}
+                                                 nil)
+                                               page 
+                                               per-page)))}
 
      :post {:summary "Create an app."
             :parameters {:body db-spec/app-body}
             :responses {201 {:body {:message int?}}}
-            :handler (fn [{{{:keys [id title description repo-url cover icon author rate]} :body} :parameters}]
+            :handler (fn [{{{:keys [id title description repo_url cover icon author rate]} :body} :parameters}]
                        (created (str "/apps/" id)
                                 {:message (db/create-app! {:id id
                                                            :title title
                                                            :description description
-                                                           :repo-url repo-url
+                                                           :repo_url repo_url
                                                            :cover cover
                                                            :icon icon
                                                            :author author
@@ -62,9 +67,9 @@
                                    :page pos-int?
                                    :per-page pos-int?
                                    :data any?}}}
-           :handler (fn [{{{:keys [page per-page query-str]} :query} :parameters}]
-                      (log/debug "page: " page, "per-page: " per-page, "query-str: " query-str)
-                      (ok (db-handler/get-tags query-str page per-page)))}
+           :handler (fn [{{{:keys [page per-page name query-map]} :query} :parameters}]
+                      (log/debug "page: " page, "per-page: " per-page, "name: " name, "query-map: " query-map)
+                      (ok (db-handler/get-tags query-map {:name (str "%" name "%")} page per-page)))}
 
      :post {:summary "Create an tag."
             :parameters {:body db-spec/tag-body}

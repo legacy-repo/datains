@@ -1,7 +1,7 @@
 (defproject datains "0.1.0-SNAPSHOT"
 
   :description "FIXME: write description"
-  :url "http://example.com/FIXME"
+  :url "http://datains.3steps.cn/"
 
   :dependencies [[ch.qos.logback/logback-classic "1.2.3"]
                  [cheshire "5.9.0"]
@@ -32,10 +32,18 @@
                  [ring/ring-servlet "1.7.1"]
                  [selmer "1.12.17"]]
 
+  :repositories [["central" "https://maven.aliyun.com/repository/central"]
+                 ["jcenter" "https://maven.aliyun.com/repository/jcenter"]
+                 ["clojars" "https://mirrors.tuna.tsinghua.edu.cn/clojars/"]]
+
+  :plugin-repositories [["central" "https://maven.aliyun.com/repository/central"]
+                        ["jcenter" "https://maven.aliyun.com/repository/jcenter"]
+                        ["clojars" "https://mirrors.tuna.tsinghua.edu.cn/clojars/"]]
+
   :min-lein-version "2.0.0"
 
-  :source-paths ["src/clj"]
-  :test-paths ["test/clj"]
+  :source-paths ["src"]
+  :test-paths ["test"]
   :resource-paths ["resources"]
   :target-path "target/%s/"
   :main ^:skip-aot datains.core
@@ -44,7 +52,7 @@
   {:uberjar {:omit-source true
              :aot :all
              :uberjar-name "datains.jar"
-             :source-paths ["env/prod/clj"]
+             :source-paths ["env/prod"]
              :resource-paths ["env/prod/resources"]}
 
    :dev           [:project/dev :profiles/dev]
@@ -59,12 +67,9 @@
                                  [ring/ring-mock "0.4.0"]]
                   :plugins      [[com.jakemccrary/lein-test-refresh "0.24.1"]
                                  [jonase/eastwood "0.3.6"]
-                                 [cider/cider-nrepl "0.22.0"]
-                                 [lein-jupyter "0.1.16"]]
-                  
-                  :jupyter-options {:jupyter-path "/Users/Choppy/cobweb/envs/working/bin/jupyter"}
+                                 [cider/cider-nrepl "0.22.0"]]
 
-                  :source-paths ["env/dev/clj"]
+                  :source-paths ["env/dev"]
                   :resource-paths ["env/dev/resources"]
                   :repl-options {:init-ns user}
                   :injections [(require 'pjstadig.humane-test-output)

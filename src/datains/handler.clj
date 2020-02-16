@@ -1,7 +1,7 @@
 (ns datains.handler
   (:require
    [datains.middleware :as middleware]
-   [datains.routes.services :refer [service-routes]]
+   [datains.routes :refer [service-routes]]
    [reitit.swagger-ui :as swagger-ui]
    [reitit.ring :as ring]
    [ring.middleware.content-type :refer [wrap-content-type]]

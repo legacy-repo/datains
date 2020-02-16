@@ -1,4 +1,4 @@
-(ns datains.routes.spec
+(ns datains.api.spec
   (:require [clojure.spec.alpha :as s]
             [spec-tools.core :as st]))
 
@@ -32,7 +32,7 @@
   {:id string?
    :title string?
    :description string?
-   :repo-url string?
+   :repo_url string?
    :cover string?
    :icon string?
    :author string?

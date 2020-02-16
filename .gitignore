@@ -14,8 +14,6 @@ profiles.clj
 
 /node_modules
 /log
-create-db.sh
-Makefile
 
 jupyter.ipynb
 .ipynb_checkpoints

@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS apps (
+CREATE TABLE IF NOT EXISTS choppy_app (
     id VARCHAR(32) PRIMARY KEY,
     icon TEXT,
     cover TEXT,

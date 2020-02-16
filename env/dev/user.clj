@@ -38,7 +38,7 @@
   (mount/stop #'datains.db.core/*db*)
   (mount/start #'datains.db.core/*db*)
   (binding [*ns* 'datains.db.core]
-    (conman/bind-connection datains.db.core/*db* "sql/queries.sql")))
+    (conman/bind-connection datains.db.core/*db* "sql/app.sql")))
 
 (defn reset-db
   "Resets database."

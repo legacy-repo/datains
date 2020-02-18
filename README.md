@@ -34,6 +34,34 @@ lein run
 lein jupyter notebook
 ```
 
+## Change Log
+1. Database (Model)
+2. Database Handler (Controller)
+3. Route (View)
+
+## TODO
+### Drivers
+#### [Gitea Driver](https://github.com/zeripath/java-gitea-api)
+
+#### [Cromwell Driver]()
+
+#### [SmartCDP Driver]()
+
+#### [Data Portal Driver]()
+
+#### [Report Driver]()
+
+### [Scheduler](http://clojurequartz.info/)
+Scheduler will help us to do a series of things, such as:
+1. Sync choppy apps from gitea.
+2. Sync the status of all jobs from Cromwell.
+3. Submit the jobs to Cromwell periodically.
+
+So we need a plugable implement.
+
+### [Async Task](core.async)
+
+
 ## License
 
 Copyright © 2019 FIXME

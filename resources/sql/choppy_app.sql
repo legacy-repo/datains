@@ -12,12 +12,14 @@
 -- :command :insert
 -- :result :affected
 /* :doc
+  Args:
+    {:id "id" :icon "icon" :cover "cover" :title "title" :description "description" :repo_url "repo_url" :author "author" :rate "rate"}
   Description:
-    Create a new app record and then return a map.
+    Create a new app record and then return the number of affected rows.
   Examples: 
     Clojure: (create-app! {:id "id" :icon "icon" :cover "cover" :title "title" :description "description" :repo_url "repo_url" :author "author" :rate "rate"})
 */
-INSERT INTO choppy_app
+INSERT INTO choppy_app (id, icon, cover, title, description, repo_url, author, rate)
 VALUES (:id, :icon, :cover, :title, :description, :repo_url, :author, :rate)
 
 
@@ -25,6 +27,8 @@ VALUES (:id, :icon, :cover, :title, :description, :repo_url, :author, :rate)
 -- :command :execute
 -- :result :affected
 /* :doc
+  Args:
+    {:updates {:title "name" :icon "icon"} :id "3"}
   Description: 
     Update an existing app record.
   Examples:
@@ -51,6 +55,8 @@ WHERE id = :id
 -- :command :query
 -- :result :one
 /* :doc
+  Args:
+    {:query-map {:title "XXX" :icon "XXX"}}
   Description:
     Get count.
   Examples:
@@ -71,6 +77,7 @@ WHERE id = :id
 SELECT COUNT(id)
 FROM choppy_app
 /*~
+; TODO: May be raise error, when the value of :query-map is unqualified.
 (when (:query-map params) 
  (str "WHERE "
   (string/join " AND "
@@ -84,6 +91,8 @@ FROM choppy_app
 -- :command :query
 -- :result :many
 /* :doc
+  Args:
+    {:query-map {:title "XXX" :icon "XXX"} :limit 1 :offset 0}
   Description:
     Get apps by using query map
   Examples: 
@@ -110,10 +119,71 @@ ORDER BY id
 --~ (when (and (:limit params) (:offset params)) "LIMIT :limit OFFSET :offset")
 
 
+-- :name search-apps-with-tags
+-- :command :query
+-- :result :many
+/* :doc
+  Args:
+    {:query-map {:title "XXX" :icon "XXX"} :limit 1 :offset 0}
+  Description:
+    Get apps with tags by using query map
+  Examples: 
+    Clojure: (search-apps-with-tags {:query-map {:title "XXX" :icon "XXX"}})
+    HugSQL:
+      SELECT  choppy_app.id,
+              choppy_app.title,
+              choppy_app.icon,
+              choppy_app.cover,
+              choppy_app.description,
+              choppy_app.repo_url,
+              choppy_app.author,
+              choppy_app.rate,
+              array_agg( tag.id ) as tag_ids,
+              array_agg( tag.title ) as tags
+      FROM choppy_app_tag
+      JOIN choppy_app ON choppy_app_tag.choppy_app_id = choppy_app.id
+      JOIN tag ON choppy_app_tag.tag_id = tag.id
+      WHERE choppy_app.title = :v:query-map.title AND choppy_app.icon = :v:query-map.icon
+      GROUP BY choppy_app.id
+  TODO:
+    1. Maybe we need to support OR/LIKE/IS NOT/etc. expressions in WHERE clause.
+    2. Maybe we need to use exact field name to replace *.
+*/
+/* :require [clojure.string :as string]
+            [hugsql.parameters :refer [identifier-param-quote]] */
+SELECT  choppy_app.id,
+        choppy_app.title,
+        choppy_app.icon,
+        choppy_app.cover,
+        choppy_app.description,
+        choppy_app.repo_url,
+        choppy_app.author,
+        choppy_app.rate,
+        array_agg( tag.id ) as tag_ids,
+        array_agg( tag.title ) as tags
+FROM choppy_app_tag
+JOIN choppy_app ON choppy_app_tag.choppy_app_id = choppy_app.id
+JOIN tag ON choppy_app_tag.tag_id = tag.id
+/*~
+(when (:query-map params) 
+ (str "WHERE "
+  (string/join " AND "
+    (for [[field _] (:query-map params)]
+      (str "choppy_app."
+        (identifier-param-quote (name field) options)
+          " = :v:query-map." (name field))))))
+~*/
+GROUP BY choppy_app.id
+ORDER BY choppy_app.id
+--~ (when (and (:limit params) (:offset params)) "LIMIT :limit OFFSET :offset")
+
+
 -- :name delete-app!
 -- :command :execute
 -- :result :affected
 /* :doc
+  Args:
+    {:id "XXX"}
   Description:
     Delete a app record given the id
   Examples:
@@ -123,3 +193,23 @@ ORDER BY id
 DELETE
 FROM choppy_app
 WHERE id = :id
+
+
+-- :name connect-app-tag!
+-- :command :insert
+-- :result :affected
+/* :doc
+  Args: 
+    {:tag-id 1 :choppy-app-id "XXX"}
+    {:choppy-app-id "XXX" :tag-title "XXX"}
+  Description:
+    Connect an app record with several tag records and then return the number of affected rows.
+  Examples: 
+    Clojure: (connect-app-tag! {:tag-id 1 :choppy-app-id "test"})
+*/
+INSERT INTO choppy_app_tag (tag_id, choppy_app_id)
+/*~
+(if (and (:tag-id params) (:choppy-app-id params)) 
+  "VALUES (:tag-id, :choppy-app-id)"
+  "SELECT id, :choppy-app-id FROM tag WHERE title = :tag-title;")
+~*/

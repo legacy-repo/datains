@@ -3,35 +3,71 @@
   :description "FIXME: write description"
   :url "http://datains.3steps.cn/"
 
-  :dependencies [[ch.qos.logback/logback-classic "1.2.3"]
-                 [cheshire "5.9.0"]
+  ;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  ;; !!                                   PLEASE KEEP THESE ORGANIZED ALPHABETICALLY                                  !!
+  ;; !!                                   AND ADD A COMMENT EXPLAINING THEIR PURPOSE                                  !!
+  ;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  :dependencies [[org.clojure/clojure "1.10.1"]
+                 [org.clojure/tools.cli "0.4.2"
+                  :exclusions [org.clojure/clojure]]
+                 [org.clojure/tools.logging "0.5.0"
+                  :exclusions [org.clojure/clojure]]
+                 [ch.qos.logback/logback-classic "1.2.3"]
+                 [cheshire "5.9.0" :exclusions [org.clojure/clojure]]
+                 [clj-http "3.9.1" :exclusions [commons-logging]]                   ; HTTP client
                  [clojure.java-time "0.3.2"]
-                 [conman "0.8.4"]
-                 [cprop "0.1.14"]
+                 [clojurewerkz/quartzite "2.1.0"
+                  :exclusions [org.clojure/clojure]]                                ; scheduling library
+                 [colorize "0.1.1" :exclusions [org.clojure/clojure]]               ; string output with ANSI color codes (for logging)
+                 [conman "0.8.4"
+                  :exclusions [org.clojure/java.jdbc
+                               org.clojure/clojure]]
+                 [cprop "0.1.14" :exclusions [org.clojure/clojure]]
                  [expound "0.7.2"]
-                 [funcool/struct "1.4.0"]
-                 [luminus-migrations "0.6.6"]
-                 [luminus-transit "0.1.2"]
-                 [luminus/ring-ttl-session "0.3.3"]
-                 [markdown-clj "1.10.0"]
-                 [metosin/muuntaja "0.6.6"]
-                 [metosin/reitit "0.3.10"]
-                 [metosin/ring-http-response "0.9.1"]
+                 [funcool/struct "1.4.0"
+                  :exclusions [org.clojure/clojure
+                               com.google.code.findbugs/jsr305
+                               com.google.errorprone/error_prone_annotations]]
+                 [luminus-jetty "0.1.7"
+                  :exclusions [clj-time joda-time org.clojure/clojure]]
+                 [luminus-migrations "0.6.6" :exclusions [org.clojure/clojure]]
+                 [luminus-transit "0.1.2" :exclusions [org.clojure/clojure]]
+                 [luminus/ring-ttl-session "0.3.3"
+                  :exclusions [org.clojure/clojure]]
+                 [markdown-clj "1.10.0" :exclusions [org.clojure/clojure]]
+                 [metosin/muuntaja "0.6.6"
+                  :exclusions [com.fasterxml.jackson.core/jackson-core
+                               com.fasterxml.jackson.core/jackson-databind
+                               com.fasterxml.jackson.core/jackson-annotations]]
+                 [metosin/reitit "0.3.10"
+                  :exclusions [clj-time
+                               joda-time
+                               org.clojure/clojure
+                               com.fasterxml.jackson.core/jackson-databind
+                               com.fasterxml.jackson.core/jackson-core
+                               com.fasterxml.jackson.core/jackson-annotations]]
+                 [metosin/ring-http-response "0.9.1"
+                  :exclusions [clj-time
+                               joda-time
+                               org.clojure/clojure]]
                  [mount "0.1.16"]
                  [nrepl "0.6.0"]
-                 [org.clojure/clojure "1.10.1"]
-                 [org.clojure/tools.cli "0.4.2"]
-                 [org.clojure/tools.logging "0.5.0"]
                  [org.postgresql/postgresql "42.2.8"]
+                 [org.tcrawley/dynapath "1.0.0"]                                    ; Dynamically add Jars (e.g. Oracle or Vertica) to classpath
                  [org.webjars.npm/bulma "0.8.0"]
                  [org.webjars.npm/material-icons "0.3.1"]
-                 [org.webjars/webjars-locator "0.38"]
-                 [ring-webjars "0.2.0"]
-                 [ring/ring-core "1.8.0"]
-                 [ring/ring-defaults "0.3.2"]
-                 [ring/ring-servlet "1.7.1"]
-                 [luminus-jetty "0.1.7"]
-                 [selmer "1.12.17"]]
+                 [org.webjars/webjars-locator "0.38"
+                  :exclusions [org.slf4j/slf4j-api
+                               com.fasterxml.jackson.core/jackson-core]]
+                 [prismatic/schema "1.1.11"]                                        ; Data schema declaration and validation library
+                 [ring-webjars "0.2.0" :exclusions [org.clojure/clojure]]
+                 [ring/ring-core "1.8.0" :exclusions [org.clojure/clojure]]
+                 [ring/ring-defaults "0.3.2" :exclusions [org.clojure/clojure]]
+                 [ring/ring-servlet "1.7.1"
+                  :exclusions [joda-time
+                               clj-time
+                               org.clojure/clojure]]
+                 [selmer "1.12.17" :exclusions [org.clojure/clojure]]]
 
   :repositories [["central" "https://maven.aliyun.com/repository/central"]
                  ["jcenter" "https://maven.aliyun.com/repository/jcenter"]
@@ -63,8 +99,8 @@
                   :dependencies [[directory-naming/naming-java "0.8"]
                                  [pjstadig/humane-test-output "0.10.0"]
                                  [prone "2019-07-08"]
-                                 [ring/ring-devel "1.8.0"]
-                                 [ring/ring-mock "0.4.0"]]
+                                 [ring/ring-devel "1.8.0" :exclusions [org.clojure/clojure]]
+                                 [ring/ring-mock "0.4.0" :exclusions [org.clojure/clojure]]]
                   :plugins      [[com.jakemccrary/lein-test-refresh "0.24.1"]
                                  [jonase/eastwood "0.3.6"]
                                  [cider/cider-nrepl "0.22.0"]

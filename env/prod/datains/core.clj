@@ -1,34 +1,40 @@
 (ns datains.core
   (:require
-    [datains.handler :as handler]
-    [datains.nrepl :as nrepl]
-    [luminus.http-server :as http]
-    [luminus-migrations.core :as migrations]
-    [datains.config :refer [env]]
-    [clojure.tools.cli :refer [parse-opts]]
-    [clojure.tools.logging :as log]
-    [mount.core :as mount])
+   [datains.handler :as handler]
+   [datains.nrepl :as nrepl]
+   [luminus.http-server :as http]
+   [luminus-migrations.core :as migrations]
+   [datains.config :refer [env]]
+   [clojure.tools.cli :refer [parse-opts]]
+   [clojure.tools.logging :as log]
+   [mount.core :as mount])
   (:gen-class))
 
 ;; log uncaught exceptions in threads
 (Thread/setDefaultUncaughtExceptionHandler
-  (reify Thread$UncaughtExceptionHandler
-    (uncaughtException [_ thread ex]
-      (log/error {:what :uncaught-exception
-                  :exception ex
-                  :where (str "Uncaught exception on" (.getName thread))}))))
+ (reify Thread$UncaughtExceptionHandler
+   (uncaughtException [_ thread ex]
+     (log/error {:what :uncaught-exception
+                 :exception ex
+                 :where (str "Uncaught exception on" (.getName thread))}))))
 
 (def cli-options
   [["-p" "--port PORT" "Port number"
     :parse-fn #(Integer/parseInt %)]])
 
+(mount/defstate ^{:on-reload :noop} scheduler
+  :start
+  (task/start-scheduler!)
+  :stop
+  (task/stop-scheduler!))
+
 (mount/defstate ^{:on-reload :noop} http-server
   :start
   (http/start
-    (-> env
-        (assoc  :handler (handler/app))
-        (update :io-threads #(or % (* 2 (.availableProcessors (Runtime/getRuntime)))))
-        (update :port #(or (-> env :options :port) %))))
+   (-> env
+       (assoc  :handler (handler/app))
+       (update :io-threads #(or % (* 2 (.availableProcessors (Runtime/getRuntime)))))
+       (update :port #(or (-> env :options :port) %))))
   :stop
   (http/stop http-server))
 
@@ -41,7 +47,6 @@
   (when repl-server
     (nrepl/stop repl-server)))
 
-
 (defn init-jndi []
   (System/setProperty "java.naming.factory.initial"
                       "org.apache.naming.java.javaURLContextFactory")
@@ -51,6 +56,7 @@
 (defn start-app [args]
   ; Start datains application
   ; Order: ["#'datains.config/env" "#'datains.db.core/*db*" "#'datains.handler/init-app" "#'datains.handler/app-routes" "#'datains.core/http-server" "#'datains.core/repl-server"]
+  ; Loading Order: core -> handler -> [routes -> api] -> db -> config
   ; https://github.com/tolitius/mount#start-and-stop-order
   (init-jndi)
   (doseq [component (-> args
@@ -90,4 +96,3 @@
       (System/exit 0))
     :else
     (start-app args)))   ; with no command line args just start Metabase normally
-  

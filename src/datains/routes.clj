@@ -8,8 +8,7 @@
    [reitit.ring.middleware.muuntaja :as muuntaja]
    [reitit.ring.middleware.parameters :as parameters]
    [datains.middleware.formats :as formats]
-   [datains.middleware.exception :as exception]
-   [datains.api.choppy_app :as app_route]))
+   [datains.middleware.exception :as exception]))
 
 (defn service-routes []
   (merge 
@@ -46,8 +45,8 @@
               :config {:validator-url nil}})}]]]
    
    ;; The group of routes for app store
-   app_route/app
-   app_route/tag
+   ;  app_route/app
+   ;  app_route/tag
    
    ;; The group of routes for cromwell
    ))

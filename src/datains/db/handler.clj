@@ -1,44 +1,43 @@
 (ns datains.db.handler
   (:require
-   [datains.db.core :as db]
-   [datains.utils :as utils]))
+   [datains.db.core :as db]))
 
+(defn- filter-query-map [query-map]
+  "Filter unqualified attribute or value."
+  ; TODO: Add filter function chain.
+  query-map)
 
-(defn- search-items
-  ([func page] (search-items func {} page 10))
-  ([func page per-page] (search-items func {} page per-page))
-  ([func query-map page per-page] (search-items func query-map {} page per-page))
-  ([func query-map like-map page per-page]
+(defn- page->offset [page per-page]
+  "Tranform page to offset."
+  (* (- page 1) per-page))
+
+(defn- search-entities
+  ([func-map] (search-entities func-map nil 1 10))
+  ([func-map page] (search-entities func-map nil page 10))
+  ([func-map page per-page] (search-entities func-map nil page per-page))
+  ([func-map query-map page per-page]
    (let [page (if (nil? page) 1 page)
          per-page (if (nil? per-page) 10 per-page)
-         query-map (if (nil? query-map) {} query-map)
-         like-map (if (nil? like-map) {} like-map)
-         query-str (utils/make-query-str query-map like-map)
-         metadata {:total (:count (db/get-app-count))
+         params (filter #(some? (val %))
+                        {:limit per-page
+                         :offset (page->offset page per-page)
+                         :query-map (filter-query-map query-map)})
+         metadata {:total (:count ((:count-func func-map) params))
                    :page page
                    :per-page per-page}]
-     (merge metadata {:data (func query-str page per-page)}))))
+     (merge metadata {:data ((:query-func func-map) params)}))))
 
+(def search-apps
+  (partial
+   search-entities
+   {:query-func db/search-apps
+    :count-func db/get-app-count}))
 
-(defn- search-apps [query-str page per-page]
-  (db/search-apps {:query-str query-str
-                   :per-page per-page
-                   :offset (utils/get-offset page per-page)}))
+(defn update-app! [id record]
+  (db/update-app! {:updates record :id id}))
 
+(defn delete-app! [id]
+  (db/delete-app! {:id id}))
 
-(defn- search-tags [query-str page per-page]
-  (db/search-tags {:query-str query-str
-                   :per-page per-page
-                   :offset (utils/get-offset page per-page)}))
-
-
-(def get-apps (partial search-items search-apps))
-(def get-tags (partial search-items search-tags))
-
-
-(defn get-app [id] (first (get-apps {:id id} 1 1)))
-(defn get-tag [id] (first (get-tags {:id id} 1 1)))
-
-
-(defn delete-app! [id] (db/delete-app! {:id id}))
-(defn delete-tag! [id] (db/delete-tag! {:id id}))
+(defn create-app! [record]
+  (db/create-app! record))

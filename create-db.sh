@@ -4,7 +4,8 @@
 # This file is listed in .gitignore and will be excluded from version control by Git.
 set -e # exit immediately if a command exits with a non-zero status.
 
-POSTGRES="psql -h localhost -p 5432 --username postgres --password"
+export PGPASSWORD=password
+POSTGRES="psql -h localhost -p 5432 --username postgres"
 
 if [ -z "$1" ]; then
   database="datains_dev"

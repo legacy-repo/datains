@@ -32,7 +32,7 @@
   {:id string?
    :title string?
    :description string?
-   :repo_url string?
+   :repo-url string?
    :cover string?
    :icon string?
    :author string?

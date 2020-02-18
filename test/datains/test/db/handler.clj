@@ -24,7 +24,7 @@
            :cover       "Smith"
            :title       "exceRptSmallRNA"
            :description "exceRptSmallRNA"
-           :repo_url    "http://choppy.3steps.cn/chenziyin/exceRptSmallRNA"
+           :repo-url    "http://choppy.3steps.cn/chenziyin/exceRptSmallRNA"
            :author      "chenziyin"
            :rate        "5"})))
   (is (= {:total 1

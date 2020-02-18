@@ -34,7 +34,7 @@
 ;                                             :cover       "Smith"
 ;                                             :title       "exceRptSmallRNA"
 ;                                             :description "exceRptSmallRNA"
-;                                             :repo_url    "http://choppy.3steps.cn/chenziyin/exceRptSmallRNA"
+;                                             :repo-url    "http://choppy.3steps.cn/chenziyin/exceRptSmallRNA"
 ;                                             :author      "chenziyin"
 ;                                             :rate        "5"})))]
 ;         (is (= 201 (:status response)))
@@ -47,7 +47,7 @@
 ;                                             :cover       "Smith"
 ;                                             :title       "exceRptSmallRNA"
 ;                                             :description "exceRptSmallRNA"
-;                                             :repo_url    "http://choppy.3steps.cn/chenziyin/exceRptSmallRNA"
+;                                             :repo-url    "http://choppy.3steps.cn/chenziyin/exceRptSmallRNA"
 ;                                             :author      "chenziyin"
 ;                                             :rate        5})))]
 ;         (is (= 400 (:status response)))))
@@ -59,7 +59,7 @@
 ;                                                :cover       "Smith"
 ;                                                :title       "exceRptSmallRNA"
 ;                                                :description "exceRptSmallRNA"
-;                                                :repo_url    "http://choppy.3steps.cn/chenziyin/exceRptSmallRNA"
+;                                                :repo-url    "http://choppy.3steps.cn/chenziyin/exceRptSmallRNA"
 ;                                                :author      "chenziyin"
 ;                                                :rate        "5"}))
 ;                                 (content-type "application/edn")

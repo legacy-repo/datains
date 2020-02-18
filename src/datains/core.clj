@@ -55,29 +55,45 @@
                       "org.apache.naming"))
 
 (defn start-app [args]
+  ; Start datains application
+  ; Order: ["#'datains.config/env" "#'datains.db.core/*db*" "#'datains.handler/init-app" "#'datains.handler/app-routes" "#'datains.core/http-server" "#'datains.core/repl-server"]
+  ; Loading Order: core -> handler -> [routes -> api] -> db -> config
+  ; https://github.com/tolitius/mount#start-and-stop-order
   (init-jndi)
   (doseq [component (-> args
                         (parse-opts cli-options)
                         mount/start-with-args
                         :started)]
     (log/info component "started"))
+  ; Run handler/destroy when the app is shutdown
   (.addShutdownHook (Runtime/getRuntime) (Thread. handler/destroy)))
 
 (defn -main [& args]
+  "Launch Datains in standalone mode."
+  (log/info "Starting Datains in STANDALONE mode")
+  ; Load configuration from system-props & env
   (mount/start #'datains.config/env)
   (cond
-    (nil? (:database-url env))
+    ; When the DATABASE_URL variable has been set as "", an exception will be raised.
+    ; #error: URI connection string cannot be empty!
+    (or (nil? (:database-url env)) (= "" (:database-url env)))
     (do
       (log/error "Database configuration not found, :database-url environment variable must be set before running")
       (System/exit 1))
+    ; Run a command like `java -jar datains.jar init-*`
     (some #{"init"} args)
     (do
+      ; Initializes the database using the script specified by the :init-script key opts
+      ; https://github.com/luminus-framework/luminus-migrations/blob/23a3061b5baaeb6a0ee44eb2f3df3a7fcaacf2da/src/luminus_migrations/core.clj#L55
+      (when (or (nil? (:init-script env)) (= "" (:init-script env)))
+        (log/error "Init script file not found, :init-script evironment variable must be set before running")
+        (System/exit 1))
       (migrations/init (select-keys env [:database-url :init-script]))
       (System/exit 0))
+    ; Run a command like `java -jar datains.jar migrate release-locks` or `lein run migrate release-locks`
     (migrations/migration? args)
     (do
       (migrations/migrate args (select-keys env [:database-url]))
       (System/exit 0))
     :else
-    (start-app args)))
-
+    (start-app args)))   ; with no command line args just start Metabase normally

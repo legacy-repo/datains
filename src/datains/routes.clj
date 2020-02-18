@@ -45,8 +45,8 @@
               :config {:validator-url nil}})}]]]
    
    ;; The group of routes for app store
-   ;  app_route/app
-   ;  app_route/tag
+   ;  app-route/app
+   ;  app-route/tag
    
    ;; The group of routes for cromwell
    ))

@@ -1,4 +1,4 @@
-(ns datains.task.sync_apps
+(ns datains.task.sync-apps
   "Tasks related to sync apps to datains database from choppy appstore."
   (:require [clojure.tools.logging :as log]
             [clojurewerkz.quartzite

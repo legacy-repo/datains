@@ -1,4 +1,4 @@
-(ns datains.api.choppy_app
+(ns datains.api.choppy-app
   (:require
    [ring.util.http-response :refer [ok created no-content]]
    [datains.db.handler :as db-handler]
@@ -35,7 +35,7 @@
                                 {:message (db/create-app! {:id id
                                                            :title title
                                                            :description description
-                                                           :repo_url repo_url
+                                                           :repo-url repo_url
                                                            :cover cover
                                                            :icon icon
                                                            :author author

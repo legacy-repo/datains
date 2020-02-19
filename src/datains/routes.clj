@@ -1,6 +1,7 @@
 (ns datains.routes
   "Main Compojure routes tables. `/api/` routes are in `datains.api.routes`."
   (:require
+   [datains.api.choppy-app :as app-route]
    [reitit.swagger :as swagger]
    [reitit.swagger-ui :as swagger-ui]
    [reitit.ring.coercion :as coercion]
@@ -11,7 +12,7 @@
    [datains.middleware.exception :as exception]))
 
 (defn service-routes []
-  (merge 
+  (merge
    ["/api"
     {:coercion spec-coercion/coercion
      :muuntaja formats/instance
@@ -43,10 +44,10 @@
       {:get (swagger-ui/create-swagger-ui-handler
              {:url "/api/swagger.json"
               :config {:validator-url nil}})}]]]
-   
+
    ;; The group of routes for app store
-   ;  app-route/app
+   app-route/app
    ;  app-route/tag
-   
+
    ;; The group of routes for cromwell
    ))

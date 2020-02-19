@@ -3,6 +3,7 @@
    [datains.handler :as handler]
    [datains.nrepl :as nrepl]
    [datains.task :as task]
+   [datains.events :as events]
    [luminus.http-server :as http]
    [luminus-migrations.core :as migrations]
    [datains.config :refer [env]]
@@ -22,6 +23,12 @@
 (def cli-options
   [["-p" "--port PORT" "Port number"
     :parse-fn #(Integer/parseInt %)]])
+
+(mount/defstate ^{:on-reload :noop} event
+  :start
+  (events/initialize-events!)
+  :stop
+  (events/stop-events!))
 
 (mount/defstate ^{:on-reload :noop} scheduler
   :start

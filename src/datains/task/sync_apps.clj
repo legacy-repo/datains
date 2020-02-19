@@ -40,7 +40,7 @@
                  (triggers/with-schedule
                    (cron/schedule
                     ;; run at the top of every hour
-                    (cron/cron-schedule "0 */1 * * * ?")
+                    (cron/cron-schedule "0 */5 * * * ?")
                     ;; If sync-apps! misfires, don't try to re-sync all the misfired apps. Retry only the most
                     ;; recent misfire, discarding all others. This should hopefully cover cases where a misfire
                     ;; happens while the system is still running; if the system goes down for an extended period of

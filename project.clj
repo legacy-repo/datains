@@ -95,7 +95,8 @@
    :dev           [:project/dev :profiles/dev]
    :test          [:project/dev :project/test :profiles/test]
 
-   :project/dev  {:jvm-opts ["-Dconf=dev-config.edn"]
+   :project/dev  {:env {:datains-run-mode "dev"}
+                  :jvm-opts ["-Dconf=dev-config.edn"]
                   :dependencies [[directory-naming/naming-java "0.8"]
                                  [pjstadig/humane-test-output "0.10.0"]
                                  [prone "2019-07-08"]
@@ -113,7 +114,8 @@
                   :repl-options {:init-ns user}
                   :injections [(require 'pjstadig.humane-test-output)
                                (pjstadig.humane-test-output/activate!)]}
-   :project/test {:jvm-opts ["-Dconf=test-config.edn"]
+   :project/test {:env {:datains-run-mode "test"}
+                  :jvm-opts ["-Dconf=test-config.edn"]
                   :resource-paths ["env/test/resources"]}
    :profiles/dev {}
    :profiles/test {}})

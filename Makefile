@@ -6,7 +6,7 @@ test: clean-test-db test-db
 	@printf "\nRunning unittest...\n"
 	lein test :all
 
-db:
+dev-db:
 	@printf "\nLaunch postgres database...(default password: password)\n"
 	@docker run --name datains -e POSTGRES_PASSWORD=password -e POSTGRES_USER=postgres -p 5432:5432 -d postgres:10.0
 	@echo "Create database: datains_dev"
@@ -28,7 +28,7 @@ clean-test-db:
 	@-docker rm datains-test
 
 
-clean-db:
+clean-dev-db:
 	@printf "Stop "
 	@-docker stop datains
 	@printf "Clean "

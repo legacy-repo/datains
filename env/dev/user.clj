@@ -9,7 +9,8 @@
     [datains.core :refer [start-app]]
     [datains.db.core]
     [conman.core :as conman]
-    [luminus-migrations.core :as migrations]))
+    [luminus-migrations.core :as migrations]
+    [clojure.tools.namespace.repl :as tn]))
 
 (alter-var-root #'s/*explain-out* (constantly expound/printer))
 
@@ -30,7 +31,7 @@
   "Restarts application."
   []
   (stop)
-  (start))
+  (tn/refresh :after 'user/start))
 
 (defn restart-db
   "Restarts database."

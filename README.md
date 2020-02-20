@@ -34,6 +34,13 @@ lein run
 lein jupyter notebook
 ```
 
+## How to reload application without the need to restart the REPL itself
+
+```
+(require '[user :as u])
+(u/restart)
+```
+
 ## Change Log
 1. Database (Model)
 2. Database Handler (Controller)

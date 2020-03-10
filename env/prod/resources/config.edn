@@ -1,2 +1,4 @@
-{:prod true
- :port 3000}
+{:prod   true
+ :port   3000
+ :app-store-host "choppy.3steps.cn"
+ :app-store-port 80}

@@ -29,14 +29,15 @@
           :opt-un [::page ::per-page ::query-str]))
 
 (def app-body
-  {:id string?
-   :title string?
+  {:id          string?
+   :title       string?
    :description string?
-   :repo-url string?
-   :cover string?
-   :icon string?
-   :author string?
-   :rate string?})
+   :repo-url    string?
+   :cover       string?
+   :icon        string?
+   :author      string?
+   :rate        string?
+   :valid       boolean?})
 
 (def tag-body
   {:name string?

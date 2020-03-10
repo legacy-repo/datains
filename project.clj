@@ -67,7 +67,12 @@
                   :exclusions [joda-time
                                clj-time
                                org.clojure/clojure]]
-                 [selmer "1.12.17" :exclusions [org.clojure/clojure]]]
+                 [selmer "1.12.17" :exclusions [org.clojure/clojure]]
+                 [lambdaisland/uri "1.2.1"]                                         ; https://github.com/dakrone/clj-http#optional-dependencies
+                 [cheshire "5.6.1"]                                                 ; for :as :json
+                 [org.clojure/tools.reader "1.3.2"]                                 ; for :as :clojure
+                 [digest "1.4.9"]                                                   ; Digest algorithms (md5, sha1 ...) for Clojure
+                 ]
 
   :repositories [["central" "https://maven.aliyun.com/repository/central"]
                  ["jcenter" "https://maven.aliyun.com/repository/jcenter"]
@@ -86,36 +91,40 @@
   :main ^:skip-aot datains.core
 
   :profiles
-  {:uberjar {:omit-source true
-             :aot :all
-             :uberjar-name "datains.jar"
-             :source-paths ["env/prod"]
-             :resource-paths ["env/prod/resources"]}
+  {:uberjar       {:omit-source    true
+                   :aot            :all
+                   :uberjar-name   "datains.jar"
+                   :source-paths   ["env/prod"]
+                   :resource-paths ["env/prod/resources"]}
 
    :dev           [:project/dev :profiles/dev]
    :test          [:project/dev :project/test :profiles/test]
 
-   :project/dev  {:env {:datains-run-mode "dev"}
-                  :jvm-opts ["-Dconf=dev-config.edn"]
-                  :dependencies [[directory-naming/naming-java "0.8"]
-                                 [pjstadig/humane-test-output "0.10.0"]
-                                 [prone "2019-07-08"]
-                                 [ring/ring-devel "1.8.0" :exclusions [org.clojure/clojure]]
-                                 [ring/ring-mock "0.4.0" :exclusions [org.clojure/clojure]]]
-                  :plugins      [[com.jakemccrary/lein-test-refresh "0.24.1"]
-                                 [jonase/eastwood "0.3.6"]
-                                 [cider/cider-nrepl "0.22.0"]
-                                 [nubank/lein-jupyter "0.1.18"]]
+   :project/dev   {:env             {:datains-run-mode "dev"}
+                   :jvm-opts        ["-Dconf=dev-config.edn"]
+                   :dependencies    [[directory-naming/naming-java "0.8"]
+                                     [pjstadig/humane-test-output "0.10.0"]
+                                     [prone "2019-07-08"]
+                                     [ring/ring-devel "1.8.0" :exclusions [org.clojure/clojure]]
+                                     [ring/ring-mock "0.4.0" :exclusions [org.clojure/clojure]]]
+                   :plugins         [[com.jakemccrary/lein-test-refresh "0.24.1"]
+                                     [jonase/eastwood "0.3.6"]
+                                     [cider/cider-nrepl "0.22.0"]
+                                     [nubank/lein-jupyter "0.1.18"]]
 
-                  :jupyter-options {:jupyter-path "jupyter"}
+                   :jupyter-options {:jupyter-path "jupyter"}
 
-                  :source-paths ["env/dev"]
-                  :resource-paths ["env/dev/resources"]
-                  :repl-options {:init-ns user}
-                  :injections [(require 'pjstadig.humane-test-output)
-                               (pjstadig.humane-test-output/activate!)]}
-   :project/test {:env {:datains-run-mode "test"}
-                  :jvm-opts ["-Dconf=test-config.edn"]
-                  :resource-paths ["env/test/resources"]}
-   :profiles/dev {}
+                   :source-paths    ["env/dev"]
+                   :resource-paths  ["env/dev/resources"]
+                   :repl            {:plugins      [[cider/cider-nrepl "0.21.2-SNAPSHOT"]]
+                                     :dependencies [[nrepl "0.6.0"]
+                                                    [cider/piggieback "0.4.0"]
+                                                    [figwheel-sidecar "0.5.18"]]
+                                     :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}}
+                   :injections      [(require 'pjstadig.humane-test-output)
+                                     (pjstadig.humane-test-output/activate!)]}
+   :project/test  {:env            {:datains-run-mode  "test"}
+                   :jvm-opts       ["-Dconf=test-config.edn"]
+                   :resource-paths ["env/test/resources"]}
+   :profiles/dev  {}
    :profiles/test {}})

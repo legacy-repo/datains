@@ -17,3 +17,4 @@ profiles.clj
 jupyter.ipynb
 .ipynb_checkpoints
 .eastwood
+.vscode

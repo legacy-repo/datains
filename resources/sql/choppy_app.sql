@@ -13,14 +13,14 @@
 -- :result :affected
 /* :doc
   Args:
-    {:id "id" :icon "icon" :cover "cover" :title "title" :description "description" :repo-url "repo_url" :author "author" :rate "rate"}
+    {:id "id" :icon "icon" :cover "cover" :title "title" :description "description" :repo-url "repo_url" :author "author" :rate "rate" :valid true}
   Description:
     Create a new app record and then return the number of affected rows.
   Examples: 
-    Clojure: (create-app! {:id "id" :icon "icon" :cover "cover" :title "title" :description "description" :repo-url "repo_url" :author "author" :rate "rate"})
+    Clojure: (create-app! {:id "id" :icon "icon" :cover "cover" :title "title" :description "description" :repo-url "repo_url" :author "author" :rate "rate" :valid true})
 */
-INSERT INTO choppy_app (id, icon, cover, title, description, repo_url, author, rate)
-VALUES (:id, :icon, :cover, :title, :description, :repo-url, :author, :rate)
+INSERT INTO choppy_app (id, icon, cover, title, description, repo_url, author, rate, valid)
+VALUES (:id, :icon, :cover, :title, :description, :repo-url, :author, :rate, :valid)
 
 
 -- :name update-app!
@@ -159,6 +159,7 @@ SELECT  choppy_app.id,
         choppy_app.repo_url,
         choppy_app.author,
         choppy_app.rate,
+        choppy_app.valid,
         array_agg( tag.id ) as tag_ids,
         array_agg( tag.title ) as tags
 FROM choppy_app_tag

@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS choppy_app (
   description TEXT,
   repo_url TEXT,
   author VARCHAR(255),
-  rate VARCHAR(16)
+  rate VARCHAR(16),
+  valid BOOLEAN
 );
 
 --;;

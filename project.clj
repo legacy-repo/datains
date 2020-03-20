@@ -69,10 +69,8 @@
                                org.clojure/clojure]]
                  [selmer "1.12.17" :exclusions [org.clojure/clojure]]
                  [lambdaisland/uri "1.2.1"]                                         ; https://github.com/dakrone/clj-http#optional-dependencies
-                 [cheshire "5.6.1"]                                                 ; for :as :json
                  [org.clojure/tools.reader "1.3.2"]                                 ; for :as :clojure
-                 [digest "1.4.9"]                                                   ; Digest algorithms (md5, sha1 ...) for Clojure
-                 ]
+                 [digest "1.4.9"]]                                                  ; Digest algorithms (md5, sha1 ...) for Clojure
 
   :repositories [["central" "https://maven.aliyun.com/repository/central"]
                  ["jcenter" "https://maven.aliyun.com/repository/jcenter"]

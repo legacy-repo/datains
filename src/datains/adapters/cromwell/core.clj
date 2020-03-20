@@ -1,4 +1,4 @@
-(ns datains.api.cromwell
+(ns datains.adapters.cromwell.core
   "Launch a Cromwell workflow and wait for it to complete."
   (:require [clojure.data.json :as json]
             [clojure.string :as str]

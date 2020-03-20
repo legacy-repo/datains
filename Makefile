@@ -9,8 +9,11 @@ test: clean-test-db test-db
 dev-db:
 	@printf "\nLaunch postgres database...(default password: password)\n"
 	@docker run --name datains -e POSTGRES_PASSWORD=password -e POSTGRES_USER=postgres -p 5432:5432 -d postgres:10.0
+	@sleep 3
 	@echo "Create database: datains_dev"
 	@bash create-db.sh datains_dev
+	@echo "Migrate database..."
+	@bash lein run migrate
 
 
 test-db:
@@ -19,6 +22,8 @@ test-db:
 	@sleep 3
 	@echo "Create database: datains_test"
 	@bash create-db.sh datains_test
+	@echo "Migrate database..."
+	@bash lein run migrate
 
 
 clean-test-db:
@@ -33,3 +38,7 @@ clean-dev-db:
 	@-docker stop datains
 	@printf "Clean "
 	@-docker rm datains
+
+deploy:
+	@printf "Make datains.jar package..."
+	@lein uberjar

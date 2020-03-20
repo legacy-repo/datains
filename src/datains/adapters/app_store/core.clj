@@ -82,14 +82,6 @@
     (catch Throwable _
       false)))
 
-(defn get-cover-or-default
-  [resp]
-  (if-let [cover (exist-file?
-                  (str (:html_url resp)
-                       "/src/branch/master/cover.png"))]
-    cover
-    (:default-cover @config)))
-
 (defn gen-repo-path
   "Version can be nil or '', then return the master branch."
   [app-name version]
@@ -97,31 +89,6 @@
            (> 0 (count version)))
     (make-url (str app-name "/src/tag/" version "spec.json") "")
     (make-url (str app-name "/src/branch/master" "spec.json") "")))
-
-(defn resp->record
-  "Transform reponse data to the app record. 
-
-    The response is request from app store and the app record is matched with database schema.
-    More details: http://choppy.3steps.cn/api/v1/repos/search?q=choppy-app&topic=true&includeDesc=false&limit=1
-  "
-  [resp]
-  (let [full_name (:full_name resp)]
-    {:id          (digest/md5 full_name)            ; Computing md5 value as the app id
-     :title       full_name
-     :icon        (:avatar_url resp)
-     :cover       (get-cover-or-default resp)
-     :description (:description resp)
-     :repo-url    (:clone_url resp)
-     :author      (:username (:owner resp))
-     :rate        (:stars_count resp)
-     :valid       (app-is-valid? full_name nil)}))  ; Don't need to check whether the specified version is valid when we fetch all apps
-
-(defn make-app-data
-  "Map resp data to a set of app record."
-  [data]
-  (->> data
-       (:data)
-       (map resp->record)))
 
 ;;; ------------------------------------------------- App Store's API ---------------------------------------------------
 (defn service-is-ok?
@@ -157,6 +124,39 @@
   (if-let [spec (exist-file? (gen-repo-path app-name version))]
     spec
     false))
+
+(defn get-cover-or-default
+  [resp]
+  (if-let [cover (exist-file?
+                  (str (:html_url resp)
+                       "/src/branch/master/cover.png"))]
+    cover
+    (:default-cover @config)))
+
+(defn resp->record
+  "Transform reponse data to the app record. 
+
+    The response is request from app store and the app record is matched with database schema.
+    More details: http://choppy.3steps.cn/api/v1/repos/search?q=choppy-app&topic=true&includeDesc=false&limit=1
+  "
+  [resp]
+  (let [full_name (:full_name resp)]
+    {:id          (digest/md5 full_name)            ; Computing md5 value as the app id
+     :title       full_name
+     :icon        (:avatar_url resp)
+     :cover       (get-cover-or-default resp)
+     :description (:description resp)
+     :repo-url    (:clone_url resp)
+     :author      (:username (:owner resp))
+     :rate        (:stars_count resp)
+     :valid       (app-is-valid? full_name nil)}))  ; Don't need to check whether the specified version is valid when we fetch all apps
+
+(defn make-app-data
+  "Map resp data to a set of app record."
+  [data]
+  (->> data
+       (:data)
+       (map resp->record)))
 
 (defn get-apps-by-page
   "Get app records from app store.

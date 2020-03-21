@@ -19,3 +19,4 @@ jupyter.ipynb
 .eastwood
 .vscode
 dist
+test-config.edn

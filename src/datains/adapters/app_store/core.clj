@@ -3,7 +3,9 @@
             [clj-http.client :as client]
             [lambdaisland.uri :as uri-lib]
             [clojure.tools.logging :as log]
-            [digest :as digest]))
+            [digest :as digest]
+            [clj-jgit.porcelain :as git]
+            [clojure.string :as clj-str]))
 
 ; Initialize the configuration of choppy store
 (def ^:private config
@@ -14,6 +16,15 @@
          :port          nil
          :scheme        nil
          :default-cover ""}))
+
+(defn get-app-workdir
+  "Fix bugs: env is null when mount is not evaluated, so need to use function instead of variable."
+  []
+  (str (clj-str/replace (get-in env [:datains-workdir]) #"/$" "") "/apps"))
+
+(defn get-local-path
+  [relative-path]
+  (str (get-app-workdir) "/" relative-path))
 
 (defn show-config
   []
@@ -180,3 +191,20 @@
     (range 1 (+ 1
                 (/ (count-by-topic topic)
                    50))))))  ; maximum page size is 50
+
+;;; ------------------------------------------------- Git API ---------------------------------------------------
+(defn credentials
+  []
+  {:user (:app-store-username env)
+   :pw   (:app-store-password env)})
+
+(defn get-repo-path
+  [repo]
+  (.getParent (.getDirectory (.getRepository repo))))
+
+(defn clone!
+  "Clone a specified repo into a local path."
+  [repo local-dir]
+  ;; Use user/pw auth instead of key based auth
+  (git/with-credentials (credentials)
+    (git/git-clone repo :dir local-dir)))

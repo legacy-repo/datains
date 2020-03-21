@@ -17,7 +17,7 @@
     (f)))
 
 (deftest test-handler
-  (is (= [:id "1"]
+  (is (= {:id "1"}
          (db-handler/create-app!
           {:id          "1"
            :icon        "Sam"
@@ -26,16 +26,18 @@
            :description "exceRptSmallRNA"
            :repo-url    "http://choppy.3steps.cn/chenziyin/exceRptSmallRNA"
            :author      "chenziyin"
-           :rate        "5"})))
-  (is (= {:total 1
-          :page 1
+           :rate        "5"
+           :valid       true})))
+  (is (= {:total    1
+          :page     1
           :per-page 10
-          :data [{:id          "1"
-                  :icon        "Sam"
-                  :cover       "Smith"
-                  :title       "exceRptSmallRNA"
-                  :description "exceRptSmallRNA"
-                  :repo_url    "http://choppy.3steps.cn/chenziyin/exceRptSmallRNA"
-                  :author      "chenziyin"
-                  :rate        "5"}]}
+          :data     [{:id          "1"
+                      :icon        "Sam"
+                      :cover       "Smith"
+                      :title       "exceRptSmallRNA"
+                      :description "exceRptSmallRNA"
+                      :repo_url    "http://choppy.3steps.cn/chenziyin/exceRptSmallRNA"
+                      :author      "chenziyin"
+                      :rate        "5"
+                      :valid       true}]}
          (db-handler/search-apps))))

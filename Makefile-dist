@@ -1,3 +1,5 @@
+.PHONY: install clean
+
 install:
 	@echo "Install dependencies..."
 	@virtualenv .env -p python3

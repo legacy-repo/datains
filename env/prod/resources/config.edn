@@ -1,10 +1,18 @@
-{:prod           true
- :port           3000
- :app-store-host "choppy.3steps.cn"
- :app-store-port 80
- :cromwell       {:url    "http://localhost:8080"
-                  :labels [:data_type
-                           :project
-                           :regulatory_designation
-                           :sample_name
-                           :version]}}
+{:prod                   true
+ :port                   3000
+ ;; when :nrepl-port is set the application starts the nREPL server on load
+ :nrepl-port             7000
+  ; set your dev database connection URL here
+ :database-url           "database-url"
+ :datains-workdir        "datains-workdir"
+ :app-store-access-token "app-store-access-token"
+ :app-store-host         "choppy.3steps.cn"
+ :app-store-port         80
+ :app-store-username     "username"
+ :app-store-password     "password"
+ :cromwell               {:url    "http://localhost:8080"
+                          :labels [:data_type
+                                   :project
+                                   :regulatory_designation
+                                   :sample_name
+                                   :version]}}

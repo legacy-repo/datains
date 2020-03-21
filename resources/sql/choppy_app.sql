@@ -9,7 +9,7 @@
 ---------------------------------------------------------------------------------------------
 
 -- :name create-app!
--- :command :insert
+-- :command :returning-execute
 -- :result :affected
 /* :doc
   Args:
@@ -21,6 +21,7 @@
 */
 INSERT INTO choppy_app (id, icon, cover, title, description, repo_url, author, rate, valid)
 VALUES (:id, :icon, :cover, :title, :description, :repo-url, :author, :rate, :valid)
+RETURNING id
 
 
 -- :name update-app!

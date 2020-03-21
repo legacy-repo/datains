@@ -18,3 +18,4 @@ jupyter.ipynb
 .ipynb_checkpoints
 .eastwood
 .vscode
+dist

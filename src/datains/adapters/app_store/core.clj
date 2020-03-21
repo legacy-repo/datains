@@ -3,7 +3,7 @@
             [clj-http.client :as client]
             [lambdaisland.uri :as uri-lib]
             [clojure.tools.logging :as log]
-            [digest]))
+            [digest :as digest]))
 
 ; Initialize the configuration of choppy store
 (def ^:private config

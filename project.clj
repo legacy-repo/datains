@@ -8,13 +8,14 @@
   ;; !!                                   AND ADD A COMMENT EXPLAINING THEIR PURPOSE                                  !!
   ;; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   :dependencies [[org.clojure/clojure "1.10.1"]
+                 [org.clojure/tools.namespace "1.0.0"]
                  [org.clojure/tools.cli "0.4.2"
                   :exclusions [org.clojure/clojure]]
                  [org.clojure/tools.logging "0.5.0"
                   :exclusions [org.clojure/clojure]]
                  [ch.qos.logback/logback-classic "1.2.3"]
                  [cheshire "5.9.0" :exclusions [org.clojure/clojure]]
-                 [clj-http "3.9.1" :exclusions [commons-logging]]                   ; HTTP client
+                 [clj-http "3.9.1"]                                                 ; HTTP client
                  [clojure.java-time "0.3.2"]
                  [clojurewerkz/quartzite "2.1.0"
                   :exclusions [org.clojure/clojure]]                                ; scheduling library
@@ -121,7 +122,7 @@
                                      :repl-options {:nrepl-middleware [cider.piggieback/wrap-cljs-repl]}}
                    :injections      [(require 'pjstadig.humane-test-output)
                                      (pjstadig.humane-test-output/activate!)]}
-   :project/test  {:env            {:datains-run-mode  "test"}
+   :project/test  {:env            {:datains-run-mode "test"}
                    :jvm-opts       ["-Dconf=test-config.edn"]
                    :resource-paths ["env/test/resources"]}
    :profiles/dev  {}

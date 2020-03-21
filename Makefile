@@ -40,5 +40,12 @@ clean-dev-db:
 	@-docker rm datains
 
 deploy:
-	@printf "Make datains.jar package..."
+	@printf "Make datains.jar package...\n"
 	@lein uberjar
+	@rm -rf dist
+	@mkdir -p dist/bin dist/lib
+	@cp Makefile-dist dist/Makefile
+	@cp requirements-dist.txt dist/requirements.txt
+	@cp target/uberjar/datains.jar dist/lib/
+	@tar -czvf target/datains.tar.gz dist/
+	@rm -rf dist

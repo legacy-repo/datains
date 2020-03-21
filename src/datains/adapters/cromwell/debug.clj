@@ -1,4 +1,4 @@
-(ns datains.debug
+(ns datains.adapters.cromwell.debug
   "Debug tools not specific to this program."
   (:require [clojure.pprint :refer [pprint]]))
 

@@ -1,0 +1,10 @@
+install:
+	@echo "Install dependencies..."
+	@virtualenv .env -p python3
+	@source .env/bin/activate && pip install -r requirements.txt
+	@PWD=$(shell pwd)
+	@printf "\n\033[0;32m-------------------------- Notice --------------------------\n\n"
+	@printf "Please add \`$(PWD)/bin\` into your PATH variable.\033[0m\n\n"
+
+clean:
+	rm -rf .env

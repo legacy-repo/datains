@@ -4,9 +4,10 @@
             [clojure.string :as str]
             [clojure.walk :as walk]
             [clj-http.client :as http]
-            [datains.debug :as debug]
-            [datains.config :refer [env]]
-            [datains.util :as util]))
+            [datains.adapters.cromwell.debug :as debug]
+            [datains.adapters.cromwell.util :as util]
+            ; Need to import env environment
+            [datains.config :refer [env]]))
 
 (def statuses
   "The statuses a Cromwell workflow can have."
@@ -42,7 +43,7 @@
 
 (def bogus-key-character-map
   "Map bogus characters in metadata keys to replacements."
-  (let [tag   (str "%" "util/the-name" "%")
+  (let [tag   (str "%" util/the-name "%")
         bogus {" " "SPACE"
                "(" "OPEN"
                ")" "CLOSE"}]

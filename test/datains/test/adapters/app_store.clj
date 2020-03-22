@@ -6,6 +6,10 @@
             [clojure.java.io :as io]
             [datains.adapters.app-store.core :as app-store]))
 
+(defn clean-dir
+  [path]
+  (io/delete-file (io/file path)))
+
 (use-fixtures
   :once
   (fn [f]
@@ -14,10 +18,6 @@
     (app-store/setup-cs-from-env!)
     (clean-dir "/tmp/bedtools")
     (f)))
-
-(defn clean-dir
-  [path]
-  (io/delete-file (io/file path)))
 
 (defn exists?
   [path]

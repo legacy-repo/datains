@@ -6,17 +6,23 @@
              [triggers :as triggers]]
             [clojurewerkz.quartzite.schedule.cron :as cron]
             [datains.task :as task]
-            [clj-http.client :as client]))
+            [clj-http.client :as client]
+            [datains.adapters.app-store.core :as app-store]))
 
 ;;; ------------------------------------------------- Syncing Apps ---------------------------------------------------
-(defn- send-msg! []
+(defn- send-msg!
+  [title msg]
   (client/post "https://oapi.dingtalk.com/robot/send"
-               {:body "{\"msgtype\": \"markdown\", \"markdown\": {\"title\": \"choppy\", \"text\": \"This is a test.\"}}"
-                :query-params {"access_token" "44cdb11cc6543f91cb25447e7e0e0c1dc29a0e4797fab106d49b3750daadedb3"}
-                :content-type :json
-                :socket-timeout 1000      ;; in milliseconds
+               {:body               (format "{\"msgtype\": \"markdown\", \"markdown\": {\"title\": \"choppy\", \"text\": \"This is a test.\"}}" )
+                :query-params       {"access_token" "44cdb11cc6543f91cb25447e7e0e0c1dc29a0e4797fab106d49b3750daadedb3"}
+                :content-type       :json
+                :socket-timeout     1000      ;; in milliseconds
                 :connection-timeout 1000  ;; in milliseconds
-                :accept :json}))
+                :accept             :json}))
+
+(defn- sync-apps! []
+  (let [apps (app-store/get-all-apps "choppy-app")]
+    (println apps)))
 
 ;;; ------------------------------------------------------ Task ------------------------------------------------------
 ;; triggers the syncing of all apps which are scheduled to run in the current hour

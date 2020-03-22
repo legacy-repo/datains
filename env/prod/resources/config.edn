@@ -15,4 +15,6 @@
                                    :project
                                    :regulatory_designation
                                    :sample_name
-                                   :version]}}
+                                   :version]}
+ :dingtalk-access-token  ""
+ :dingtalk-secret ""}

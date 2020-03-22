@@ -233,9 +233,9 @@
    app_name: huangyechao/annovar
    samples: file path
   "
-  ([project-name app-name samples] (render-app project-name app-name samples 
-                                               (get-app-workdir) 
-                                               (get-project-workdir project-name)))
+  ([project-name app-name samples] (render-app! project-name app-name samples
+                                                (get-app-workdir)
+                                                (get-project-workdir project-name)))
   ([project-name app-name samples base-dir work-dir]
    (if (exist-bin? "app-utility")
      (sh "app-utility" app-name samples base-dir work-dir project-name)

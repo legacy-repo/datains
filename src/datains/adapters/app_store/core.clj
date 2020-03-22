@@ -4,6 +4,7 @@
             [lambdaisland.uri :as uri-lib]
             [clojure.tools.logging :as log]
             [digest :as digest]
+            [me.raynes.fs :as fs]
             [clj-jgit.porcelain :as git]
             [clojure.string :as clj-str]))
 
@@ -191,6 +192,32 @@
     (range 1 (+ 1
                 (/ (count-by-topic topic)
                    50))))))  ; maximum page size is 50
+
+(defn get-installed-apps
+  "Get the list of installed apps.
+   e.g. ('/choppy/bedtools' '/choppy/samtools')
+  "
+  [app-root-dir]
+  (let [app-root-dir (fs/expand-home app-root-dir)]
+    (map #(clj-str/replace (.getPath %)
+                           (re-pattern (.getPath app-root-dir)) "")
+         (filter #(and (some? %) (fs/directory? %))
+                 (flatten
+                  (map #(fs/list-dir %)
+                       (fs/list-dir app-root-dir)))))))
+
+(defn is-installed?
+  "Returns true if an app is installed, false otherwise."
+  ([app-name] (is-installed? app-name (get-app-workdir)))
+  ([app-name app-root-dir] (> (count
+                               (filter #(re-find (re-pattern app-name) %)
+                                       (get-installed-apps app-root-dir)))
+                              0)))
+
+(defn render-app
+  "Render as a pipeline based on the specified app template."
+  [app-name app-root-dir]
+  true)
 
 ;;; ------------------------------------------------- Git API ---------------------------------------------------
 (defn credentials

@@ -13,6 +13,7 @@
 import verboselogs
 import logging
 import zipfile
+import tempfile
 import shutil
 import uuid
 import csv
@@ -36,6 +37,7 @@ APP_INSTALL_FAILED = 2
 JSON_NOT_VALID = 3
 
 DEFAULT_APP_ROOT_DIR = os.path.expanduser('~/.choppy/apps')
+DEFAULT_PROJECT_ROOT_DIR = os.path.expanduser('~/.choppy/projects')
 
 
 class NotFoundApp(Exception):
@@ -191,15 +193,10 @@ def generate_dependencies_zip(dependencies_path):
     # Fix Bug: When Changing Directory, you need a abs path.
     dependencies_path = os.path.abspath(dependencies_path)
     previous_workdir = os.getcwd()
-    par_dir = str(uuid.uuid1())
-    workdir = os.path.join('/', 'tmp', par_dir)
-    os.mkdir(workdir)
-    zip_output = os.path.join('/', 'tmp', par_dir, 'tasks.zip')
+    par_dir = tempfile.mkdtemp()
+    zip_output = os.path.join(par_dir, 'tasks.zip')
 
-    os.chdir(workdir)
-    # Fix bug:
-    # Need two levels or one level?
-    # dest_path = os.path.join('tasks', 'tasks')
+    os.chdir(par_dir)
     dest_path = 'tasks'
     shutil.copytree(dependencies_path, dest_path)
 
@@ -304,12 +301,13 @@ def install_app(app_root_dir, choppy_app, base_url, username, password, is_termi
             raise InValidApp("Not a valid app.")
 
 
-def uninstall_app(app_dir, is_terminal=True):
-    if not os.path.exists(app_dir):
-        logger.debug("App root directory: %s" % os.path.dirname(app_dir))
-        msg = 'No such app: %s' % os.path.basename(app_dir)
+def uninstall_app(base_dir, app_name, is_terminal=True):
+    if app_name not in listapps(base_dir):
+        msg = 'No such app: %s' % app_name
         logger.error(msg)
         raise AppUnInstallationFailed(msg)
+
+    app_dir = os.path.join(base_dir, app_name)
 
     if is_terminal:
         answer = ''
@@ -404,6 +402,9 @@ def listapps(app_root_dir):
         # 2. User owner name as a namespace.
         for dir in os.listdir(app_root_dir):
             abs_dir = os.path.join(app_root_dir, dir)
+            if not os.path.isdir(abs_dir):
+                continue
+
             if is_valid_app(abs_dir, ignore_error=True):
                 apps.append(dir)
             else:
@@ -622,7 +623,8 @@ def copy_and_overwrite(from_path, to_path, is_file=False, ignore_errors=True, as
         elif os.path.isdir(from_path):
             shutil.copytree(from_path, to_path)
     except Exception as err:
-        logger.warning('Copy %s to %s error: %s' % (from_path, to_path, str(err)))
+        logger.warning('Copy %s to %s error: %s' %
+                       (from_path, to_path, str(err)))
 
 
 @click.group()
@@ -688,16 +690,18 @@ def uninstall_cli():
 
 @uninstall_cli.command()
 @click.argument('app_name')
-@click.option('--base-dir', '-b', help='The base directory for your apps.', type=click.Path(exists=True))
+@click.option('--base-dir', '-b', default=DEFAULT_APP_ROOT_DIR,
+              help='The base directory for your apps.',
+              type=click.Path(exists=True))
 def uninstall(app_name, base_dir):
     """
     Uninstall an app.
     """
     app_dir = os.path.join(base_dir, app_name)
     if not os.path.isdir(app_dir):
-        raise NotFoundApp("The %s doesn't exist" % args.app_name)
+        raise NotFoundApp("The %s doesn't exist" % app_name)
 
-    uninstall_app(app_dir)
+    uninstall_app(base_dir, app_name)
 
 
 @click.group()
@@ -706,11 +710,14 @@ def apps_cli():
 
 
 @apps_cli.command()
-def apps():
+@click.option('--base-dir', '-b', default=DEFAULT_APP_ROOT_DIR,
+              help='The base directory for your apps.',
+              type=click.Path(exists=True))
+def apps(base_dir):
     """
     List all apps that is supported by choppy.
     """
-    apps = listapps()
+    apps = listapps(base_dir)
     if len(apps) > 0:
         print(apps)
     else:
@@ -725,18 +732,21 @@ def render_cli():
 @render_cli.command()
 @click.argument('app_name')
 @click.argument('samples', type=click.Path(exists=True))
-@click.option('--base-dir', '-b', help='The base directory for your apps.', type=click.Path(exists=True))
-@click.option('--work-dir', '-b', help='The working directory for your pipelines.', type=click.Path(exists=True))
-@click.option('--project-name', '-p', help='Your project name. (default: None)', type=str)
-@click.option('--dry-run', '-D', help='Generate all workflow but skipping running. (default: False)', is_flag=True)
+@click.option('--base-dir', '-b', default=DEFAULT_APP_ROOT_DIR,
+              help='The base directory for your apps.',
+              type=click.Path(exists=True))
+@click.option('--work-dir', '-b', default=DEFAULT_PROJECT_ROOT_DIR,
+              help='The working directory for your pipelines.',
+              type=click.Path(exists=True))
+@click.option('--project-name', '-p', help='Your project name. (default: None)', type=str, required=True)
 @click.option('--force', '-f', help='Force to overwrite files. (default: False)', is_flag=True)
-def render(app_name, samples, base_dir, work_dir, project_name, dry_run, label, force):
+def render(app_name, samples, base_dir, work_dir, project_name, force):
     """
     Render as a pipeline based on the specified app template.
     """
     samples_file = click.format_filename(samples)
     app_dir = os.path.join(base_dir, app_name)
-    project_path = os.path.join(working_dir, project_name)
+    project_path = os.path.join(work_dir, project_name)
 
     samples_data = parse_samples(samples)
 
@@ -779,6 +789,10 @@ def render(app_name, samples, base_dir, work_dir, project_name, dry_run, label, 
             src_dependencies = os.path.join(app_dir, 'tasks')
             dest_dependencies = os.path.join(sample_path, 'tasks')
             copy_and_overwrite(src_dependencies, dest_dependencies)
+
+            # dependencies zip file
+            zip_output = generate_dependencies_zip(src_dependencies)
+            shutil.copy2(zip_output, sample_path)
 
 
 cli = click.CommandCollection(

@@ -6,7 +6,8 @@
             [digest :as digest]
             [me.raynes.fs :as fs]
             [clj-jgit.porcelain :as git]
-            [clojure.string :as clj-str]))
+            [clojure.string :as clj-str])
+  (:use [clojure.java.shell :only [sh]]))
 
 ; Initialize the configuration of choppy store
 (def ^:private config
@@ -18,10 +19,18 @@
          :scheme        nil
          :default-cover ""}))
 
-(defn get-app-workdir
+(defn get-workdir
   "Fix bugs: env is null when mount is not evaluated, so need to use function instead of variable."
   []
-  (str (clj-str/replace (get-in env [:datains-workdir]) #"/$" "") "/apps"))
+  (clj-str/replace (get-in env [:datains-workdir]) #"/$" ""))
+
+(defn get-app-workdir
+  []
+  (str (get-workdir) "/apps"))
+
+(defn get-project-workdir
+  [project-name]
+  (str (get-workdir) "/projects/" project-name))
 
 (defn get-local-path
   [relative-path]
@@ -214,10 +223,23 @@
                                        (get-installed-apps app-root-dir)))
                               0)))
 
-(defn render-app
-  "Render as a pipeline based on the specified app template."
-  [app-name app-root-dir]
-  true)
+(defn exist-bin?
+  [name]
+  (= 0 (:exit (sh "which" name))))
+
+(defn render-app!
+  "Render as a pipeline based on the specified app template.
+   project_name: ^[a-zA-Z_]+[a-zA-Z0-9]+$
+   app_name: huangyechao/annovar
+   samples: file path
+  "
+  ([project-name app-name samples] (render-app project-name app-name samples 
+                                               (get-app-workdir) 
+                                               (get-project-workdir project-name)))
+  ([project-name app-name samples base-dir work-dir]
+   (if (exist-bin? "app-utility")
+     (sh "app-utility" app-name samples base-dir work-dir project-name)
+     (log/error "Command not found: app-utility."))))
 
 ;;; ------------------------------------------------- Git API ---------------------------------------------------
 (defn credentials

@@ -1,6 +1,5 @@
 (ns datains.adapters.dingtalk
-  (:require [datains.config :refer [env]]
-            [lambdaisland.uri :as uri-lib]
+  (:require [lambdaisland.uri :as uri-lib]
             [clj-http.client :as client]
             [clojure.tools.logging :as log]
             [clojure.data.json :as json])
@@ -9,13 +8,17 @@
            (org.apache.commons.codec.binary Base64)
            (java.net URLEncoder)))
 
-(defn access-token
-  []
-  (get-in env [:dingtalk-access-token]))
+(def ^:private access-token (atom ""))
 
-(defn secret
-  []
-  (get-in env [:dingtalk-secret]))
+(defn setup-access-token
+  [token]
+  (reset! access-token token))
+
+(def ^:private secret (atom ""))
+
+(defn setup-secret
+  [secret-key]
+  (reset! secret secret-key))
 
 (defn timestamp
   []
@@ -23,7 +26,7 @@
 
 (defn string-to-sign
   [timestamp]
-  (str timestamp "\n" (secret)))
+  (str timestamp "\n" @secret))
 
 (defn secretKeyInst [secret mac]
   (SecretKeySpec. (.getBytes secret "UTF-8") (.getAlgorithm mac)))
@@ -49,19 +52,19 @@
 (defn gen-signed-string
   [timestamp]
   (->> (string-to-sign timestamp)
-       (sign (secret))
+       (sign @secret)
        (encode)))
 
 (defn make-webhook-url
   ([] (let [timestamp (timestamp)]
-        (make-webhook-url (access-token) timestamp (gen-signed-string timestamp))))
+        (make-webhook-url @access-token timestamp (gen-signed-string timestamp))))
   ([query]
    (str (assoc (uri-lib/uri "https://oapi.dingtalk.com/robot/send")
                :query query)))
   ([access-token timestamp sign]
    (make-webhook-url (format "access_token=%s&timestamp=%s&sign=%s" access-token timestamp sign))))
 
-(defn send-msg!
+(defn- send-msg!
   [msg]
   (let [ret-msg (client/post (make-webhook-url)
                              {:body               msg
@@ -69,7 +72,8 @@
                               :socket-timeout     1000      ;; in milliseconds
                               :connection-timeout 1000      ;; in milliseconds
                               :accept             :json})]
-    (log/info "Send message to dingtalk: " (:body ret-msg))))
+    (log/info "Send message to dingtalk: " (:body ret-msg))
+    ret-msg))
 
 (defn markdown-msg
   [title content]

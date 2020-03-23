@@ -1,6 +1,5 @@
 (ns datains.adapters.app-store.core
-  (:require [datains.config :refer [env]]
-            [clj-http.client :as client]
+  (:require [clj-http.client :as client]
             [lambdaisland.uri :as uri-lib]
             [clojure.tools.logging :as log]
             [digest :as digest]
@@ -11,18 +10,21 @@
 
 ; Initialize the configuration of choppy store
 (def ^:private config
-  (atom {:access-token  nil
-         :ping          "/api/v1/version"
-         :api-prefix    "/api/v1"
-         :host          nil
-         :port          nil
-         :scheme        nil
-         :default-cover ""}))
+  (atom {:access-token       nil
+         :ping               "/api/v1/version"
+         :api-prefix         "/api/v1"
+         :host               nil
+         :port               nil
+         :scheme             nil
+         :default-cover      ""
+         :datains-workdir    "~/.choppy/"
+         :app-store-password nil
+         :app-store-username nil}))
 
 (defn get-workdir
   "Fix bugs: env is null when mount is not evaluated, so need to use function instead of variable."
   []
-  (clj-str/replace (get-in env [:datains-workdir]) #"/$" ""))
+  (clj-str/replace (:datains-workdir @config) #"/$" ""))
 
 (defn get-app-workdir
   []
@@ -40,16 +42,10 @@
   []
   @config)
 
-(defn setup-cs-from-env!
-  "Setup the configuration of choppy store from environment variables."
-  []
-  (reset! config
-          (merge @config
-                 {:access-token  (:app-store-access-token env)
-                  :host          (:app-store-host env "choppy.3steps.cn")
-                  :port          (:app-store-port env 80)
-                  :scheme        (:app-store-scheme env "http")
-                  :default-cover (:app-default-cover env "")})))
+(defn setup-config
+  [new-config]
+  (reset! config 
+          (merge @config new-config)))
 
 (defn join-url
   [scheme host port path query]
@@ -244,8 +240,8 @@
 ;;; ------------------------------------------------- Git API ---------------------------------------------------
 (defn credentials
   []
-  {:user (:app-store-username env)
-   :pw   (:app-store-password env)})
+  {:user (:app-store-username @config)
+   :pw   (:app-store-password @config)})
 
 (defn get-repo-path
   [repo]

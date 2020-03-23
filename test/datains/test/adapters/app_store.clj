@@ -8,7 +8,10 @@
 
 (defn clean-dir
   [path]
-  (io/delete-file (io/file path)))
+  (try
+    (io/delete-file (io/file path))
+    (catch Exception e
+           (println "Not such file: " path))))
 
 (use-fixtures
   :once

@@ -9,7 +9,8 @@
    [datains.config :refer [env]]
    [clojure.tools.cli :refer [parse-opts]]
    [clojure.tools.logging :as log]
-   [mount.core :as mount])
+   [mount.core :as mount]
+   [datains.setup-adapters :as adapters])
   (:gen-class))
 
 ;; log uncaught exceptions in threads
@@ -23,6 +24,18 @@
 (def cli-options
   [["-p" "--port PORT" "Port number"
     :parse-fn #(Integer/parseInt %)]])
+
+(mount/defstate dingtalk
+  :start
+  (adapters/setup-dingtalk)
+  :stop
+  (adapters/reset-dingtalk))
+
+(mount/defstate appstore
+  :start
+  (adapters/setup-app-store)
+  :stop
+  (adapters/reset-app-store))
 
 (mount/defstate ^{:on-reload :noop} event
   :start

@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS choppy_app_tag;
+DROP TABLE IF EXISTS entity_tag;
 
 --;;
 DROP TABLE IF EXISTS choppy_app;

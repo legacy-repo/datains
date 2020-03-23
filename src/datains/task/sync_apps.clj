@@ -7,29 +7,25 @@
             [clojurewerkz.quartzite.schedule.cron :as cron]
             [datains.task :as task]
             [clj-http.client :as client]
-            [datains.adapters.app-store.core :as app-store]))
+            [datains.adapters.app-store.core :as app-store]
+            [datains.db.core :refer [*db*] :as db]
+            [clojure.java.jdbc :as jdbc]))
 
 ;;; ------------------------------------------------- Syncing Apps ---------------------------------------------------
-(defn- send-msg!
-  [title msg]
-  (client/post "https://oapi.dingtalk.com/robot/send"
-               {:body               (format "{\"msgtype\": \"markdown\", \"markdown\": {\"title\": \"choppy\", \"text\": \"This is a test.\"}}" )
-                :query-params       {"access_token" "44cdb11cc6543f91cb25447e7e0e0c1dc29a0e4797fab106d49b3750daadedb3"}
-                :content-type       :json
-                :socket-timeout     1000      ;; in milliseconds
-                :connection-timeout 1000  ;; in milliseconds
-                :accept             :json}))
-
 (defn- sync-apps! []
   (let [apps (app-store/get-all-apps "choppy-app")]
-    (println apps)))
+    (jdbc/with-db-transaction [t-conn *db*]
+      (db/delete-all-apps! t-conn)
+      (doseq [app apps]
+        (log/info app)
+        (db/create-app! t-conn app)))))
 
 ;;; ------------------------------------------------------ Task ------------------------------------------------------
 ;; triggers the syncing of all apps which are scheduled to run in the current hour
 (jobs/defjob SyncApps [_]
   (try
-    (send-msg!)
-    (log/info "Send message to dingtalk...")
+    (sync-apps!)
+    (log/info "Sync apps from app store...")
     (catch Throwable e
       (log/error e "SyncApps task failed"))))
 
@@ -46,7 +42,7 @@
                  (triggers/with-schedule
                    (cron/schedule
                     ;; run at the top of every hour
-                    (cron/cron-schedule "0 */5 * * * ?")
+                    (cron/cron-schedule "0 */1 * * * ?")
                     ;; If sync-apps! misfires, don't try to re-sync all the misfired apps. Retry only the most
                     ;; recent misfire, discarding all others. This should hopefully cover cases where a misfire
                     ;; happens while the system is still running; if the system goes down for an extended period of

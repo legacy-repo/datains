@@ -141,14 +141,15 @@ ORDER BY id
               choppy_app.rate,
               array_agg( tag.id ) as tag_ids,
               array_agg( tag.title ) as tags
-      FROM choppy_app_tag
-      JOIN choppy_app ON choppy_app_tag.choppy_app_id = choppy_app.id
-      JOIN tag ON choppy_app_tag.tag_id = tag.id
+      FROM entity_tag
+      JOIN choppy_app ON entity_tag.entity_id = choppy_app.id
+      JOIN tag ON entity_tag.tag_id = tag.id
       WHERE choppy_app.title = :v:query-map.title AND choppy_app.icon = :v:query-map.icon
       GROUP BY choppy_app.id
   TODO:
     1. Maybe we need to support OR/LIKE/IS NOT/etc. expressions in WHERE clause.
     2. Maybe we need to use exact field name to replace *.
+    3. Maybe we need to add entity_tag.entity_type = "choppy-app" condition.
 */
 /* :require [clojure.string :as string]
             [hugsql.parameters :refer [identifier-param-quote]] */
@@ -163,9 +164,9 @@ SELECT  choppy_app.id,
         choppy_app.valid,
         array_agg( tag.id ) as tag_ids,
         array_agg( tag.title ) as tags
-FROM choppy_app_tag
-JOIN choppy_app ON choppy_app_tag.choppy_app_id = choppy_app.id
-JOIN tag ON choppy_app_tag.tag_id = tag.id
+FROM entity_tag
+JOIN choppy_app ON entity_tag.choppy_app_id = choppy_app.id
+JOIN tag ON entity_tag.tag_id = tag.id
 /*~
 (when (:query-map params) 
  (str "WHERE "
@@ -197,21 +198,14 @@ FROM choppy_app
 WHERE id = :id
 
 
--- :name connect-app-tag!
--- :command :insert
+-- :name delete-all-apps!
+-- :command :execute
 -- :result :affected
 /* :doc
-  Args: 
-    {:tag-id 1 :choppy-app-id "XXX"}
-    {:choppy-app-id "XXX" :tag-title "XXX"}
   Description:
-    Connect an app record with several tag records and then return the number of affected rows.
-  Examples: 
-    Clojure: (connect-app-tag! {:tag-id 1 :choppy-app-id "test"})
+    Delete all app records.
+  Examples:
+    Clojure: (delete-all-apps!)
+    SQL: TRUNCATE choppy_app;
 */
-INSERT INTO choppy_app_tag (tag_id, choppy_app_id)
-/*~
-(if (and (:tag-id params) (:choppy-app-id params)) 
-  "VALUES (:tag-id, :choppy-app-id)"
-  "SELECT id, :choppy-app-id FROM tag WHERE title = :tag-title;")
-~*/
+TRUNCATE choppy_app;

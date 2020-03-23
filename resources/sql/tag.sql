@@ -101,3 +101,23 @@ ORDER BY id
 DELETE
 FROM tag
 WHERE title = :title
+
+
+-- :name connect-entity-tag!
+-- :command :insert
+-- :result :affected
+/* :doc
+  Args: 
+    {:tag-id 1 :entity-id "XXX" :entity-type "choppy-app"}
+    {:entity-id "XXX" :entity-type "choppy-app" :tag-title "XXX"}
+  Description:
+    Connect an app record with several tag records and then return the number of affected rows.
+  Examples: 
+    Clojure: (connect-entity-tag! {:tag-id 1 :entity-id "test" :entity-type "choppy-app"})
+*/
+INSERT INTO entity_tag (tag_id, entity_id, entity_type)
+/*~
+(if (and (:tag-id params) (and (:entity-id params) (:entity-type params)))
+  "VALUES (:tag-id, :entity-id, :entity-type)"
+  "SELECT id, :entity-id, :entity-type FROM tag WHERE title = :tag-title;")
+~*/

@@ -26,18 +26,18 @@ CREATE TABLE IF NOT EXISTS tag (
 COMMENT ON TABLE tag IS 'Used for tagging project/app/report etc.';
 
 --;;
-CREATE TABLE IF NOT EXISTS choppy_app_tag (
+CREATE TABLE IF NOT EXISTS entity_tag (
   id SERIAL NOT NULL,
   -- entity_id may contains choppy_app id, project id and report id etc.
-  choppy_app_id VARCHAR(32),
+  entity_id VARCHAR(32),
+  entity_type VARCHAR(32),
   tag_id INT,
   PRIMARY KEY(id),
-  CONSTRAINT fk_choppy_app_id FOREIGN KEY (choppy_app_id) REFERENCES choppy_app(id),
   CONSTRAINT fk_tag_id FOREIGN KEY (tag_id) REFERENCES tag(id)
 );
 
 --;;
-COMMENT ON TABLE choppy_app_tag IS 'Used for connecting choppy_app and tag table.';
+COMMENT ON TABLE entity_tag IS 'Used for connecting other entity and tag table.';
 
 --;;
 CREATE TABLE qrtz_job_details (

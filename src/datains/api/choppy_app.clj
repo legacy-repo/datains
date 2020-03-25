@@ -5,7 +5,9 @@
    [datains.api.spec :as db-spec]
    [clojure.tools.logging :as log]
    [datains.api.response :as response]
-   [datains.events :as events]))
+   [datains.events :as events]
+   [digest :as digest]
+   [datains.adapters.app-store.core :as app-store]))
 
 (def app
   [""
@@ -38,4 +40,13 @@
                                                                       :icon        icon
                                                                       :author      author
                                                                       :rate        rate
-                                                                      :valid       valid})}))}}]])
+                                                                      :valid       valid})}))}}]
+   ["/installed-apps"
+    {:get {:summary    "Get installed apps."
+           :parameters {}
+           :responses  {200 {:body {:total nat-int?
+                                    :data  any?}}}
+           :handler    (fn [parameters]
+                         (let [apps (app-store/get-installed-apps (app-store/get-app-workdir))]
+                           (ok {:data  (map #(assoc {} :name % :id (digest/md5 %)) apps)
+                                :total (count apps)})))}}]])

@@ -200,12 +200,13 @@
 
 (defn get-installed-apps
   "Get the list of installed apps.
-   e.g. ('/choppy/bedtools' '/choppy/samtools')
+   e.g. ('choppy/bedtools' 'choppy/samtools')
   "
   [app-root-dir]
   (let [app-root-dir (fs/expand-home app-root-dir)]
     (map #(clj-str/replace (.getPath %)
-                           (re-pattern (.getPath app-root-dir)) "")
+                           (re-pattern (str (.getPath app-root-dir) "/"))
+                           "")
          (filter #(and (some? %) (fs/directory? %))
                  (flatten
                   (map #(fs/list-dir %)

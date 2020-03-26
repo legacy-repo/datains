@@ -6,7 +6,7 @@
             [datains.plugins.classloader :as classloader]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.string :as str]))
+            [clojure.string :as clj-str]))
 
 (defn- namespace-symbs* []
   (for [ns-symb (ns-find/find-namespaces (concat (classpath/system-classpath)
@@ -43,3 +43,9 @@
 
   (^String [color format-string & args]
    (colorize color (apply format (str format-string) args))))
+
+(defn join-path
+  [root path]
+  (let [root (clj-str/replace root #"/$" "")
+        path (clj-str/replace path #"^/" "")]
+    (str root "/" path)))

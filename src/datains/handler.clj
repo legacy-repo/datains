@@ -5,6 +5,7 @@
    [datains.routes :refer [service-routes]]
    [reitit.swagger-ui :as swagger-ui]
    [reitit.ring :as ring]
+   [ring.middleware.file :refer [wrap-file]]
    [ring.middleware.content-type :refer [wrap-content-type]]
    [ring.middleware.webjars :refer [wrap-webjars]]
    [datains.env :refer [defaults]]
@@ -12,7 +13,8 @@
    [clojure.tools.logging :as log]
    [datains.config :refer [env]]
    [reitit.spec :as rs]
-   [reitit.dev.pretty :as pretty]))
+   [reitit.dev.pretty :as pretty]
+   [datains.adapters.app-store.core :as app-store]))
 
 (mount/defstate init-app
   :start ((or (:init defaults) (fn [])))
@@ -39,17 +41,17 @@
 (mount/defstate app-routes
   :start
   (ring/ring-handler
-    (ring/router
-     [["/" {:get
-            {:handler (constantly {:status 301 :headers {"Location" "/api/api-docs/index.html"}})}}]
-      (service-routes)]
-     {:validate rs/validate
-      :exception pretty/exception})
-    (ring/routes
-      (ring/create-resource-handler
-        {:path "/"})
-      (wrap-content-type (wrap-webjars (constantly nil)))
-      (ring/create-default-handler))))
+   (ring/router
+    [["/" {:get {:handler (constantly {:status  301
+                                       :headers {"Location" "/api/api-docs/index.html"}})}}]
+     ["/report/*" (-> (ring/create-resource-handler {:path "/"})
+                      (wrap-file (app-store/get-workdir)))]
+     (service-routes)]
+    {:validate  rs/validate
+     :exception pretty/exception})
+   (ring/routes
+    (wrap-content-type (wrap-webjars (constantly nil)))
+    (ring/create-default-handler))))
 
 (defn app []
   (middleware/wrap-base #'app-routes))

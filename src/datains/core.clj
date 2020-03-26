@@ -31,6 +31,12 @@
   :stop
   (adapters/reset-dingtalk))
 
+(mount/defstate multiqc
+  :start
+  (adapters/setup-multiqc)
+  :stop
+  (adapters/reset-multiqc))
+
 (mount/defstate appstore
   :start
   (adapters/setup-app-store)

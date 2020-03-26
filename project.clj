@@ -71,6 +71,7 @@
                  [selmer "1.12.17" :exclusions [org.clojure/clojure]]
                  [clj-jgit "1.0.0-beta3"]
                  [ring-cors "0.1.13"]
+                 [ring/ring-headers "0.3.0"]
                  [me.raynes/fs "1.4.6"]
                  [lambdaisland/uri "1.2.1"]                                         ; https://github.com/dakrone/clj-http#optional-dependencies
                  [org.clojure/tools.reader "1.3.2"]                                 ; for :as :clojure

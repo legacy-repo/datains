@@ -1,8 +1,10 @@
 (ns datains.setup-adapters
   (:require [datains.adapters.dingtalk :as dingtalk]
+            [datains.adapters.multiqc :as multiqc]
             [clojure.tools.logging :as log]
             [datains.adapters.app-store.core :as app-store]
-            [datains.config :refer [env]]))
+            [datains.config :refer [env]]
+            [datains.util :as util]))
 
 (defn setup-dingtalk
   []
@@ -17,6 +19,18 @@
   (log/info "Reset dingtalk adapter.")
   (dingtalk/setup-access-token "")
   (dingtalk/setup-secret ""))
+
+(defn setup-multiqc
+  []
+  (let [datains-workdir (get-in env [:datains-workdir])
+        report-dir (util/join-path datains-workdir "/report")]
+    (log/info "Setup multiqc adapter: ", report-dir)
+    (multiqc/setup-report-dir report-dir)))
+
+(defn reset-multiqc
+  []
+  (log/info "Reset multiqc adapter.")
+  (multiqc/setup-report-dir "~/.choppy/report"))
 
 (defn setup-app-store
   "Setup the configuration of choppy store from environment variables."

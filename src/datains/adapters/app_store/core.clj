@@ -24,7 +24,8 @@
 (defn get-workdir
   "Fix bugs: env is null when mount is not evaluated, so need to use function instead of variable."
   []
-  (clj-str/replace (:datains-workdir @config) #"/$" ""))
+  (let [work-dir (fs/expand-home (:datains-workdir @config))]
+    (clj-str/replace work-dir #"/$" "")))
 
 (defn get-app-workdir
   []
@@ -44,7 +45,7 @@
 
 (defn setup-config
   [new-config]
-  (reset! config 
+  (reset! config
           (merge @config new-config)))
 
 (defn join-url

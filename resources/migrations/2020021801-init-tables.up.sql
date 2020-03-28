@@ -1,6 +1,6 @@
 -- how to run multiple statements in the migrations?
 -- See https://github.com/yogthos/migratus#multiple-statements for more details
-CREATE TABLE IF NOT EXISTS choppy_app (
+CREATE TABLE IF NOT EXISTS datains_choppy_app (
   id VARCHAR(32) PRIMARY KEY,
   title VARCHAR(255),
   icon TEXT,
@@ -13,10 +13,10 @@ CREATE TABLE IF NOT EXISTS choppy_app (
 );
 
 --;;
-COMMENT ON TABLE choppy_app IS 'Used for Choppy pipe.';
+COMMENT ON TABLE datains_choppy_app IS 'Used for Choppy pipe.';
 
 --;;
-CREATE TABLE IF NOT EXISTS project (
+CREATE TABLE IF NOT EXISTS datains_project (
   id VARCHAR(36) PRIMARY KEY,
   project_name VARCHAR(64) UNIQUE,
   description TEXT,
@@ -30,13 +30,13 @@ CREATE TABLE IF NOT EXISTS project (
 );
 
 --;;
-COMMENT ON TABLE project IS 'Used for organizing jobs.';
+COMMENT ON TABLE datains_project IS 'Used for organizing jobs.';
 
 --;;
-COMMENT ON COLUMN project.status IS 'One of Aborted,Aborting,Failed,On Hold,Running,Submitted,Succeeded.';
+COMMENT ON COLUMN datains_project.status IS 'One of Aborted,Aborting,Failed,On Hold,Running,Submitted,Succeeded.';
 
 --;;
-CREATE TABLE IF NOT EXISTS workflow (
+CREATE TABLE IF NOT EXISTS datains_workflow (
   id VARCHAR(36) PRIMARY KEY,
   project_id VARCHAR(32) NOT NULL,
   sample_id VARCHAR(64) NOT NULL,
@@ -49,19 +49,19 @@ CREATE TABLE IF NOT EXISTS workflow (
 );
 
 --;;
-COMMENT ON TABLE workflow IS 'Used for recording job details.';
+COMMENT ON TABLE datains_workflow IS 'Used for recording job details.';
 
 --;;
-COMMENT ON COLUMN workflow.job_params IS 'Job parameters for WDL inputs file.';
+COMMENT ON COLUMN datains_workflow.job_params IS 'Job parameters for WDL inputs file.';
 
 --;;
-COMMENT ON COLUMN workflow.labels IS 'A string seperated by comma.';
+COMMENT ON COLUMN datains_workflow.labels IS 'A string seperated by comma.';
 
 --;;
-COMMENT ON COLUMN workflow.status IS 'One of Aborted,Aborting,Failed,On Hold,Running,Submitted,Succeeded.';
+COMMENT ON COLUMN datains_workflow.status IS 'One of Aborted,Aborting,Failed,On Hold,Running,Submitted,Succeeded.';
 
 --;;
-CREATE TABLE IF NOT EXISTS report (
+CREATE TABLE IF NOT EXISTS datains_report (
   id VARCHAR(36) PRIMARY KEY,
   report_name VARCHAR(64) NOT NULL UNIQUE,
   project_id VARCHAR(36),
@@ -78,25 +78,25 @@ CREATE TABLE IF NOT EXISTS report (
 );
 
 --;;
-COMMENT ON TABLE report IS 'Used for report.';
+COMMENT ON TABLE datains_report IS 'Used for report.';
 
 --;;
-COMMENT ON COLUMN report.id IS 'uuid for report';
+COMMENT ON COLUMN datains_report.id IS 'uuid for report';
 
 --;;
-COMMENT ON COLUMN report.script IS 'Auto generated script for making a report';
+COMMENT ON COLUMN datains_report.script IS 'Auto generated script for making a report';
 
 --;;
-COMMENT ON COLUMN report.report_path IS 'A relative path of a report based on the report directory';
+COMMENT ON COLUMN datains_report.report_path IS 'A relative path of a report based on the report directory';
 
 --;;
-COMMENT ON COLUMN report.report_type IS 'multiqc';
+COMMENT ON COLUMN datains_report.report_type IS 'multiqc';
 
 --;;
-COMMENT ON COLUMN report.status IS 'Started, Finished, Checked, Archived';
+COMMENT ON COLUMN datains_report.status IS 'Started, Finished, Checked, Archived';
 
 --;;
-CREATE TABLE IF NOT EXISTS notification (
+CREATE TABLE IF NOT EXISTS datains_notification (
   id SERIAL NOT NULL,
   title VARCHAR(255) NOT NULL,
   description TEXT,
@@ -106,46 +106,46 @@ CREATE TABLE IF NOT EXISTS notification (
 );
 
 --;;
-COMMENT ON TABLE notification IS 'Used for managing notification.';
+COMMENT ON TABLE datains_notification IS 'Used for managing notification.';
 
 --;;
-COMMENT ON COLUMN notification.id IS 'serial id for report.';
+COMMENT ON COLUMN datains_notification.id IS 'serial id for report.';
 
 --;;
-COMMENT ON COLUMN notification.title IS 'The title of notification.';
+COMMENT ON COLUMN datains_notification.title IS 'The title of notification.';
 
 --;;
-COMMENT ON COLUMN notification.description IS 'A description of notification.';
+COMMENT ON COLUMN datains_notification.description IS 'A description of notification.';
 
 --;;
-COMMENT ON COLUMN notification.notification_type IS 'Which type the notification is.';
+COMMENT ON COLUMN datains_notification.notification_type IS 'Which type the notification is.';
 
 --;;
-COMMENT ON COLUMN notification.status IS 'Read, Unread';
+COMMENT ON COLUMN datains_notification.status IS 'Read, Unread';
 
 --;;
-CREATE TABLE IF NOT EXISTS tag (
+CREATE TABLE IF NOT EXISTS datains_tag (
   id SERIAL NOT NULL,
   title VARCHAR(32) NOT NULL UNIQUE,
   PRIMARY KEY(id)
 );
 
 --;;
-COMMENT ON TABLE tag IS 'Used for tagging project/app/report etc.';
+COMMENT ON TABLE datains_tag IS 'Used for tagging project/app/report etc.';
 
 --;;
-CREATE TABLE IF NOT EXISTS entity_tag (
+CREATE TABLE IF NOT EXISTS datains_entity_tag (
   id SERIAL NOT NULL,
   -- entity_id may contains choppy_app id, project id and report id etc.
   entity_id VARCHAR(32),
   entity_type VARCHAR(32),
   tag_id INT,
   PRIMARY KEY(id),
-  CONSTRAINT fk_tag_id FOREIGN KEY (tag_id) REFERENCES tag(id)
+  CONSTRAINT fk_tag_id FOREIGN KEY (tag_id) REFERENCES datains_tag(id)
 );
 
 --;;
-COMMENT ON TABLE entity_tag IS 'Used for connecting other entity and tag table.';
+COMMENT ON TABLE datains_entity_tag IS 'Used for connecting other entity and tag table.';
 
 --;;
 CREATE TABLE qrtz_job_details (

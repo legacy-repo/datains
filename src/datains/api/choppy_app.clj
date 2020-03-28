@@ -15,17 +15,19 @@
 
    ["/apps"
     {:get  {:summary    "Get apps."
-            :parameters {:query db-spec/params-query}
+            :parameters {:query db-spec/app-params-query}
             :responses  {200 {:body {:total    nat-int?
                                      :page     pos-int?
                                      :per-page pos-int?
                                      :data     any?}}}
-            :handler    (fn [{{{:keys [page per-page query-map]} :query} :parameters}]
-                          (log/debug "page: " page, "per-page: " per-page, "query-map: " query-map)
-                          (events/publish-event! :app-update "Choppy apps are synced from choppy.3steps.cn")
-                          (ok (db-handler/search-apps query-map
-                                                      page
-                                                      per-page)))}
+            :handler    (fn [{{{:keys [page per-page title valid author]} :query} :parameters}]
+                          (let [query-map {:title  title
+                                           :valid  valid
+                                           :author author}]
+                            (log/debug "page: " page, "per-page: " per-page, "query-map: " query-map)
+                            (ok (db-handler/search-apps query-map
+                                                        page
+                                                        per-page))))}
 
      :post {:summary    "Create an app."
             :parameters {:body db-spec/app-body}

@@ -5,14 +5,15 @@
             [clojure.string :as str]
             [clojure.java.io :as io]
             [datains.setup-adapters :as setup]
-            [datains.adapters.app-store.core :as app-store]))
+            [datains.adapters.app-store.core :as app-store]
+            [datains.util :as util]))
 
 (defn clean-dir
   [path]
   (try
-    (io/delete-file (io/file path))
+    (util/delete-recursively path)
     (catch Exception e
-           (println "Not such file: " path))))
+      (println "Not such file: " path e))))
 
 (use-fixtures
   :once
@@ -35,7 +36,7 @@
     (is (app-store/exist-file? "/junshang/annotation-test/src/branch/master/workflow.wdl"))
     (is (= false (app-store/app-is-valid? "junshang/bedtools" "")))
     (is (= true (app-store/service-is-ok?)))
-    (is (> (app-store/get-all-apps "") 0))
+    (is (> (count (app-store/get-all-apps "choppy-app")) 0))
     (is (= "/tmp/bedtools"
            (app-store/get-repo-path
             (app-store/clone!

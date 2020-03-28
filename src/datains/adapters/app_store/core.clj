@@ -204,7 +204,7 @@
    e.g. ('choppy/bedtools' 'choppy/samtools')
   "
   [app-root-dir]
-  (let [app-root-dir (fs/expand-home app-root-dir)]
+  (let [app-root-dir (fs/absolute (fs/expand-home app-root-dir))]
     (map #(clj-str/replace (.getPath %)
                            (re-pattern (str (.getPath app-root-dir) "/"))
                            "")

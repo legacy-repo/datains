@@ -12,17 +12,17 @@ dev-db: clean-dev-db
 	@docker run --name datains -e POSTGRES_PASSWORD=password -e POSTGRES_USER=postgres -p 5432:5432 -d postgres:10.0
 	@sleep 3
 	@echo "Create database: datains_dev"
-	@bash create-db.sh datains_dev
+	@bash create-db.sh datains_dev 5432
 	@echo "Migrate database..."
 	@bash lein run migrate
 
 
 test-db:
 	@printf "\nLaunch postgres database...(default password: password)\n"
-	@docker run --name datains-test -e POSTGRES_PASSWORD=password -e POSTGRES_USER=postgres -p 5432:5432 -d postgres:10.0
+	@docker run --name datains-test -e POSTGRES_PASSWORD=password -e POSTGRES_USER=postgres -p 54320:5432 -d postgres:10.0
 	@sleep 3
 	@echo "Create database: datains_test"
-	@bash create-db.sh datains_test
+	@bash create-db.sh datains_test 54320
 
 
 clean-test-db:

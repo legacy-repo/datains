@@ -49,3 +49,9 @@
   (let [root (clj-str/replace root #"/$" "")
         path (clj-str/replace path #"^/" "")]
     (str root "/" path)))
+
+(defn delete-recursively [fname]
+  (doseq [f (-> (clojure.java.io/file fname)
+                (file-seq)
+                (reverse))]
+    (clojure.java.io/delete-file f)))

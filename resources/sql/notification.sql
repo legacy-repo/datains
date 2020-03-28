@@ -3,7 +3,7 @@
 -- License: See the details in license.md
 
 ---------------------------------------------------------------------------------------------
--- Table Name: notification
+-- Table Name: datains_notification
 -- Description: Managing notifications for choppy_app, project, report etc.
 -- Functions: create-notification!, get-notification-count, search-notifications, delete-notification!
 ---------------------------------------------------------------------------------------------
@@ -29,7 +29,7 @@
     1. `ON CONFLICT` expression is only support by PostgreSQL
     2. `title` must have an unique or exclusion constrait
 */
-INSERT INTO notification (title, description, notification_type, created_time, status)
+INSERT INTO datains_notification (title, description, notification_type, created_time, status)
 VALUES (:title, :description, :notification-type, :created-time, :status)
 RETURNING id
 
@@ -42,11 +42,11 @@ RETURNING id
     Get count.
   Examples:
     Clojure: (get-notification-count)
-    SQL: SELECT COUNT(id) FROM notification
+    SQL: SELECT COUNT(id) FROM datains_notification
 
     Clojure: (get-notification-count {:query-map {:title "XXX"}})
-    HugSQL: SELECT COUNT(id) FROM notification WHERE title = :v:query-map.title
-    SQL: SELECT COUNT(id) FROM notification WHERE title = "XXX"
+    HugSQL: SELECT COUNT(id) FROM datains_notification WHERE title = :v:query-map.title
+    SQL: SELECT COUNT(id) FROM datains_notification WHERE title = "XXX"
   TODO: 
     Maybe we need to support OR/LIKE/IS NOT/etc. expressions in WHERE clause.
   FAQs:
@@ -56,7 +56,7 @@ RETURNING id
 /* :require [clojure.string :as string]
             [hugsql.parameters :refer [identifier-param-quote]] */
 SELECT COUNT(id)
-FROM notification
+FROM datains_notification
 /*~
 (when (:query-map params) 
  (str "WHERE "
@@ -75,8 +75,8 @@ FROM notification
     Get notifications by using query map
   Examples: 
     Clojure: (search-notifications {:query-map {:title "XXX"}})
-    HugSQL: SELECT * FROM notification WHERE title = :v:query-map.title
-    SQL: SELECT * FROM notification WHERE title = "XXX"
+    HugSQL: SELECT * FROM datains_notification WHERE title = :v:query-map.title
+    SQL: SELECT * FROM datains_notification WHERE title = "XXX"
   TODO:
     1. Maybe we need to support OR/LIKE/IS NOT/etc. expressions in WHERE clause.
     2. Maybe we need to use exact field name to replace *.
@@ -84,7 +84,7 @@ FROM notification
 /* :require [clojure.string :as string]
             [hugsql.parameters :refer [identifier-param-quote]] */
 SELECT * 
-FROM notification
+FROM datains_notification
 /*~
 (when (:query-map params) 
  (str "WHERE "
@@ -105,8 +105,8 @@ ORDER BY id
     Delete a notification record given the title
   Examples:
     Clojure: (delete-notification! {:id 1})
-    SQL: DELETE FROM notification WHERE id = 1
+    SQL: DELETE FROM datains_notification WHERE id = 1
 */
 DELETE
-FROM notification
+FROM datains_notification
 WHERE id = :id

@@ -3,7 +3,7 @@
 -- License: See the details in license.md
 
 ---------------------------------------------------------------------------------------------
--- Table Name: project
+-- Table Name: datains_project
 -- Description: Managing projects
 -- Functions: create-project!, update-project!, get-project-count, search-projects, delete-project!
 ---------------------------------------------------------------------------------------------
@@ -30,7 +30,7 @@
   Examples: 
     Clojure: (create-project! {:id "id" :project-name "project-name" :description "description" :app-id "app-id" :app-name "app-name" :author "author" :group-name "group" :started-time "started-time" :status "status"})
 */
-INSERT INTO project (id, project_name, description, app_id, app_name, author, group_name, started_time, finished_time, status)
+INSERT INTO datains_project (id, project_name, description, app_id, app_name, author, group_name, started_time, finished_time, status)
 VALUES (:id, :project-name, :description, :app-id, :app-name, :author, :group-name, :started-time, :finished-time, :status)
 RETURNING id
 
@@ -45,14 +45,14 @@ RETURNING id
     Update an existing project record.
   Examples:
     Clojure: (update-project! {:updates {:finished-time "finished-time" :status "status"} :id "3"})
-    HugSQL: UPDATE project SET finished_time = :v:query-map.finished-time,status = :v:query-map.status WHERE id = :id
-    SQL: UPDATE project SET finished_time = "finished_time", status = "status" WHERE id = "3"
+    HugSQL: UPDATE datains_project SET finished_time = :v:query-map.finished-time,status = :v:query-map.status WHERE id = :id
+    SQL: UPDATE datains_project SET finished_time = "finished_time", status = "status" WHERE id = "3"
   TODO:
     It will be raise exception when (:updates params) is nil.
 */
 /* :require [clojure.string :as string]
             [hugsql.parameters :refer [identifier-param-quote]] */
-UPDATE project
+UPDATE datains_project
 SET
 /*~
 (string/join ","
@@ -73,11 +73,11 @@ WHERE id = :id
     Get count.
   Examples:
     Clojure: (get-project-count)
-    SQL: SELECT COUNT(id) FROM project
+    SQL: SELECT COUNT(id) FROM datains_project
 
     Clojure: (get-project-count {:query-map {:status "XXX"}})
-    HugSQL: SELECT COUNT(id) FROM project WHERE status = :v:query-map.status
-    SQL: SELECT COUNT(id) FROM project WHERE status = "XXX"
+    HugSQL: SELECT COUNT(id) FROM datains_project WHERE status = :v:query-map.status
+    SQL: SELECT COUNT(id) FROM datains_project WHERE status = "XXX"
   TODO: 
     Maybe we need to support OR/LIKE/IS NOT/etc. expressions in WHERE clause.
   FAQs:
@@ -87,7 +87,7 @@ WHERE id = :id
 /* :require [clojure.string :as string]
             [hugsql.parameters :refer [identifier-param-quote]] */
 SELECT COUNT(id)
-FROM project
+FROM datains_project
 /*~
 ; TODO: May be raise error, when the value of :query-map is unqualified.
 (when (:query-map params) 
@@ -109,8 +109,8 @@ FROM project
     Get projects by using query map
   Examples: 
     Clojure: (search-projects {:query-map {:status "XXX"}})
-    HugSQL: SELECT * FROM project WHERE status = :v:query-map.status
-    SQL: SELECT * FROM project WHERE status = "XXX"
+    HugSQL: SELECT * FROM datains_project WHERE status = :v:query-map.status
+    SQL: SELECT * FROM datains_project WHERE status = "XXX"
   TODO:
     1. Maybe we need to support OR/LIKE/IS NOT/etc. expressions in WHERE clause.
     2. Maybe we need to use exact field name to replace *.
@@ -118,7 +118,7 @@ FROM project
 /* :require [clojure.string :as string]
             [hugsql.parameters :refer [identifier-param-quote]] */
 SELECT * 
-FROM project
+FROM datains_project
 /*~
 (when (:query-map params) 
  (str "WHERE "
@@ -142,56 +142,56 @@ ORDER BY id
   Examples: 
     Clojure: (search-projects-with-tags {:query-map {:status "XXX"}})
     HugSQL:
-      SELECT  project.id,
-              project.project_name,
-              project.description,
-              project.app_id,
-              project.app_name,
-              project.author,
-              project.group_name,
-              project.started_time,
-              project.finished_time,
-              project.status
-              array_agg( tag.id ) as tag_ids,
-              array_agg( tag.title ) as tags
-      FROM entity_tag
-      JOIN project ON entity_tag.entity_id = project.id
-      JOIN tag ON entity_tag.tag_id = tag.id
-      WHERE project.project_name = :v:query-map.project_name
-      GROUP BY project.id
+      SELECT  datains_project.id,
+              datains_project.project_name,
+              datains_project.description,
+              datains_project.app_id,
+              datains_project.app_name,
+              datains_project.author,
+              datains_project.group_name,
+              datains_project.started_time,
+              datains_project.finished_time,
+              datains_project.status
+              array_agg( datains_tag.id ) as tag_ids,
+              array_agg( datains_tag.title ) as tags
+      FROM datains_entity_tag
+      JOIN datains_project ON datains_entity_tag.entity_id = datains_project.id
+      JOIN datains_tag ON datains_entity_tag.tag_id = datains_tag.id
+      WHERE datains_project.project_name = :v:query-map.project_name
+      GROUP BY datains_project.id
   TODO:
     1. Maybe we need to support OR/LIKE/IS NOT/etc. expressions in WHERE clause.
     2. Maybe we need to use exact field name to replace *.
-    3. Maybe we need to add entity_tag.entity_type = "project" condition.
+    3. Maybe we need to add datains_entity_tag.entity_type = "project" condition.
 */
 /* :require [clojure.string :as string]
             [hugsql.parameters :refer [identifier-param-quote]] */
-SELECT  project.id,
-        project.project_name,
-        project.description,
-        project.app_id,
-        project.app_name,
-        project.author,
-        project.group_name,
-        project.started_time,
-        project.finished_time,
-        project.status
-        array_agg( tag.id ) as tag_ids,
-        array_agg( tag.title ) as tags
-FROM entity_tag
-JOIN project ON entity_tag.entity_id = project.id
-JOIN tag ON entity_tag.tag_id = tag.id
+SELECT  datains_project.id,
+        datains_project.project_name,
+        datains_project.description,
+        datains_project.app_id,
+        datains_project.app_name,
+        datains_project.author,
+        datains_project.group_name,
+        datains_project.started_time,
+        datains_project.finished_time,
+        datains_project.status
+        array_agg( datains_tag.id ) as tag_ids,
+        array_agg( datains_tag.title ) as tags
+FROM datains_entity_tag
+JOIN datains_project ON datains_entity_tag.entity_id = datains_project.id
+JOIN datains_tag ON datains_entity_tag.tag_id = datains_tag.id
 /*~
 (when (:query-map params) 
  (str "WHERE "
   (string/join " AND "
     (for [[field _] (:query-map params)]
-      (str "project."
+      (str "datains_project."
         (identifier-param-quote (name field) options)
           " = :v:query-map." (name field))))))
 ~*/
-GROUP BY project.id
-ORDER BY project.id
+GROUP BY datains_project.id
+ORDER BY datains_project.id
 --~ (when (and (:limit params) (:offset params)) "LIMIT :limit OFFSET :offset")
 
 
@@ -205,10 +205,10 @@ ORDER BY project.id
     Delete a project record given the id
   Examples:
     Clojure: (delete-project! {:id "XXX"})
-    SQL: DELETE FROM project WHERE id = "XXX"
+    SQL: DELETE FROM datains_project WHERE id = "XXX"
 */
 DELETE
-FROM project
+FROM datains_project
 WHERE id = :id
 
 
@@ -220,6 +220,6 @@ WHERE id = :id
     Delete all project records.
   Examples:
     Clojure: (delete-all-projects!)
-    SQL: TRUNCATE project;
+    SQL: TRUNCATE datains_project;
 */
-TRUNCATE project;
+TRUNCATE datains_project;

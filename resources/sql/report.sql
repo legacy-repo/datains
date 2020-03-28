@@ -3,7 +3,7 @@
 -- License: See the details in license.md
 
 ---------------------------------------------------------------------------------------------
--- Table Name: report
+-- Table Name: datains_report
 -- Description: Managing reports
 -- Functions: create-report!, update-report!, get-report-count, search-reports, delete-report!
 ---------------------------------------------------------------------------------------------
@@ -32,7 +32,7 @@
   Examples: 
     Clojure: (create-report! {})
 */
-INSERT INTO report (id, report_name, project_id, script, started_time, finished_time, checked_time, archived_time, report_path, log, status)
+INSERT INTO datains_report (id, report_name, project_id, script, started_time, finished_time, checked_time, archived_time, report_path, log, status)
 VALUES (:id, :report-name, :project-id, :script, :started-time, :finished-time, :checked-time, :archived-time, :report-path, :log, :status)
 RETURNING id
 
@@ -47,14 +47,14 @@ RETURNING id
     Update an existing report record.
   Examples:
     Clojure: (update-report! {:updates {:finished-time "finished-time" :status "status"} :id "3"})
-    HugSQL: UPDATE report SET finished_time = :v:query-map.finished-time,status = :v:query-map.status WHERE id = :id
-    SQL: UPDATE report SET finished_time = "finished_time", status = "status" WHERE id = "3"
+    HugSQL: UPDATE datains_report SET finished_time = :v:query-map.finished-time,status = :v:query-map.status WHERE id = :id
+    SQL: UPDATE datains_report SET finished_time = "finished_time", status = "status" WHERE id = "3"
   TODO:
     It will be raise exception when (:updates params) is nil.
 */
 /* :require [clojure.string :as string]
             [hugsql.parameters :refer [identifier-param-quote]] */
-UPDATE report
+UPDATE datains_report
 SET
 /*~
 (string/join ","
@@ -75,11 +75,11 @@ WHERE id = :id
     Get count.
   Examples:
     Clojure: (get-report-count)
-    SQL: SELECT COUNT(id) FROM report
+    SQL: SELECT COUNT(id) FROM datains_report
 
     Clojure: (get-report-count {:query-map {:status "XXX"}})
-    HugSQL: SELECT COUNT(id) FROM report WHERE status = :v:query-map.status
-    SQL: SELECT COUNT(id) FROM report WHERE status = "XXX"
+    HugSQL: SELECT COUNT(id) FROM datains_report WHERE status = :v:query-map.status
+    SQL: SELECT COUNT(id) FROM datains_report WHERE status = "XXX"
   TODO: 
     Maybe we need to support OR/LIKE/IS NOT/etc. expressions in WHERE clause.
   FAQs:
@@ -89,7 +89,7 @@ WHERE id = :id
 /* :require [clojure.string :as string]
             [hugsql.parameters :refer [identifier-param-quote]] */
 SELECT COUNT(id)
-FROM report
+FROM datains_report
 /*~
 ; TODO: May be raise error, when the value of :query-map is unqualified.
 (when (:query-map params) 
@@ -111,8 +111,8 @@ FROM report
     Get reports by using query map
   Examples: 
     Clojure: (search-reports {:query-map {:status "XXX"}})
-    HugSQL: SELECT * FROM report WHERE status = :v:query-map.status
-    SQL: SELECT * FROM report WHERE status = "XXX"
+    HugSQL: SELECT * FROM datains_report WHERE status = :v:query-map.status
+    SQL: SELECT * FROM datains_report WHERE status = "XXX"
   TODO:
     1. Maybe we need to support OR/LIKE/IS NOT/etc. expressions in WHERE clause.
     2. Maybe we need to use exact field name to replace *.
@@ -120,7 +120,7 @@ FROM report
 /* :require [clojure.string :as string]
             [hugsql.parameters :refer [identifier-param-quote]] */
 SELECT * 
-FROM report
+FROM datains_report
 /*~
 (when (:query-map params) 
  (str "WHERE "
@@ -144,58 +144,58 @@ ORDER BY id
   Examples: 
     Clojure: (search-reports-with-tags {:query-map {:status "XXX"}})
     HugSQL:
-      SELECT  report.id,
-              report.report_name,
-              report.project_id,
-              report.script,
-              report.started_time,
-              report.finished_time,
-              report.checked_time,
-              report.archived_time,
-              report.report_path,
-              report.log,
-              report.status
-              array_agg( tag.id ) as tag_ids,
-              array_agg( tag.title ) as tags
-      FROM entity_tag
-      JOIN report ON entity_tag.entity_id = report.id
-      JOIN tag ON entity_tag.tag_id = tag.id
-      WHERE report.status = :v:query-map.status
-      GROUP BY report.id
+      SELECT  datains_report.id,
+              datains_report.report_name,
+              datains_report.project_id,
+              datains_report.script,
+              datains_report.started_time,
+              datains_report.finished_time,
+              datains_report.checked_time,
+              datains_report.archived_time,
+              datains_report.report_path,
+              datains_report.log,
+              datains_report.status
+              array_agg( datains_tag.id ) as tag_ids,
+              array_agg( datains_tag.title ) as tags
+      FROM datains_entity_tag
+      JOIN datains_report ON datains_entity_tag.entity_id = datains_report.id
+      JOIN datains_tag ON datains_entity_tag.tag_id = datains_tag.id
+      WHERE datains_report.status = :v:query-map.status
+      GROUP BY datains_report.id
   TODO:
     1. Maybe we need to support OR/LIKE/IS NOT/etc. expressions in WHERE clause.
     2. Maybe we need to use exact field name to replace *.
-    3. Maybe we need to add entity_tag.entity_type = "report" condition.
+    3. Maybe we need to add datains_entity_tag.entity_type = "report" condition.
 */
 /* :require [clojure.string :as string]
             [hugsql.parameters :refer [identifier-param-quote]] */
-SELECT  report.id,
-        report.report_name,
-        report.project_id,
-        report.script,
-        report.started_time,
-        report.finished_time,
-        report.checked_time,
-        report.archived_time,
-        report.report_path,
-        report.log,
-        report.status
-        array_agg( tag.id ) as tag_ids,
-        array_agg( tag.title ) as tags
-FROM entity_tag
-JOIN report ON entity_tag.entity_id = report.id
-JOIN tag ON entity_tag.tag_id = tag.id
+SELECT  datains_report.id,
+        datains_report.report_name,
+        datains_report.project_id,
+        datains_report.script,
+        datains_report.started_time,
+        datains_report.finished_time,
+        datains_report.checked_time,
+        datains_report.archived_time,
+        datains_report.report_path,
+        datains_report.log,
+        datains_report.status
+        array_agg( datains_tag.id ) as tag_ids,
+        array_agg( datains_tag.title ) as tags
+FROM datains_entity_tag
+JOIN datains_report ON datains_entity_tag.entity_id = datains_report.id
+JOIN datains_tag ON datains_entity_tag.tag_id = datains_tag.id
 /*~
 (when (:query-map params) 
  (str "WHERE "
   (string/join " AND "
     (for [[field _] (:query-map params)]
-      (str "report."
+      (str "datains_report."
         (identifier-param-quote (name field) options)
           " = :v:query-map." (name field))))))
 ~*/
-GROUP BY report.id
-ORDER BY report.id
+GROUP BY datains_report.id
+ORDER BY datains_report.id
 --~ (when (and (:limit params) (:offset params)) "LIMIT :limit OFFSET :offset")
 
 
@@ -209,10 +209,10 @@ ORDER BY report.id
     Delete a report record given the id
   Examples:
     Clojure: (delete-report! {:id "XXX"})
-    SQL: DELETE FROM report WHERE id = "XXX"
+    SQL: DELETE FROM datains_report WHERE id = "XXX"
 */
 DELETE
-FROM report
+FROM datains_report
 WHERE id = :id
 
 
@@ -224,6 +224,6 @@ WHERE id = :id
     Delete all report records.
   Examples:
     Clojure: (delete-all-reports!)
-    SQL: TRUNCATE report;
+    SQL: TRUNCATE datains_report;
 */
-TRUNCATE report;
+TRUNCATE datains_report;

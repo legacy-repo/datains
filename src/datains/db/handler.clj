@@ -1,11 +1,21 @@
 (ns datains.db.handler
   (:require
-   [datains.db.core :as db]))
+   [datains.db.core :as db]
+   [clojure.tools.logging :as log]))
 
-(defn- filter-query-map [query-map]
-  "Filter unqualified attribute or value."
-  ; TODO: Add filter function chain.
-  query-map)
+(defn- filter-query-map
+  "Filter unqualified attribute or value.
+
+   Change Log:
+   1. Fix bug: PSQLException
+      `filter-query-map` need to return nil when query-map is nil
+  "
+  [query-map]
+  (if query-map
+    (into {}
+          (filter
+           (comp some? val) query-map))
+    nil))
 
 (defn- page->offset [page per-page]
   "Tranform page to offset."
@@ -18,13 +28,13 @@
   ([func-map query-map page per-page]
    (let [page     (if (nil? page) 1 page)
          per-page (if (nil? per-page) 10 per-page)
-         params   (filter #(some? (val %))
-                          {:limit     per-page
-                           :offset    (page->offset page per-page)
-                           :query-map (filter-query-map query-map)})
+         params   {:limit     per-page
+                   :offset    (page->offset page per-page)
+                   :query-map (filter-query-map query-map)}
          metadata {:total    (:count ((:count-func func-map) params))
                    :page     page
                    :per-page per-page}]
+     (log/info "Query db by: " params)
      (merge metadata {:data ((:query-func func-map) params)}))))
 
 ;; --------------------- App Record ---------------------

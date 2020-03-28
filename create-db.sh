@@ -5,7 +5,7 @@
 set -e # exit immediately if a command exits with a non-zero status.
 
 export PGPASSWORD=password
-POSTGRES="psql -h localhost -p 5432 --username postgres"
+POSTGRES="psql -h localhost -p $2 --username postgres"
 
 if [ -z "$1" ]; then
   database="datains_dev"

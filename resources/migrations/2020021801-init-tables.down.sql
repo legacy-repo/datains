@@ -1,19 +1,19 @@
-DROP TABLE IF EXISTS entity_tag;
+DROP TABLE IF EXISTS datains_entity_tag;
 
 --;;
-DROP TABLE IF EXISTS choppy_app;
+DROP TABLE IF EXISTS datains_choppy_app;
 
 --;;
-DROP TABLE IF EXISTS tag;
+DROP TABLE IF EXISTS datains_tag;
 
 --;;
-DROP TABLE IF EXISTS project;
+DROP TABLE IF EXISTS datains_project;
 
 --;;
-DROP TABLE IF EXISTS workflow;
+DROP TABLE IF EXISTS datains_workflow;
 
 --;;
-DROP TABLE IF EXISTS report;
+DROP TABLE IF EXISTS datains_report;
 
 --;;
 DROP TABLE IF EXISTS qrtz_blob_triggers;

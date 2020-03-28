@@ -17,7 +17,7 @@
 ;;; ------------------------------------------------ Event Processing ------------------------------------------------
 
 (defn- send-notification! [title object]
-  (log/info title object (dingtalk/string-to-sign))
+  (log/info title object (dingtalk/string-to-sign (System/currentTimeMillis)))
   (dingtalk/send-markdown-msg! title object))
 
 (defn- process-notifications-event!

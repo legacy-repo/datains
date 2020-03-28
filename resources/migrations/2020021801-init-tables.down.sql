@@ -7,6 +7,15 @@ DROP TABLE IF EXISTS choppy_app;
 DROP TABLE IF EXISTS tag;
 
 --;;
+DROP TABLE IF EXISTS project;
+
+--;;
+DROP TABLE IF EXISTS workflow;
+
+--;;
+DROP TABLE IF EXISTS report;
+
+--;;
 DROP TABLE IF EXISTS qrtz_blob_triggers;
 
 --;;

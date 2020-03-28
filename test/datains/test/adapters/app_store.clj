@@ -4,6 +4,7 @@
             [mount.core :as mount]
             [clojure.string :as str]
             [clojure.java.io :as io]
+            [datains.setup-adapters :as setup]
             [datains.adapters.app-store.core :as app-store]))
 
 (defn clean-dir
@@ -18,7 +19,7 @@
   (fn [f]
     (mount/start
      #'datains.config/env)
-    (app-store/setup-cs-from-env!)
+    (setup/setup-app-store)
     (clean-dir "/tmp/bedtools")
     (f)))
 

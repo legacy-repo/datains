@@ -165,7 +165,7 @@ SELECT  choppy_app.id,
         array_agg( tag.id ) as tag_ids,
         array_agg( tag.title ) as tags
 FROM entity_tag
-JOIN choppy_app ON entity_tag.choppy_app_id = choppy_app.id
+JOIN choppy_app ON entity_tag.entity_id = choppy_app.id
 JOIN tag ON entity_tag.tag_id = tag.id
 /*~
 (when (:query-map params) 

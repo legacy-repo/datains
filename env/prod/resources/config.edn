@@ -4,6 +4,8 @@
  :nrepl-port             7000
   ; set your dev database connection URL here
  :database-url           "database-url"
+ :app-utility-bin        ""
+ :multiqc-bin            ""
  :datains-workdir        "datains-workdir"
  :app-store-access-token "app-store-access-token"
  :app-store-host         "choppy.3steps.cn"
@@ -17,4 +19,4 @@
                                    :sample_name
                                    :version]}
  :dingtalk-access-token  ""
- :dingtalk-secret ""}
+ :dingtalk-secret        ""}

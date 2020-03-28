@@ -112,8 +112,9 @@
                 :rate        "5"
                 :valid       true})
               (db/create-tag! t-conn {:title "test"})
-              (db/connect-app-tag! t-conn {:tag-title     "test"
-                                           :choppy-app-id "1"})
+              (db/connect-entity-tag! t-conn {:tag-title   "test"
+                                              :entity-id   "1"
+                                              :entity-type "choppy-app"})
               (db/search-apps-with-tags t-conn {:query-map {:id "1"}
                                                 :limit     1
                                                 :offset    0})))))))

@@ -16,6 +16,114 @@ CREATE TABLE IF NOT EXISTS choppy_app (
 COMMENT ON TABLE choppy_app IS 'Used for Choppy pipe.';
 
 --;;
+CREATE TABLE IF NOT EXISTS project (
+  id VARCHAR(36) PRIMARY KEY,
+  project_name VARCHAR(64) UNIQUE,
+  description TEXT,
+  app_id VARCHAR(255) NOT NULL,
+  app_name VARCHAR(255) NOT NULL,
+  author VARCHAR(32) NOT NULL,
+  group_name VARCHAR(32),
+  started_time BIGINT NOT NULL,
+  finished_time BIGINT,
+  status VARCHAR(32) NOT NULL
+);
+
+--;;
+COMMENT ON TABLE project IS 'Used for organizing jobs.';
+
+--;;
+COMMENT ON COLUMN project.status IS 'One of Aborted,Aborting,Failed,On Hold,Running,Submitted,Succeeded.';
+
+--;;
+CREATE TABLE IF NOT EXISTS workflow (
+  id VARCHAR(36) PRIMARY KEY,
+  project_id VARCHAR(32) NOT NULL,
+  sample_id VARCHAR(64) NOT NULL,
+  submitted_time BIGINT NOT NULL,
+  started_time BIGINT NOT NULL,
+  finished_time BIGINT,
+  job_params TEXT,
+  labels TEXT,
+  status VARCHAR(32) NOT NULL
+);
+
+--;;
+COMMENT ON TABLE workflow IS 'Used for recording job details.';
+
+--;;
+COMMENT ON COLUMN workflow.job_params IS 'Job parameters for WDL inputs file.';
+
+--;;
+COMMENT ON COLUMN workflow.labels IS 'A string seperated by comma.';
+
+--;;
+COMMENT ON COLUMN workflow.status IS 'One of Aborted,Aborting,Failed,On Hold,Running,Submitted,Succeeded.';
+
+--;;
+CREATE TABLE IF NOT EXISTS report (
+  id VARCHAR(36) PRIMARY KEY,
+  report_name VARCHAR(64) NOT NULL UNIQUE,
+  project_id VARCHAR(36),
+  script TEXT,
+  description TEXT,
+  started_time BIGINT NOT NULL,
+  finished_time BIGINT,
+  checked_time BIGINT,
+  archived_time BIGINT,
+  report_path VARCHAR(255),
+  report_type VARCHAR(32) NOT NULL,
+  status VARCHAR(32) NOT NULL,
+  log TEXT
+);
+
+--;;
+COMMENT ON TABLE report IS 'Used for report.';
+
+--;;
+COMMENT ON COLUMN report.id IS 'uuid for report';
+
+--;;
+COMMENT ON COLUMN report.script IS 'Auto generated script for making a report';
+
+--;;
+COMMENT ON COLUMN report.report_path IS 'A relative path of a report based on the report directory';
+
+--;;
+COMMENT ON COLUMN report.report_type IS 'multiqc';
+
+--;;
+COMMENT ON COLUMN report.status IS 'Started, Finished, Checked, Archived';
+
+--;;
+CREATE TABLE IF NOT EXISTS notification (
+  id SERIAL NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  description TEXT,
+  notification_type VARCHAR(32) NOT NULL,
+  created_time BIGINT NOT NULL,
+  status VARCHAR(32) NOT NULL
+);
+
+--;;
+COMMENT ON TABLE notification IS 'Used for managing notification.';
+
+--;;
+COMMENT ON COLUMN notification.id IS 'serial id for report.';
+
+--;;
+COMMENT ON COLUMN notification.title IS 'The title of notification.';
+
+--;;
+COMMENT ON COLUMN notification.description IS 'A description of notification.';
+
+--;;
+COMMENT ON COLUMN notification.notification_type IS 'Which type the notification is.';
+
+--;;
+COMMENT ON COLUMN notification.status IS 'Read, Unread';
+
+--;;
 CREATE TABLE IF NOT EXISTS tag (
   id SERIAL NOT NULL,
   title VARCHAR(32) NOT NULL UNIQUE,
@@ -187,8 +295,8 @@ CREATE TABLE qrtz_simprop_triggers (
   int_prop_2 INTEGER,
   long_prop_1 BIGINT,
   long_prop_2 BIGINT,
-  dec_prop_1 numeric(13, 4),
-  dec_prop_2 numeric(13, 4),
+  dec_prop_1 NUMERIC(13, 4),
+  dec_prop_2 NUMERIC(13, 4),
   bool_prop_1 BOOLEAN,
   bool_prop_2 BOOLEAN,
   CONSTRAINT pk_qrtz_simprop_triggers PRIMARY KEY (sched_name, trigger_name, trigger_group),

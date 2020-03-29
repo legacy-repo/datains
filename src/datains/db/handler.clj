@@ -11,11 +11,10 @@
       `filter-query-map` need to return nil when query-map is nil
   "
   [query-map]
-  (if query-map
-    (into {}
-          (filter
-           (comp some? val) query-map))
-    nil))
+  (let [query-map (into {} (filter (comp some? val) query-map))]
+    (if (empty? query-map)
+      nil
+      query-map)))
 
 (defn- page->offset [page per-page]
   "Tranform page to offset."
@@ -104,3 +103,20 @@
 
 (defn create-workflow! [record]
   (db/create-workflow! record))
+
+;; --------------------- Notification Record ---------------------
+(def search-notifications
+  (partial
+   search-entities
+   {:query-func db/search-notifications
+    :count-func db/get-notification-count}))
+
+(defn update-notification! [id record]
+  (db/update-notification! {:updates record
+                            :id      id}))
+
+(defn delete-notification! [id]
+  (db/delete-notification! {:id id}))
+
+(defn create-notification! [record]
+  (db/create-notification! record))

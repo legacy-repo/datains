@@ -2,6 +2,10 @@
   "Main Compojure routes tables. `/api/` routes are in `datains.api.routes`."
   (:require
    [datains.api.choppy-app :as app-route]
+   [datains.api.project :as project-route]
+   [datains.api.workflow :as workflow-route]
+   [datains.api.report :as report-route]
+   [datains.api.notification :as notification-route]
    [reitit.swagger :as swagger]
    [reitit.swagger-ui :as swagger-ui]
    [reitit.ring.coercion :as coercion]
@@ -47,7 +51,8 @@
 
    ;; The group of routes for app store
    app-route/app
-   ;  app-route/tag
-
-   ;; The group of routes for cromwell
-   ))
+   ; app-route/tag
+   project-route/project
+   workflow-route/workflow
+   report-route/report
+   notification-route/notification))

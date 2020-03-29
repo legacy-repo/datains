@@ -31,7 +31,7 @@
 
      :post {:summary    "Create an app."
             :parameters {:body db-spec/app-body}
-            :responses  {201 {:body {:message int?}}}
+            :responses  {201 {:body {:message {:id string?}}}}
             :handler    (fn [{{{:keys [id title description repo_url cover icon author rate valid]} :body} :parameters}]
                           (created (str "/apps/" id)
                                    {:message (db-handler/create-app! {:id          id

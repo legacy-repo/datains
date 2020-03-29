@@ -6,7 +6,8 @@
             [datains.plugins.classloader :as classloader]
             [clojure.edn :as edn]
             [clojure.java.io :as io]
-            [clojure.string :as clj-str]))
+            [clojure.string :as clj-str]
+            [clj-uuid :as uuid]))
 
 (defn- namespace-symbs* []
   (for [ns-symb (ns-find/find-namespaces (concat (classpath/system-classpath)
@@ -55,3 +56,12 @@
                 (file-seq)
                 (reverse))]
     (clojure.java.io/delete-file f)))
+
+(defn uuid
+  "These UUID's will be guaranteed to be unique and thread-safe regardless of clock precision or degree of concurrency."
+  []
+  (str (uuid/v1)))
+
+(defn uuid?
+  [uuid-str]
+  (some? (re-matches #"[a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8}" uuid-str)))

@@ -96,6 +96,32 @@ FROM datains_notification
 ORDER BY id
 --~ (when (and (:limit params) (:offset params)) "LIMIT :limit OFFSET :offset")
 
+-- :name update-notification!
+-- :command :execute
+-- :result :affected
+/* :doc
+  Args:
+    {:updates {:status "status" :notification-type ""} :id "3"}
+  Description: 
+    Update an existing notification record.
+  Examples:
+    Clojure: (update-notification! {:updates {:notification-type "notification-type" :status "status"} :id "3"})
+    HugSQL: UPDATE datains_notification SET notification-type = :v:query-map.notification-type,status = :v:query-map.status WHERE id = :id
+    SQL: UPDATE datains_notification SET notification-type = "notification-type", status = "status" WHERE id = "3"
+  TODO:
+    It will be raise exception when (:updates params) is nil.
+*/
+/* :require [clojure.string :as string]
+            [hugsql.parameters :refer [identifier-param-quote]] */
+UPDATE datains_notification
+SET
+/*~
+(string/join ","
+  (for [[field _] (:updates params)]
+    (str (identifier-param-quote (name field) options)
+      " = :v:updates." (name field))))
+~*/
+WHERE id = :id
 
 -- :name delete-notification!
 -- :command :execute

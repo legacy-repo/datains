@@ -1,11 +1,12 @@
-(ns datains.api.choppy-app
+(ns datains.api.project
   (:require
    [ring.util.http-response :refer [ok created no-content]]
    [datains.db.handler :as db-handler]
    [datains.api.spec :as db-spec]
    [clojure.tools.logging :as log]
    [datains.api.response :as response]
-   [datains.events :as events]))
+   [datains.events :as events]
+   [datains.util :as util]))
 
 (def project
   [""
@@ -29,8 +30,33 @@
 
      :post {:summary    "Create an project."
             :parameters {:body db-spec/project-body}
-            :responses  {201 {:body {:message int?}}}
-            :handler    (fn [{{:body } :parameters}]
-                          (log/debug "Create an project: " body)
-                          (created (str "/projects/" (:id body))
-                                   {:message (db-handler/create-project! body)}))}}]])
+            :responses  {201 {:body {:message {:id string?}}}}
+            :handler    (fn [{{:keys [body]} :parameters}]
+                          (let [body (merge body {:id (util/uuid)})]
+                            (log/debug "Create an project: " body)
+                            (created (str "/projects/" (:id body))
+                                     {:message (db-handler/create-project! body)})))}}]
+
+   ["/projects/:id"
+    {:get    {:summary    "Get a project by id."
+              :parameters {:path {:id util/uuid?}}
+              :responses  {200 {:body map?}}
+              :handler    (fn [{{{:keys [id]} :path} :parameters}]
+                            (let [query-map {:id id}]
+                              (log/debug "Get project: " id)
+                              (ok (first (:data (db-handler/search-projects query-map 1 1))))))}
+
+     :put    {:summary    "Modify a project record."
+              :parameters {:path {:id util/uuid?}
+                           :body db-spec/project-body}
+              :responses  {204 nil}
+              :handler    (fn [{{{:keys [finished-time status]} :body} :parameters}
+                               {{{:keys [id]} :path} :parameters}]
+                            (db-handler/update-project! id {:finished-time finished-time
+                                                            :status        status}))}
+
+     :delete {:summary    "Delete a project."
+              :parameters {:path {:id util/uuid?}}
+              :responses  {204 nil}
+              :handler    (fn [{{{:keys [id]} :path} :parameters}]
+                            (db-handler/delete-project! id))}}]])

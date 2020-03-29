@@ -24,14 +24,15 @@
     | :group-name        | false     | The team name
     | :started-time      | true      | Bigint
     | :finished-time     | false     | Bigint
+    | :samples           | true      | JSON string
     | :status            | true      | Submitted, Running, Failed, Aborting, Aborted, Succeeded, On Hold
   Description:
     Create a new project record and then return the number of affected rows.
   Examples: 
     Clojure: (create-project! {:id "id" :project-name "project-name" :description "description" :app-id "app-id" :app-name "app-name" :author "author" :group-name "group" :started-time "started-time" :status "status"})
 */
-INSERT INTO datains_project (id, project_name, description, app_id, app_name, author, group_name, started_time, finished_time, status)
-VALUES (:id, :project-name, :description, :app-id, :app-name, :author, :group-name, :started-time, :finished-time, :status)
+INSERT INTO datains_project (id, project_name, description, app_id, app_name, author, group_name, started_time, finished_time, samples, status)
+VALUES (:id, :project-name, :description, :app-id, :app-name, :author, :group-name, :started-time, :finished-time, :samples, :status)
 RETURNING id
 
 
@@ -151,6 +152,7 @@ ORDER BY id
               datains_project.group_name,
               datains_project.started_time,
               datains_project.finished_time,
+              datains_project.samples,
               datains_project.status
               array_agg( datains_tag.id ) as tag_ids,
               array_agg( datains_tag.title ) as tags
@@ -175,6 +177,7 @@ SELECT  datains_project.id,
         datains_project.group_name,
         datains_project.started_time,
         datains_project.finished_time,
+        datains_project.samples,
         datains_project.status
         array_agg( datains_tag.id ) as tag_ids,
         array_agg( datains_tag.title ) as tags

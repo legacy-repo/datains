@@ -30,24 +30,24 @@
 
      :post {:summary    "Create an report."
             :parameters {:body db-spec/report-body}
-            :responses  {201 {:body {:message {:id util/uuid?}}}}
+            :responses  {201 {:body {:message db-spec/uuid-spec}}}
             :handler    (fn [{{:keys [body]} :parameters}]
                           (let [body (merge body {:id (util/uuid)})]
                             (log/debug "Create an report: " body)
                             (created (str "/reports/" (:id body))
                                      {:message (db-handler/create-report! body)})))}}]
 
-   ["/reports/:id"
+   ["/reports/::uuid"
     {:get    {:summary    "Get a report by id."
-              :parameters {:path {:id util/uuid?}}
+              :parameters {:path db-spec/uuid-spec}
               :responses  {200 {:body map?}}
               :handler    (fn [{{{:keys [id]} :path} :parameters}]
-                            (let [query-map {:id id}]
-                              (log/debug "Get report: " id)
-                              (ok (first (:data (db-handler/search-reports query-map 1 1))))))}
+                            (log/debug "Get report: " id)
+                            (ok (db-handler/search-report id)))}
 
      :delete {:summary    "Delete a report."
-              :parameters {:path {:id util/uuid?}}
+              :parameters {:path db-spec/uuid-spec}
               :responses  {204 nil}
               :handler    (fn [{{{:keys [id]} :path} :parameters}]
-                            (db-handler/delete-report! id))}}]])
+                            (db-handler/delete-report! id)
+                            (no-content))}}]])

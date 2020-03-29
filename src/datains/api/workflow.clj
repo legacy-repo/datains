@@ -29,24 +29,24 @@
 
      :post {:summary    "Create an workflow."
             :parameters {:body db-spec/workflow-body}
-            :responses  {201 {:body {:message {:id util/uuid?}}}}
+            :responses  {201 {:body {:message db-spec/uuid-spec}}}
             :handler    (fn [{{:keys [body]} :parameters}]
                           (let [body (merge body {:id (util/uuid)})]
                             (log/debug "Create an workflow: " body)
                             (created (str "/workflows/" (:id body))
                                      {:message (db-handler/create-workflow! body)})))}}]
 
-   ["/workflows/:id"
+   ["/workflows/::uuid"
     {:get    {:summary    "Get a workflow by id."
-              :parameters {:path {:id util/uuid?}}
+              :parameters {:path db-spec/uuid-spec}
               :responses  {200 {:body map?}}
               :handler    (fn [{{{:keys [id]} :path} :parameters}]
-                            (let [query-map {:id id}]
-                              (log/debug "Get workflow: " id)
-                              (ok (first (:data (db-handler/search-workflows query-map 1 1))))))}
+                            (log/debug "Get workflow: " id)
+                            (ok (db-handler/search-workflow id)))}
 
      :delete {:summary    "Delete a workflow."
-              :parameters {:path {:id util/uuid?}}
+              :parameters {:path db-spec/uuid-spec}
               :responses  {204 nil}
               :handler    (fn [{{{:keys [id]} :path} :parameters}]
-                            (db-handler/delete-workflow! id))}}]])
+                            (db-handler/delete-workflow! id)
+                            (no-content))}}]])

@@ -3,6 +3,16 @@
             [spec-tools.core :as st]
             [datains.util :as util]))
 
+(s/def ::string-or-nil (s/or :string string? :nil nil?))
+
+(s/def ::map-or-nil (s/or :map map? :nil nil?))
+
+(s/def ::vector-or-nil (s/or :vector vector? :nil nil?))
+
+(s/def ::pos-or-nil (s/or :pos-int pos-int? :nil nil?))
+
+(s/def ::nat-or-nil (s/or :nat-int nat-int? :nil nil?))
+
 (s/def ::page
   (st/spec
    {:spec nat-int?
@@ -16,6 +26,13 @@
     :description "Num of items per page."
     :swagger/default 10
     :reason "The per-page parameter can't be none."}))
+
+(s/def ::uuid #(some? (re-matches #"[a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8}" %)))
+
+(def uuid-spec
+  "A spec for the query parameters."
+  (s/keys :req-un [::uuid]
+          :opt-un []))
 
 ;; -------------------------------- App Spec --------------------------------
 (s/def ::author
@@ -82,19 +99,20 @@
 
 (def project-body
   {:project-name  string?
-   :description   string?
+   :description   ::string-or-nil
    :app-id        string?
    :app-name      string?
    :author        string?
-   :group-name    string?
+   :group-name    ::string-or-nil
    :started-time  nat-int?
-   :finished-time nat-int?
+   :finished-time ::nat-or-nil
+   :samples       vector?
    :status        string?})
 
 ;; -------------------------------- Workflow Spec --------------------------------
 (s/def ::project-id
   (st/spec
-   {:spec            util/uuid?
+   {:spec            ::uuid
     :description     "Filter results by project-id field."
     :swagger/default nil
     :reason          "Not valid project-id"}))
@@ -105,19 +123,19 @@
           :opt-un [::page ::per-page ::project-id ::status]))
 
 (def workflow-body
-  {:project-id     util/uuid?
+  {:project-id     ::uuid
    :sample-id      string?
    :submitted-time nat-int?
-   :started-time   nat-int?
-   :finished-time  nat-int?
-   :job-params     string?
-   :lables         string?
+   :started-time   ::nat-or-nil
+   :finished-time  ::nat-or-nil
+   :job-params     map?
+   :labels         map?
    :status         string?})
 
 ;; -------------------------------- Report Spec --------------------------------
 (s/def ::project-id
   (st/spec
-   {:spec            util/uuid?
+   {:spec            ::uuid
     :description     "Filter results by project-id field."
     :swagger/default nil
     :reason          "Not valid project-id"}))
@@ -143,17 +161,17 @@
 
 (def report-body
   {:report-name   string?
-   :project-id    util/uuid?
-   :script        string?
-   :description   string?
+   :project-id    ::uuid
+   :script        ::string-or-nil
+   :description   ::string-or-nil
    :started-time  nat-int?
-   :finished-time nat-int?
-   :checked-time  nat-int?
-   :archived-time nat-int?
+   :finished-time ::nat-or-nil
+   :checked-time  ::nat-or-nil
+   :archived-time ::nat-or-nil
    :report-path   string?
    :report-type   string?
    :status        string?
-   :log           string?})
+   :log           ::string-or-nil})
 
 ;; -------------------------------- Notification Spec --------------------------------
 (s/def ::notification-type
@@ -177,7 +195,7 @@
 
 (def notification-body
   {:title             string?
-   :description       string?
+   :description       ::string-or-nil
    :notification-type string?
    :created-time      nat-int?
    :status            string?})

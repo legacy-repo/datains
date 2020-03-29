@@ -36,10 +36,24 @@
      (log/info "Query db by: " params)
      (merge metadata {:data ((:query-func func-map) params)}))))
 
+(defn- search-entity
+  [func-map id]
+  (let [data (:data (search-entities func-map {:id id} 1 10))
+        record (first data)]
+    (if record
+      record
+      {})))
+
 ;; --------------------- App Record ---------------------
 (def search-apps
   (partial
    search-entities
+   {:query-func db/search-apps
+    :count-func db/get-app-count}))
+
+(def search-app
+  (partial
+   search-entity
    {:query-func db/search-apps
     :count-func db/get-app-count}))
 
@@ -60,6 +74,12 @@
    {:query-func db/search-reports
     :count-func db/get-report-count}))
 
+(def search-report
+  (partial
+   search-entity
+   {:query-func db/search-reports
+    :count-func db/get-report-count}))
+
 (defn update-report! [id record]
   (db/update-report! {:updates record
                       :id      id}))
@@ -74,6 +94,12 @@
 (def search-projects
   (partial
    search-entities
+   {:query-func db/search-projects
+    :count-func db/get-project-count}))
+
+(def search-project
+  (partial
+   search-entity
    {:query-func db/search-projects
     :count-func db/get-project-count}))
 
@@ -94,6 +120,12 @@
    {:query-func db/search-workflows
     :count-func db/get-workflow-count}))
 
+(def search-workflow
+  (partial
+   search-entity
+   {:query-func db/search-workflows
+    :count-func db/get-workflow-count}))
+
 (defn update-workflow! [id record]
   (db/update-workflow! {:updates record
                         :id      id}))
@@ -108,6 +140,12 @@
 (def search-notifications
   (partial
    search-entities
+   {:query-func db/search-notifications
+    :count-func db/get-notification-count}))
+
+(def search-notification
+  (partial
+   search-entity
    {:query-func db/search-notifications
     :count-func db/get-notification-count}))
 

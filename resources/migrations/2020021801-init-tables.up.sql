@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS datains_project (
   group_name VARCHAR(32),
   started_time BIGINT NOT NULL,
   finished_time BIGINT,
+  samples JSON NOT NULL,
   status VARCHAR(32) NOT NULL
 );
 
@@ -36,15 +37,18 @@ COMMENT ON TABLE datains_project IS 'Used for organizing jobs.';
 COMMENT ON COLUMN datains_project.status IS 'One of Aborted,Aborting,Failed,On Hold,Running,Submitted,Succeeded.';
 
 --;;
+COMMENT ON COLUMN datains_project.samples IS 'samples file as json string';
+
+--;;
 CREATE TABLE IF NOT EXISTS datains_workflow (
   id VARCHAR(36) PRIMARY KEY,
-  project_id VARCHAR(32) NOT NULL,
+  project_id VARCHAR(36) NOT NULL,
   sample_id VARCHAR(64) NOT NULL,
   submitted_time BIGINT NOT NULL,
   started_time BIGINT NOT NULL,
   finished_time BIGINT,
-  job_params TEXT,
-  labels TEXT,
+  job_params JSON NOT NULL,
+  labels JSON NOT NULL,
   status VARCHAR(32) NOT NULL
 );
 

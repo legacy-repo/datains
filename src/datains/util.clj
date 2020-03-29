@@ -61,7 +61,3 @@
   "These UUID's will be guaranteed to be unique and thread-safe regardless of clock precision or degree of concurrency."
   []
   (str (uuid/v1)))
-
-(defn uuid?
-  [uuid-str]
-  (some? (re-matches #"[a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8}" uuid-str)))

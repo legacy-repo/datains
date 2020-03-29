@@ -16,21 +16,21 @@
     | key                | required  | description |
     | -------------------|-----------|-------------|
     | :id                | true/uniq | UUID string
-    | :project-name      | true      | The project name, required, [a-zA-Z0-9]+
+    | :project-id        | true      | The project id, required, uuid
     | :sample-id         | true      | A unique index in the specified project.
     | :submitted-time    | true      | Bigint
     | :started-time      | true      | Bigint
     | :finished-time     | false     | Bigint
-    | :job-params        | false     | JSON string, the parameters be used to render inputs file.
-    | :labels            | false     | JSON string, the labels be used to label workflow.
+    | :job-params        | true      | JSON string, the parameters be used to render inputs file.
+    | :labels            | true      | JSON string, the labels be used to label workflow. default: { sample-id: "", project-name: ""}
     | :status            | true      | Submitted, Running, Failed, Aborting, Aborted, Succeeded, On Hold
   Description:
     Create a new workflow record and then return the number of affected rows.
   Examples: 
     Clojure: (create-workflow! {:id "id" :project-name "project-name" :sample-id "" :job-params "" :labels "" :status "status"})
 */
-INSERT INTO datains_workflow (id, project_name, sample_id, submitted_time, started_time, finished_time, job_params, labels, status)
-VALUES (:id, :project-name, :sample-id, :submitted-time, :started-time, :finished-time, :job-params, :labels, :status)
+INSERT INTO datains_workflow (id, project_id, sample_id, submitted_time, started_time, finished_time, job_params, labels, status)
+VALUES (:id, :project-id, :sample-id, :submitted-time, :started-time, :finished-time, :job-params, :labels, :status)
 RETURNING id
 
 

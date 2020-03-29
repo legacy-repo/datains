@@ -31,23 +31,22 @@
      :post {:summary    "Create an project."
             :parameters {:body db-spec/project-body}
             :responses  {201 {:body {:message {:id string?}}}}
-            :handler    (fn [{{:keys [body]} :parameters}]
+            :handler    (fn [{{{:keys [body]} :body} :parameters}]
                           (let [body (merge body {:id (util/uuid)})]
                             (log/debug "Create an project: " body)
                             (created (str "/projects/" (:id body))
                                      {:message (db-handler/create-project! body)})))}}]
 
-   ["/projects/:id"
+   ["/projects/::uuid"
     {:get    {:summary    "Get a project by id."
-              :parameters {:path {:id util/uuid?}}
+              :parameters {:path db-spec/uuid-spec}
               :responses  {200 {:body map?}}
               :handler    (fn [{{{:keys [id]} :path} :parameters}]
-                            (let [query-map {:id id}]
-                              (log/debug "Get project: " id)
-                              (ok (first (:data (db-handler/search-projects query-map 1 1))))))}
+                            (log/debug "Get project: " id)
+                            (ok (db-handler/search-project id)))}
 
      :put    {:summary    "Modify a project record."
-              :parameters {:path {:id util/uuid?}
+              :parameters {:path db-spec/uuid-spec
                            :body db-spec/project-body}
               :responses  {204 nil}
               :handler    (fn [{{{:keys [finished-time status]} :body} :parameters}
@@ -56,7 +55,8 @@
                                                             :status        status}))}
 
      :delete {:summary    "Delete a project."
-              :parameters {:path {:id util/uuid?}}
+              :parameters {:path db-spec/uuid-spec}
               :responses  {204 nil}
               :handler    (fn [{{{:keys [id]} :path} :parameters}]
-                            (db-handler/delete-project! id))}}]])
+                            (db-handler/delete-project! id)
+                            (no-content))}}]])

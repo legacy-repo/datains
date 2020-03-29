@@ -35,17 +35,17 @@
                           (created (str "/notifications/" (:id body))
                                    {:message (db-handler/create-notification! body)}))}}]
 
-   ["/notifications/:id"
+   ["/notifications/::uuid"
     {:get    {:summary    "Get a notification by id."
               :parameters {:path {:id pos-int?}}
               :responses  {200 {:body map?}}
               :handler    (fn [{{{:keys [id]} :path} :parameters}]
-                            (let [query-map {:id id}]
-                              (log/debug "Get notification: " id)
-                              (ok (first (:data (db-handler/search-notifications query-map 1 1))))))}
+                            (log/debug "Get notification: " id)
+                            (ok (db-handler/search-notifications id)))}
 
      :delete {:summary    "Delete a notification."
               :parameters {:path {:id pos-int?}}
               :responses  {204 nil}
               :handler    (fn [{{{:keys [id]} :path} :parameters}]
-                            (db-handler/delete-notification! id))}}]])
+                            (db-handler/delete-notification! id)
+                            (no-content))}}]])

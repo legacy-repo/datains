@@ -2,7 +2,7 @@
   (:require
    [ring.util.http-response :refer [ok created no-content]]
    [datains.db.handler :as db-handler]
-   [datains.api.spec :as db-spec]
+   [datains.api.app-spec :as app-spec]
    [clojure.tools.logging :as log]
    [datains.api.response :as response]
    [datains.events :as events]
@@ -15,7 +15,7 @@
 
    ["/apps"
     {:get  {:summary    "Get apps."
-            :parameters {:query db-spec/app-params-query}
+            :parameters {:query app-spec/app-params-query}
             :responses  {200 {:body {:total    nat-int?
                                      :page     pos-int?
                                      :per-page pos-int?
@@ -30,7 +30,7 @@
                                                         per-page))))}
 
      :post {:summary    "Create an app."
-            :parameters {:body db-spec/app-body}
+            :parameters {:body app-spec/app-body}
             :responses  {201 {:body {:message {:id string?}}}}
             :handler    (fn [{{{:keys [id title description repo_url cover icon author rate valid]} :body} :parameters}]
                           (created (str "/apps/" id)

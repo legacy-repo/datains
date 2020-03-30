@@ -51,7 +51,6 @@
 
    ;; The group of routes for app store
    app-route/app
-   ; app-route/tag
    project-route/project
    workflow-route/workflow
    report-route/report

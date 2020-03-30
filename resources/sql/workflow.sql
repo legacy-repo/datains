@@ -142,7 +142,7 @@ ORDER BY id
     Clojure: (search-workflows-with-tags {:query-map {:status "XXX"}})
     HugSQL:
       SELECT  datains_workflow.id,
-              datains_workflow.project_name,
+              datains_workflow.project_id,
               datains_workflow.sample_id,
               datains_workflow.submitted_time,
               datains_workflow.started_time,
@@ -155,7 +155,7 @@ ORDER BY id
       FROM datains_entity_tag
       JOIN datains_workflow ON datains_entity_tag.entity_id = datains_workflow.id
       JOIN datains_tag ON datains_entity_tag.tag_id = datains_tag.id
-      WHERE datains_workflow.project_name = :v:query-map.project_name
+      WHERE datains_workflow.project_id = :v:query-map.project_id
       GROUP BY datains_workflow.id
   TODO:
     1. Maybe we need to support OR/LIKE/IS NOT/etc. expressions in WHERE clause.
@@ -165,7 +165,7 @@ ORDER BY id
 /* :require [clojure.string :as string]
             [hugsql.parameters :refer [identifier-param-quote]] */
 SELECT  datains_workflow.id,
-        datains_workflow.project_name,
+        datains_workflow.project_id,
         datains_workflow.sample_id,
         datains_workflow.submitted_time,
         datains_workflow.started_time,

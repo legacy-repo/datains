@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS datains_project (
   id VARCHAR(36) PRIMARY KEY,
   project_name VARCHAR(64) UNIQUE,
   description TEXT,
-  app_id VARCHAR(255) NOT NULL,
+  app_id VARCHAR(32) NOT NULL,
   app_name VARCHAR(255) NOT NULL,
   author VARCHAR(32) NOT NULL,
   group_name VARCHAR(32),
@@ -126,6 +126,15 @@ COMMENT ON COLUMN datains_notification.notification_type IS 'Which type the noti
 
 --;;
 COMMENT ON COLUMN datains_notification.status IS 'Read, Unread';
+
+--;;
+CREATE TABLE IF NOT EXISTS datains_log (
+  id SERIAL NOT NULL,
+  log_id VARCHAR(36) NOT NULL,
+  log_type VARCHAR(32) NOT NULL,
+  title VARCHAR(255) NOT NULL,
+  link VARCHAR(255) NOT NULL
+);
 
 --;;
 CREATE TABLE IF NOT EXISTS datains_tag (

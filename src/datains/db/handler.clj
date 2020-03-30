@@ -1,7 +1,10 @@
 (ns datains.db.handler
   (:require
    [datains.db.core :as db]
-   [clojure.tools.logging :as log]))
+   [clojure.java.jdbc :as jdbc]
+   [datains.db.core :refer [*db*] :as db]
+   [clojure.tools.logging :as log]
+   [datains.util :as util]))
 
 (defn- filter-query-map
   "Filter unqualified attribute or value.
@@ -38,11 +41,17 @@
 
 (defn- search-entity
   [func-map id]
-  (let [data (:data (search-entities func-map {:id id} 1 10))
+  (let [data   (:data (search-entities func-map {:id id} 1 10))
         record (first data)]
     (if record
       record
       {})))
+
+(defn- update-entity!
+  [func id record]
+  (if-let [record (filter-query-map record)]
+    (func {:updates record
+           :id      id})))
 
 ;; --------------------- App Record ---------------------
 (def search-apps
@@ -58,8 +67,7 @@
     :count-func db/get-app-count}))
 
 (defn update-app! [id record]
-  (db/update-app! {:updates record
-                   :id      id}))
+  (update-entity! db/update-app! id record))
 
 (defn delete-app! [id]
   (db/delete-app! {:id id}))
@@ -81,8 +89,7 @@
     :count-func db/get-report-count}))
 
 (defn update-report! [id record]
-  (db/update-report! {:updates record
-                      :id      id}))
+  (update-entity! db/update-report! id record))
 
 (defn delete-report! [id]
   (db/delete-report! {:id id}))
@@ -104,14 +111,32 @@
     :count-func db/get-project-count}))
 
 (defn update-project! [id record]
-  (db/update-project! {:updates record
-                       :id      id}))
+  (update-entity! db/update-project! id record))
 
 (defn delete-project! [id]
   (db/delete-project! {:id id}))
 
 (defn create-project! [record]
   (db/create-project! record))
+
+(defn gen-workflow-record [project-id workflow]
+  {:id             (util/uuid)
+   :project-id     project-id
+   :sample-id      (:sample-id workflow)
+   :submitted-time (util/time->int (util/now))
+   :started-time   0
+   :finished-time  nil
+   :job-params     workflow
+   :labels         {:project-id project-id}
+   :status         "Submitted"})
+
+(defn create-project-workflow! [record]
+  (jdbc/with-db-transaction [t-conn *db*]
+    (let [workflow-records (map #(gen-workflow-record (:id record) %) (:samples record))]
+      (log/debug "Create project & workflow: " record workflow-records)
+      (doseq [workflow workflow-records]
+        (db/create-workflow! t-conn workflow))
+      (db/create-project! t-conn record))))
 
 ;; --------------------- Workflow Record ---------------------
 (def search-workflows
@@ -127,8 +152,7 @@
     :count-func db/get-workflow-count}))
 
 (defn update-workflow! [id record]
-  (db/update-workflow! {:updates record
-                        :id      id}))
+  (update-entity! db/update-workflow! id record))
 
 (defn delete-workflow! [id]
   (db/delete-workflow! {:id id}))
@@ -150,8 +174,7 @@
     :count-func db/get-notification-count}))
 
 (defn update-notification! [id record]
-  (db/update-notification! {:updates record
-                            :id      id}))
+  (update-entity! db/update-notification! id record))
 
 (defn delete-notification! [id]
   (db/delete-notification! {:id id}))

@@ -2,7 +2,7 @@
   (:require
    [ring.util.http-response :refer [ok created no-content]]
    [datains.db.handler :as db-handler]
-   [datains.api.spec :as db-spec]
+   [datains.api.notification-spec :as notification-spec]
    [clojure.tools.logging :as log]
    [datains.api.response :as response]
    [datains.events :as events]
@@ -14,28 +14,28 @@
 
    ["/notifications"
     {:get  {:summary    "Get notifications."
-            :parameters {:query db-spec/notification-params-query}
+            :parameters {:query notification-spec/notification-params-query}
             :responses  {200 {:body {:total    nat-int?
                                      :page     pos-int?
                                      :per-page pos-int?
                                      :data     any?}}}
-            :handler    (fn [{{{:keys [page per-page nstatus notification-type]} :query} :parameters}]
-                          (let [query-map {:status            nstatus
-                                           :notification-type notification-type}]
+            :handler    (fn [{{{:keys [page per-page status notification-type]} :query} :parameters}]
+                          (let [query-map {:status            status
+                                           :notification_type notification-type}]
                             (log/debug "page: " page, "per-page: " per-page, "query-map: " query-map)
                             (ok (db-handler/search-notifications query-map
                                                                  page
                                                                  per-page))))}
 
      :post {:summary    "Create a notification."
-            :parameters {:body db-spec/notification-body}
+            :parameters {:body notification-spec/notification-body}
             :responses  {201 {:body {:message {:id pos-int?}}}}
             :handler    (fn [{{:keys [body]} :parameters}]
                           (log/debug "Create a notification: " body)
                           (created (str "/notifications/" (:id body))
                                    {:message (db-handler/create-notification! body)}))}}]
 
-   ["/notifications/::uuid"
+   ["/notifications/:id"
     {:get    {:summary    "Get a notification by id."
               :parameters {:path {:id pos-int?}}
               :responses  {200 {:body map?}}

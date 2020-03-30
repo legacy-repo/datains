@@ -7,7 +7,9 @@
             [clojure.edn :as edn]
             [clojure.java.io :as io]
             [clojure.string :as clj-str]
-            [clj-uuid :as uuid]))
+            [clj-uuid :as uuid]
+            [clj-time.coerce :as coerce]
+            [clj-time.local :as local]))
 
 (defn- namespace-symbs* []
   (for [ns-symb (ns-find/find-namespaces (concat (classpath/system-classpath)
@@ -61,3 +63,18 @@
   "These UUID's will be guaranteed to be unique and thread-safe regardless of clock precision or degree of concurrency."
   []
   (str (uuid/v1)))
+
+(defn merge-diff-map
+  "Insert into the old-map when it doesn't contains a key in default map."
+  [old-map default-map]
+  (let [diff-map (into {} (filter #(nil? ((key %) old-map)) default-map))]
+    (merge old-map diff-map)))
+
+(defn time->int
+  [datetime]
+  (coerce/to-long datetime))
+
+(defn now
+  "Get the current local datetime."
+  []
+  (local/local-now))

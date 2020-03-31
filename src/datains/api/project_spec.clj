@@ -59,6 +59,14 @@
     :swagger/default     "Submitted"
     :reason              "Only support the one of Submitted, Running, Failed, Aborting, Aborted, Succeeded, On Hold"}))
 
+(s/def ::percentage
+  (st/spec
+   {:spec            (s/and nat-int? #(< % 100))
+    :type            :long
+    :description     "Percentage."
+    :swagger/default 0
+    :reason          "The percentage parameter can't be negative integer."}))
+
 (s/def ::app-id
   (st/spec
    {:spec                #(re-find #"^[a-z0-9]{32}$" %)  ; md5sum Regex
@@ -69,7 +77,7 @@
 
 (s/def ::app-name
   (st/spec
-   {:spec                #(re-find #"^[a-zA-Z_][a-zA-Z0-9/_]{4,255}$" %)
+   {:spec                #(re-find #"^[a-zA-Z_][a-zA-Z0-9/_-]{4,255}$" %)
     :type                :string
     :description         "The name of the app."
     :swagger/default     "huangyechao/annovar"
@@ -114,12 +122,12 @@
 (def project-params-query
   "A spec for the query parameters."
   (s/keys :req-un []
-          :opt-un [::page ::per-page ::author ::status ::app-id]))
+          :opt-un [::page ::per-page ::author ::status ::app-id ::project-name]))
 
 (def project-body
-  (s/keys :req-un [::project-name ::app-id ::app-name ::author ::samples ::status]
-          :opt-un [::description ::group-name ::started-time ::finished-time]))
+  (s/keys :req-un [::project-name ::app-id ::app-name ::author ::samples]
+          :opt-un [::description ::group-name ::started-time ::finished-time ::status]))
 
 (def project-put-body
   (s/keys :req-un []
-          :opt-un [::finished-time ::status]))
+          :opt-un [::finished-time ::status ::percentage]))

@@ -65,3 +65,7 @@
 (def notification-body
   (s/keys  :req-un [::title ::notification-type ::status]
            :opt-un [::created-time ::description]))
+
+(def notification-put-body
+  (s/keys  :req-un [::status]
+           :opt-un []))

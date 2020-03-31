@@ -19,10 +19,11 @@
                                      :page     pos-int?
                                      :per-page pos-int?
                                      :data     any?}}}
-            :handler    (fn [{{{:keys [page per-page app-id author status]} :query} :parameters}]
-                          (let [query-map {:app_id app-id
-                                           :status status
-                                           :author author}]
+            :handler    (fn [{{{:keys [page per-page app-id author status project-name]} :query} :parameters}]
+                          (let [query-map {:app_id       app-id
+                                           :status       status
+                                           :author       author
+                                           :project_name project-name}]
                             (log/debug "page: " page, "per-page: " per-page, "query-map: " query-map)
                             (ok (db-handler/search-projects query-map
                                                             page
@@ -35,7 +36,9 @@
                           (let [body (util/merge-diff-map body {:id            (util/uuid)
                                                                 :description   ""
                                                                 :group-name    "Choppy Team"
+                                                                :status        "Submitted"
                                                                 :finished-time nil
+                                                                :percentage    0
                                                                 :started-time  (util/time->int (util/now))})]
                             (log/debug "Create an project: " body)
                             (created (str "/projects/" (:id body))

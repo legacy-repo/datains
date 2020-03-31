@@ -122,12 +122,12 @@
 (defn gen-workflow-record [project-id workflow]
   {:id             (util/uuid)
    :project-id     project-id
-   :sample-id      (:sample-id workflow)
+   :sample-id      (:sample_id workflow)
    :submitted-time (util/time->int (util/now))
    :started-time   0
    :finished-time  nil
    :job-params     workflow
-   :labels         {:project-id project-id}
+   :labels         {:project_id project-id}
    :status         "Submitted"})
 
 (defn create-project-workflow! [record]
@@ -181,3 +181,25 @@
 
 (defn create-notification! [record]
   (db/create-notification! record))
+
+;; --------------------- Log Record ---------------------
+(def search-logs
+  (partial
+   search-entities
+   {:query-func db/search-logs
+    :count-func db/get-log-count}))
+
+(def search-log
+  (partial
+   search-entity
+   {:query-func db/search-logs
+    :count-func db/get-log-count}))
+
+(defn update-log! [id record]
+  (update-entity! db/update-log! id record))
+
+(defn delete-log! [id]
+  (db/delete-log! {:id id}))
+
+(defn create-log! [record]
+  (db/create-log! record))

@@ -14,6 +14,6 @@
        (-> site-defaults
            (assoc-in [:security :anti-forgery] false)
            (assoc-in  [:session :store] (ttl-memory-store (* 60 30)))))
-      (wrap-cors :access-control-allow-origin [#"http://localhost:3001"]
+      (wrap-cors :access-control-allow-origin [#".*"]
                  :access-control-allow-methods [:get :put :post :delete :options])
       (wrap-frame-options {:allow-from "*"})))

@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS datains_project (
   started_time BIGINT NOT NULL,
   finished_time BIGINT,
   samples JSON NOT NULL,
+  percentage SMALLINT NOT NULL,
   status VARCHAR(32) NOT NULL
 );
 
@@ -49,6 +50,7 @@ CREATE TABLE IF NOT EXISTS datains_workflow (
   finished_time BIGINT,
   job_params JSON NOT NULL,
   labels JSON NOT NULL,
+  percentage SMALLINT NOT NULL,
   status VARCHAR(32) NOT NULL
 );
 
@@ -130,11 +132,34 @@ COMMENT ON COLUMN datains_notification.status IS 'Read, Unread';
 --;;
 CREATE TABLE IF NOT EXISTS datains_log (
   id SERIAL NOT NULL,
-  log_id VARCHAR(36) NOT NULL,
-  log_type VARCHAR(32) NOT NULL,
   title VARCHAR(255) NOT NULL,
-  link VARCHAR(255) NOT NULL
+  content TEXT,
+  created_time BIGINT NOT NULL,
+  log_type VARCHAR(32) NOT NULL,
+  entity_id VARCHAR(36) NOT NULL,
+  entity_type VARCHAR(32) NOT NULL
 );
+
+--;;
+COMMENT ON TABLE datains_log IS 'Used for managing logs.';
+
+--;;
+COMMENT ON COLUMN datains_log.id IS 'serial id for log.';
+
+--;;
+COMMENT ON COLUMN datains_log.title IS 'The title of log.';
+
+--;;
+COMMENT ON COLUMN datains_log.content IS 'A content of log, may be a link or content.';
+
+--;;
+COMMENT ON COLUMN datains_log.log_type IS 'Which type the log is, Link or Content.';
+
+--;;
+COMMENT ON COLUMN datains_log.entity_id IS 'which entity the log is from?';
+
+--;;
+COMMENT ON COLUMN datains_log.entity_type IS 'which entity type the log is from?';
 
 --;;
 CREATE TABLE IF NOT EXISTS datains_tag (

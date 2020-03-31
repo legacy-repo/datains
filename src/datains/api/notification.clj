@@ -43,6 +43,16 @@
                             (log/debug "Get notification: " id)
                             (ok (db-handler/search-notifications id)))}
 
+     :put    {:summary    "Modify a notification record."
+              :parameters {:path {:id pos-int?}
+                           :body notification-spec/notification-put-body}
+              :responses  {204 nil}
+              :handler    (fn [{{:keys [body path]} :parameters}]
+                            (let [id (:id path)]
+                              (log/debug "Update notification: " id body)
+                              (db-handler/update-notification! id body)
+                              (no-content)))}
+
      :delete {:summary    "Delete a notification."
               :parameters {:path {:id pos-int?}}
               :responses  {204 nil}

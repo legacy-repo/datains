@@ -30,7 +30,8 @@
                         "sql/report.sql"
                         "sql/workflow.sql" 
                         "sql/project.sql"
-                        "sql/notification.sql")
+                        "sql/notification.sql"
+                        "sql/log.sql")
 
 
 (extend-protocol jdbc/IResultSetReadColumn

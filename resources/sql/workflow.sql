@@ -29,8 +29,8 @@
   Examples: 
     Clojure: (create-workflow! {:id "id" :project-name "project-name" :sample-id "" :job-params "" :labels "" :status "status"})
 */
-INSERT INTO datains_workflow (id, project_id, sample_id, submitted_time, started_time, finished_time, job_params, labels, status)
-VALUES (:id, :project-id, :sample-id, :submitted-time, :started-time, :finished-time, :job-params, :labels, :status)
+INSERT INTO datains_workflow (id, project_id, sample_id, submitted_time, started_time, finished_time, job_params, labels, status, percentage)
+VALUES (:id, :project-id, :sample-id, :submitted-time, :started-time, :finished-time, :job-params, :labels, :status, :percentage)
 RETURNING id
 
 
@@ -149,7 +149,8 @@ ORDER BY id
               datains_workflow.finished_time,
               datains_workflow.job_params,
               datains_workflow.labels,
-              datains_workflow.status
+              datains_workflow.status,
+              datains_workflow.percentage
               array_agg( datains_tag.id ) as tag_ids,
               array_agg( datains_tag.title ) as tags
       FROM datains_entity_tag
@@ -172,7 +173,8 @@ SELECT  datains_workflow.id,
         datains_workflow.finished_time,
         datains_workflow.job_params,
         datains_workflow.labels,
-        datains_workflow.status
+        datains_workflow.status,
+        datains_workflow.percentage
         array_agg( datains_tag.id ) as tag_ids,
         array_agg( datains_tag.title ) as tags
 FROM datains_entity_tag

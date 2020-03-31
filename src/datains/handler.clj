@@ -44,9 +44,13 @@
    (ring/router
     [["/" {:get {:handler (constantly {:status  301
                                        :headers {"Location" "/api/api-docs/index.html"}})}}]
-     ["/report/*" (-> (ring/create-resource-handler {:path "/"})
-                      (wrap-file (app-store/get-workdir)))]
-     (service-routes)]
+     (service-routes)
+     ["/reports/*" (-> (ring/create-resource-handler {:path "/"})
+                       (wrap-file (app-store/get-workdir)))]         ; <ROOT>/reports/
+     ["/projects/*" (-> (ring/create-resource-handler {:path "/"})
+                        (wrap-file (app-store/get-workdir)))]        ; <ROOT>/projects/
+     ["/cromwell/*" (-> (ring/create-resource-handler {:path "/"})
+                        (wrap-file (app-store/get-workdir)))]]       ; <ROOT>/cromwell/, for logs
     {:validate  rs/validate
      :exception pretty/exception})
    (ring/routes

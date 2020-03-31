@@ -16,6 +16,12 @@ DROP TABLE IF EXISTS datains_workflow;
 DROP TABLE IF EXISTS datains_report;
 
 --;;
+DROP TABLE IF EXISTS datains_notification;
+
+--;;
+DROP TABLE IF EXISTS datains_log;
+
+--;;
 DROP TABLE IF EXISTS qrtz_blob_triggers;
 
 --;;

@@ -31,8 +31,8 @@
   Examples: 
     Clojure: (create-project! {:id "id" :project-name "project-name" :description "description" :app-id "app-id" :app-name "app-name" :author "author" :group-name "group" :started-time "started-time" :status "status"})
 */
-INSERT INTO datains_project (id, project_name, description, app_id, app_name, author, group_name, started_time, finished_time, samples, status)
-VALUES (:id, :project-name, :description, :app-id, :app-name, :author, :group-name, :started-time, :finished-time, :samples, :status)
+INSERT INTO datains_project (id, project_name, description, app_id, app_name, author, group_name, started_time, finished_time, samples, status, percentage)
+VALUES (:id, :project-name, :description, :app-id, :app-name, :author, :group-name, :started-time, :finished-time, :samples, :status, :percentage)
 RETURNING id
 
 
@@ -128,7 +128,7 @@ FROM datains_project
       (str (identifier-param-quote (name field) options)
         " = :v:query-map." (name field))))))
 ~*/
-ORDER BY id
+ORDER BY started_time
 --~ (when (and (:limit params) (:offset params)) "LIMIT :limit OFFSET :offset")
 
 
@@ -153,7 +153,8 @@ ORDER BY id
               datains_project.started_time,
               datains_project.finished_time,
               datains_project.samples,
-              datains_project.status
+              datains_project.status,
+              datains_project.percentage
               array_agg( datains_tag.id ) as tag_ids,
               array_agg( datains_tag.title ) as tags
       FROM datains_entity_tag
@@ -178,7 +179,8 @@ SELECT  datains_project.id,
         datains_project.started_time,
         datains_project.finished_time,
         datains_project.samples,
-        datains_project.status
+        datains_project.status,
+        datains_project.percentage
         array_agg( datains_tag.id ) as tag_ids,
         array_agg( datains_tag.title ) as tags
 FROM datains_entity_tag

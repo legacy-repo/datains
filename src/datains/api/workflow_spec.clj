@@ -83,6 +83,14 @@
     :swagger/default {}
     :reason          "Not a valid labels."}))
 
+(s/def ::percentage
+  (st/spec
+   {:spec            (s/and nat-int? #(< % 100))
+    :type            :long
+    :description     "Percentage."
+    :swagger/default 0
+    :reason          "The percentage parameter can't be negative integer."}))
+
 (s/def ::status
   (st/spec
    {:spec                #(#{"Submitted" "Running" "Failed" "Aborting" "Aborted" "Succeeded" "On Hold"} %)
@@ -113,4 +121,4 @@
 
 (def workflow-put-body
   (s/keys :req-un []
-          :opt-un [::status]))
+          :opt-un [::status ::percentage ::finished-time]))

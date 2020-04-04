@@ -41,7 +41,7 @@
                  (triggers/start-now)
                  (triggers/with-schedule
                    (cron/schedule
-                    ;; run at the top of every hour
+                    ;; run at the top of every five minutes
                     (cron/cron-schedule "0 */5 * * * ?")
                     ;; If sync-apps! misfires, don't try to re-sync all the misfired apps. Retry only the most
                     ;; recent misfire, discarding all others. This should hopefully cover cases where a misfire

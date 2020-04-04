@@ -337,6 +337,8 @@ def parse_samples(file):
     """
     try:
         dict_list = json.load(open(file, 'r'))
+        if type(dict_list) == dict:
+            dict_list = [dict_list, ]
     except Exception:
         reader = csv.DictReader(open(file, 'rt'))
         dict_list = []
@@ -735,7 +737,7 @@ def render_cli():
 @click.option('--base-dir', '-b', default=DEFAULT_APP_ROOT_DIR,
               help='The base directory for your apps.',
               type=click.Path(exists=True))
-@click.option('--work-dir', '-b', default=DEFAULT_PROJECT_ROOT_DIR,
+@click.option('--work-dir', '-w', default=DEFAULT_PROJECT_ROOT_DIR,
               help='The working directory for your pipelines.',
               type=click.Path(exists=True))
 @click.option('--project-name', '-p', help='Your project name. (default: None)', type=str, required=True)

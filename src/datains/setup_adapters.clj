@@ -23,7 +23,7 @@
 (defn setup-multiqc
   []
   (let [datains-workdir (get-in env [:datains-workdir])
-        report-dir (util/join-path datains-workdir "/report")]
+        report-dir      (util/join-path datains-workdir "/report")]
     (log/info "Setup multiqc adapter: ", report-dir)
     (multiqc/setup-report-dir report-dir)))
 
@@ -42,6 +42,7 @@
                            :scheme             (:app-store-scheme env "http")
                            :default-cover      (:app-default-cover env "")
                            :datains-workdir    (:datains-workdir env "~/.choppy")
+                           :app-utility-bin    (:app-utility-bin env nil)
                            :app-store-username (:app-store-username env)
                            :app-store-password (:app-store-password env)}))
 

@@ -17,6 +17,7 @@
     | -------------------|-----------|-------------|
     | :id                | true/uniq | UUID string
     | :project-id        | true      | The project id, required, uuid
+    | :workflow-id       | false     | The workflow id from cromwell instance.
     | :sample-id         | true      | A unique index in the specified project.
     | :submitted-time    | true      | Bigint
     | :started-time      | true      | Bigint
@@ -29,8 +30,8 @@
   Examples: 
     Clojure: (create-workflow! {:id "id" :project-name "project-name" :sample-id "" :job-params "" :labels "" :status "status"})
 */
-INSERT INTO datains_workflow (id, project_id, sample_id, submitted_time, started_time, finished_time, job_params, labels, status, percentage)
-VALUES (:id, :project-id, :sample-id, :submitted-time, :started-time, :finished-time, :job-params, :labels, :status, :percentage)
+INSERT INTO datains_workflow (id, project_id, workflow_id, sample_id, submitted_time, started_time, finished_time, job_params, labels, status, percentage)
+VALUES (:id, :project-id, :workflow-id, :sample-id, :submitted-time, :started-time, :finished-time, :job-params, :labels, :status, :percentage)
 RETURNING id
 
 
@@ -143,6 +144,7 @@ ORDER BY id
     HugSQL:
       SELECT  datains_workflow.id,
               datains_workflow.project_id,
+              datains_workflow.workflow_id,
               datains_workflow.sample_id,
               datains_workflow.submitted_time,
               datains_workflow.started_time,
@@ -167,6 +169,7 @@ ORDER BY id
             [hugsql.parameters :refer [identifier-param-quote]] */
 SELECT  datains_workflow.id,
         datains_workflow.project_id,
+        datains_workflow.workflow_id,
         datains_workflow.sample_id,
         datains_workflow.submitted_time,
         datains_workflow.started_time,
@@ -222,3 +225,43 @@ WHERE id = :id
     SQL: TRUNCATE datains_workflow;
 */
 TRUNCATE datains_workflow;
+
+
+-- :name search-workflows-with-projects
+-- :command :query
+-- :result :many
+/* :doc
+  Args:
+    {:query-map {:status "XXX"} :limit 1 :offset 0}
+  Description:
+    Get workflows with projects by using query map
+  TODO:
+    1. Maybe we need to support OR/LIKE/IS NOT/etc. expressions in WHERE clause.
+    2. Maybe we need to use exact field name to replace *.
+*/
+/* :require [clojure.string :as string]
+            [hugsql.parameters :refer [identifier-param-quote]] */
+SELECT  datains_workflow.id,
+        datains_workflow.project_id,
+        datains_workflow.sample_id,
+        datains_workflow.job_params,
+        datains_workflow.labels,
+        datains_workflow.status,
+				datains_project.app_id,
+				datains_project.app_name,
+				datains_project.author,
+				datains_project.group_name,
+				datains_project.project_name
+FROM datains_workflow
+INNER JOIN datains_project ON datains_workflow.project_id = datains_project.id
+/*~
+(when (:query-map params) 
+ (str "WHERE "
+  (string/join " AND "
+    (for [[field _] (:query-map params)]
+      (str "datains_workflow."
+        (identifier-param-quote (name field) options)
+          " = :v:query-map." (name field))))))
+~*/
+ORDER BY datains_workflow.submitted_time
+--~ (when (and (:limit params) (:offset params)) "LIMIT :limit OFFSET :offset")

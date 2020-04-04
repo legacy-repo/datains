@@ -1,4 +1,4 @@
-(ns datains.events.notification
+(ns datains.events.sync-into-db
   (:require [clojure.core.async :as async]
             [clojure.set :as set]
             [clojure.tools.logging :as log]

@@ -9,7 +9,8 @@
             [clojure.string :as clj-str]
             [clj-uuid :as uuid]
             [clj-time.coerce :as coerce]
-            [clj-time.local :as local]))
+            [clj-time.core :as t]
+            [clj-time.format :as f]))
 
 (defn- namespace-symbs* []
   (for [ns-symb (ns-find/find-namespaces (concat (classpath/system-classpath)
@@ -76,5 +77,6 @@
 
 (defn now
   "Get the current local datetime."
-  []
-  (local/local-now))
+  ([offset]
+   (t/to-time-zone (t/now) (t/time-zone-for-offset offset)))
+  ([] (now 0)))

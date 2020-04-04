@@ -126,6 +126,8 @@
    :submitted-time (util/time->int (util/now))
    :started-time   0
    :finished-time  nil
+   :workflow-id    nil
+   :percentage     0
    :job-params     workflow
    :labels         {:project_id project-id}
    :status         "Submitted"})
@@ -149,6 +151,12 @@
   (partial
    search-entity
    {:query-func db/search-workflows
+    :count-func db/get-workflow-count}))
+
+(def search-workflows-with-projects
+  (partial
+   search-entities
+   {:query-func db/search-workflows-with-projects
     :count-func db/get-workflow-count}))
 
 (defn update-workflow! [id record]

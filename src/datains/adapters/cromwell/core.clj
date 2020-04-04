@@ -20,7 +20,7 @@
    "Succeeded"])
 
 (defn get-url
-  "URL for GotC Cromwell in ENVIRONMENT."
+  "URL for GotC Cromwell."
   []
   (get-in env [:cromwell :url]))
 
@@ -30,7 +30,7 @@
   {"Authorization" (str "Bearer " (get-in env [:cromwell :token]))})
 
 (defn api
-  "API URL for GotC Cromwell API in ENVIRONMENT."
+  "API URL for GotC Cromwell API."
   []
   (str (get-url) "/api/workflows/v1"))
 
@@ -92,17 +92,17 @@
   (some-thing :post thing id))
 
 (defn status
-  "Status of the workflow with ID on Cromwell in ENVIRONMENT."
+  "Status of the workflow with ID on Cromwell."
   [id]
   (:status (get-thing "status" id)))
 
 (defn release-hold
-  "Let 'On Hold' workflow with ID run on Cromwell in ENVIRONMENT."
+  "Let 'On Hold' workflow with ID run on Cromwell."
   [id]
   (post-thing "releaseHold" id))
 
 (defn release-a-workflow-every-10-seconds
-  "Every 10 seconds release one workflow from WORKFLOW-IDS in ENVIRONMENT."
+  "Every 10 seconds release one workflow from WORKFLOW-IDS."
   [workflow-ids]
   (when (seq workflow-ids)
     (util/sleep-seconds 10)
@@ -118,7 +118,7 @@
               release-a-workflow-every-10-seconds)))
 
 (defn metadata
-  "GET the metadata for workflow ID in ENVIRONMENT."
+  "GET the metadata for workflow ID."
   ([id query-params]
    (get-thing "metadata" id query-params))
   ([id]
@@ -130,7 +130,7 @@
   (metadata id {:expandSubWorkflows true}))
 
 (defn outputs
-  "GET the metadata for workflow ID in ENVIRONMENT."
+  "GET the metadata for workflow ID."
   ([id query-params]
    (get-thing "outputs" id query-params))
   ([id]
@@ -146,7 +146,7 @@
     (mapcat expand form-params)))
 
 (defn query
-  "Lazy results of querying Cromwell in ENVIRONMENT with PARAMS map."
+  "Lazy results of querying Cromwell with PARAMS map."
   [params]
   (let [form-params (merge {:pagesize 999} params)
         request     {:method       :post ;; :debug true :debug-body true
@@ -167,7 +167,7 @@
 ;; HACK: (into (array-map) ...) is egregious.
 ;;
 (defn status-counts
-  "Map status to workflow counts on Cromwell in ENVIRONMENT with PARAMS
+  "Map status to workflow counts on Cromwell with PARAMS
   map and AUTH-HEADER."
   ([auth-header params]
    (letfn [(each [status]
@@ -206,7 +206,7 @@
 
 (defn post-workflow
   "Assemble PARTS into a multipart HTML body and post it to the Cromwell
-  server in ENVIRONMENT, and return the workflow ID."
+  server, and return the workflow ID."
   [parts]
   (letfn [(multipartify [[k v]] {:name    (name k)
                                  :content v})]
@@ -217,23 +217,21 @@
         request-json #_debug/dump :body :id)))
 
 (defn partify-workflow
-  "Return a map describing a workflow named WF to run in ENVIRONMENT
+  "Return a map describing a workflow named WF to run
    with DEPENDENCIES, INPUTS, OPTIONS, and LABELS."
   [wf dependencies inputs options labels]
   (letfn [(jsonify [edn] (when edn (json/write-str edn :escape-slash false)))
           (maybe [m k v] (if v (assoc m k v) m))]
-    (let [wf-labels  (make-workflow-labels (.getName wf) inputs)
-          all-labels (merge labels wf-labels)]
-      (-> {:workflowSource wf
-           :workflowType   "WDL"
-           :labels         (jsonify all-labels)}
-          (maybe :workflowDependencies dependencies)
-          (maybe :workflowInputs       (jsonify inputs))
-          (maybe :workflowOptions      (jsonify options))))))
+    (-> {:workflowSource wf
+         :workflowType   "WDL"
+         :labels         (jsonify labels)}
+        (maybe :workflowDependencies dependencies)
+        (maybe :workflowInputs       (jsonify inputs))
+        (maybe :workflowOptions      (jsonify options)))))
 
 (defn hold-workflow
   "Submit a workflow 'On Hold' to run WDL with IMPORTS-ZIP, INPUTS,
-  OPTIONS, and LABELS on the Cromwell in ENVIRONMENT and return its
+  OPTIONS, and LABELS on the Cromwell and return its
   ID.  IMPORTS-ZIP, INPUTS, OPTIONS, and LABELS can be nil.  WDL is
   the top-level wf.wdl file specifying the workflow.  IMPORTS-ZIP is a
   zip archive of WDL's dependencies.  INPUTS and OPTIONS are the
@@ -249,7 +247,7 @@
 
 (defn submit-workflow
   "Submit a workflow to run WDL with IMPORTS-ZIP, INPUTS,
-  OPTIONS, and LABELS on the Cromwell in ENVIRONMENT and return its
+  OPTIONS, and LABELS on the Cromwell and return its
   ID.  IMPORTS-ZIP, INPUTS, OPTIONS, and LABELS can be nil.  WDL is
   the top-level wf.wdl file specifying the workflow.  IMPORTS-ZIP is a
   zip archive of WDL's dependencies.  INPUTS and OPTIONS are the
@@ -264,7 +262,7 @@
 
 (defn work-around-cromwell-fail-bug
   "Wait 2 seconds and ignore up to N times a bogus failure response from
-  Cromwell for workflow ID in ENVIRONMENT.  Work around the 'sore spot'
+  Cromwell for workflow ID.  Work around the 'sore spot'
   reported in https://github.com/broadinstitute/cromwell/issues/2671"
   [n id]
   (util/sleep-seconds 2)
@@ -290,6 +288,31 @@
         (metadata  id)))))
 
 (defn abort
-  "Abort the workflow with ID run on Cromwell in ENVIRONMENT."
+  "Abort the workflow with ID run on Cromwell."
   [id]
   (post-thing "abort" id))
+
+(defn count-task
+  "How many tasks in a workflow?"
+  [all-metadata]
+  (count (:imports (:submittedFiles all-metadata))))
+
+(defn count-finished-task
+  [all-metadata]
+  (count
+   (filter
+    (fn [[_ value]]
+      (not-empty (filter #(and (:end %)
+                               (= 0 (:returnCode %)))
+                         value)))
+    (:calls all-metadata))))
+
+(defn workflow-metadata
+  "Return the finished percentage of workflow named by ID."
+  [id]
+  (let [metadata (all-metadata id)]
+    {:status         (:status metadata)
+     :started-time   (:start metadata)
+     :finished-time  (:end metadata)
+     :submitted-time (:submission metadata)
+     :percentage     (* 100 (/ (count-finished-task metadata) (* 1.0 (count-task metadata))))}))

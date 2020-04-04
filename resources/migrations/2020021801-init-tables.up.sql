@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS datains_project (
   started_time BIGINT NOT NULL,
   finished_time BIGINT,
   samples JSON NOT NULL,
-  percentage SMALLINT NOT NULL,
+  percentage REAL NOT NULL,
   status VARCHAR(32) NOT NULL
 );
 
@@ -43,6 +43,7 @@ COMMENT ON COLUMN datains_project.samples IS 'samples file as json string';
 --;;
 CREATE TABLE IF NOT EXISTS datains_workflow (
   id VARCHAR(36) PRIMARY KEY,
+  workflow_id VARCHAR(36),
   project_id VARCHAR(36) NOT NULL,
   sample_id VARCHAR(64) NOT NULL,
   submitted_time BIGINT NOT NULL,
@@ -50,7 +51,7 @@ CREATE TABLE IF NOT EXISTS datains_workflow (
   finished_time BIGINT,
   job_params JSON NOT NULL,
   labels JSON NOT NULL,
-  percentage SMALLINT NOT NULL,
+  percentage REAL NOT NULL,
   status VARCHAR(32) NOT NULL
 );
 

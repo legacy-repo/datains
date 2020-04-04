@@ -5,8 +5,10 @@
             [digest :as digest]
             [me.raynes.fs :as fs]
             [clj-jgit.porcelain :as git]
-            [clojure.string :as clj-str])
-  (:use [clojure.java.shell :only [sh]]))
+            [clojure.string :as clj-str]
+            [clojure.java.io :as io]
+            [clojure.data.json :as json]
+            [clojure.java.shell :as shell :refer [sh]]))
 
 ; Initialize the configuration of choppy store
 (def ^:private config
@@ -18,6 +20,7 @@
          :scheme             nil
          :default-cover      ""
          :datains-workdir    "~/.choppy/"
+         :app-utility-bin    nil
          :app-store-password nil
          :app-store-username nil}))
 
@@ -32,8 +35,8 @@
   (str (get-workdir) "/apps"))
 
 (defn get-project-workdir
-  [project-name]
-  (str (get-workdir) "/projects/" project-name))
+  []
+  (str (get-workdir) "/projects"))
 
 (defn get-local-path
   [relative-path]
@@ -66,6 +69,10 @@
 
 (def ^:private ping-path
   (:ping @config))
+
+(defn app-utility-bin
+  []
+  (:app-utility-bin @config))
 
 (defn- make-path
   "Concat the api-prefix with a path."
@@ -225,19 +232,40 @@
   [name]
   (= 0 (:exit (sh "which" name))))
 
+(defn make-sample-file!
+  "Save job-params as a sample file."
+  [project-name sample-id job-params]
+  (let [dest-file (format "%s/%s/%s/%s" (get-project-workdir) project-name sample-id "sample.json")]
+    (io/make-parents dest-file)
+    (spit dest-file (json/write-str job-params))
+    dest-file))
+
 (defn render-app!
   "Render as a pipeline based on the specified app template.
-   project_name: ^[a-zA-Z_]+[a-zA-Z0-9]+$
+   project_name: ^[a-zA-Z_][a-zA-Z0-9_]+$
    app_name: huangyechao/annovar
    samples: file path
   "
   ([project-name app-name samples] (render-app! project-name app-name samples
                                                 (get-app-workdir)
-                                                (get-project-workdir project-name)))
+                                                (get-project-workdir)))
   ([project-name app-name samples base-dir work-dir]
-   (if (exist-bin? "app-utility")
-     (sh "app-utility" app-name samples base-dir work-dir project-name)
-     (log/error "Command not found: app-utility."))))
+   (if (re-find #"^[a-zA-Z_][a-zA-Z0-9_]+$" project-name)
+     (shell/with-sh-env {:PATH   (app-utility-bin)
+                         :LC_ALL "en_US.utf-8"
+                         :LANG   "en_US.utf-8"}
+       (if (exist-bin? "app-utility")
+         (let [command ["bash" "-c"
+                        (format "app-utility render %s %s --base-dir %s --work-dir %s --project-name %s --force"
+                                app-name samples base-dir work-dir project-name)]
+               result  (apply sh command)]
+           result)
+         {:exit 1
+          :out   ""
+          :err   "Command not found: app-utility."}))
+     {:exit 2
+      :out  ""
+      :err "Not valid project-name: ^[a-zA-Z_][a-zA-Z0-9_]+$"})))
 
 ;;; ------------------------------------------------- Git API ---------------------------------------------------
 (defn credentials

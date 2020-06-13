@@ -24,10 +24,15 @@
   []
   (get-in env [:cromwell :url]))
 
+(defn engine
+  "Engine URL for Connecting Cromwell Engine."
+  []
+  (str (get-url) "/engine/v1"))
+
 (defn get-local-auth-header
   "Local auth header."
   []
-  {"Authorization" (str "Bearer " (get-in env [:cromwell :token]))})
+  {"Authorization" (get-in env [:cromwell :token])})
 
 (defn api
   "API URL for GotC Cromwell API."
@@ -59,6 +64,16 @@
   [s]
   (reduce (fn [s [k v]] (str/replace s k v))
           s bogus-key-character-map))
+
+(defn ok?
+  "Check whether the cromwell service is okay."
+  []
+  (-> {:method :get
+       :content-type :application/json
+       :headers (get-local-auth-header)
+       :url (str (engine) "/version")}
+      (request-json)
+      :body))
 
 (defn some-thing
   "GET or POST THING to ENVIRONMENT Cromwell for workflow with ID, where
@@ -298,6 +313,7 @@
   (count (:imports (:submittedFiles all-metadata))))
 
 (defn count-finished-task
+  "How many finished tasks in a workflow?"
   [all-metadata]
   (count
    (filter

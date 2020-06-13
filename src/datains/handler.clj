@@ -38,6 +38,10 @@
   (shutdown-agents)
   (log/info "datains has shut down!"))
 
+(defn get-workdir
+  []
+  (get-in env [:datains-workdir]))
+
 (mount/defstate app-routes
   :start
   (ring/ring-handler
@@ -46,11 +50,11 @@
                                        :headers {"Location" "/api/api-docs/index.html"}})}}]
      (service-routes)
      ["/reports/*" (-> (ring/create-resource-handler {:path "/"})
-                       (wrap-file (app-store/get-workdir)))]         ; <ROOT>/reports/
+                       (wrap-file (get-workdir)))]  ; <ROOT>/reports/
      ["/projects/*" (-> (ring/create-resource-handler {:path "/"})
-                        (wrap-file (app-store/get-workdir)))]        ; <ROOT>/projects/
+                        (wrap-file (get-workdir)))]  ; <ROOT>/projects/
      ["/cromwell/*" (-> (ring/create-resource-handler {:path "/"})
-                        (wrap-file (app-store/get-workdir)))]]       ; <ROOT>/cromwell/, for logs
+                        (wrap-file (get-workdir)))]]  ; <ROOT>/cromwell/, for logs
     {:validate  rs/validate
      :exception pretty/exception})
    (ring/routes

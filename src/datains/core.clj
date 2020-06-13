@@ -122,4 +122,4 @@
       (migrations/migrate args (select-keys env [:database-url]))
       (System/exit 0))
     :else
-    (start-app args)))   ; with no command line args just start Metabase normally
+    (start-app args)))   ; with no command line args just start Datains normally

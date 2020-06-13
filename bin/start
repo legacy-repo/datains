@@ -4,6 +4,9 @@ set -e
 
 # NOTE: The canonical source for this file is in the clinico-omics/datains repository.
 
+# For default working directory
+mkdir -p ~/.datains
+
 if [ -z "$PORT" ]; then
     export PORT=3000
 fi
@@ -70,5 +73,8 @@ JAVA_OPTS="$JAVA_OPTS -Djava.awt.headless=true"         # don't try to start AWT
 JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=UTF-8"            # Use UTF-8
 
 echo "Using these JAVA_OPTS: ${JAVA_OPTS}"
+
+# Auto migrate database schema
+java -jar ./target/uberjar/datains.jar migrate
 
 exec java $JAVA_OPTS -jar ./target/uberjar/datains.jar

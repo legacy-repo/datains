@@ -9,7 +9,7 @@
   []
   (= 0 (:exit (sh "which" "multiqc"))))
 
-(def ^:private report-dir (atom "~/.choppy/report"))
+(def ^:private report-dir (atom "~/.datains/reports"))
 
 (defn setup-report-dir
   [new-report-dir]

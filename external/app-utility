@@ -36,8 +36,8 @@ APP_IS_INSTALLED = 1
 APP_INSTALL_FAILED = 2
 JSON_NOT_VALID = 3
 
-DEFAULT_APP_ROOT_DIR = os.path.expanduser('~/.choppy/apps')
-DEFAULT_PROJECT_ROOT_DIR = os.path.expanduser('~/.choppy/projects')
+DEFAULT_APP_ROOT_DIR = os.path.expanduser('~/.datains/apps')
+DEFAULT_PROJECT_ROOT_DIR = os.path.expanduser('~/.datains/projects')
 
 
 class NotFoundApp(Exception):

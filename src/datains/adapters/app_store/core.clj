@@ -19,7 +19,7 @@
          :port               nil
          :scheme             nil
          :default-cover      ""
-         :datains-workdir    "~/.choppy/"
+         :datains-workdir    "~/.datains/"
          :app-utility-bin    nil
          :app-store-password nil
          :app-store-username nil}))

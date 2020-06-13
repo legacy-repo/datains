@@ -23,14 +23,14 @@
 (defn setup-multiqc
   []
   (let [datains-workdir (get-in env [:datains-workdir])
-        report-dir      (util/join-path datains-workdir "/report")]
+        report-dir      (util/join-path datains-workdir "/reports")]
     (log/info "Setup multiqc adapter: ", report-dir)
     (multiqc/setup-report-dir report-dir)))
 
 (defn reset-multiqc
   []
   (log/info "Reset multiqc adapter.")
-  (multiqc/setup-report-dir "~/.choppy/report"))
+  (multiqc/setup-report-dir "~/.datains/reports"))
 
 (defn setup-app-store
   "Setup the configuration of choppy store from environment variables."
@@ -41,7 +41,7 @@
                            :port               (:app-store-port env 80)
                            :scheme             (:app-store-scheme env "http")
                            :default-cover      (:app-default-cover env "")
-                           :datains-workdir    (:datains-workdir env "~/.choppy")
+                           :datains-workdir    (:datains-workdir env "~/.datains")
                            :app-utility-bin    (:app-utility-bin env nil)
                            :app-store-username (:app-store-username env)
                            :app-store-password (:app-store-password env)}))
@@ -56,6 +56,6 @@
                            :port               nil
                            :scheme             nil
                            :default-cover      ""
-                           :datains-workdir    "~/.choppy/"
+                           :datains-workdir    "~/.datains/"
                            :app-store-username nil
                            :app-store-password nil}))

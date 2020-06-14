@@ -10,9 +10,11 @@
   []
   (let [access-token (get-in env [:dingtalk-access-token])
         secret       [get-in env [:dingtalk-secret]]]
-    (log/info "Setup dingtalk adapter.")
-    (dingtalk/setup-access-token access-token)
-    (dingtalk/setup-secret secret)))
+    ; Don't setup dingtalk, if user don't set access-token and secret
+    (when (and access-token secret)
+      (log/info "Setup dingtalk adapter.")
+      (dingtalk/setup-access-token access-token)
+      (dingtalk/setup-secret secret))))
 
 (defn reset-dingtalk
   []

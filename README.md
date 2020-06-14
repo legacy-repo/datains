@@ -41,6 +41,44 @@ lein jupyter notebook
 (u/restart)
 ```
 
+## Environment Variables for Datains
+
+```bash
+# Required
+## General
+PORT=
+### Only support postgresql
+DATABASE_URL='postgresql://localhost:5432/datains_dev?user=postgres&password=password'
+### For reports/apps/projects
+WORKDIR=
+
+## App Store
+APP_STORE_ACCESS_TOKEN=
+APP_STORE_HOST=
+APP_STORE_PORT=
+APP_STORE_USER_NAME=
+APP_STORE_PASSWORD=
+### app_utility is a script for rendering choppy-app. where is the virtualenv for the app_utility?
+APP_UTILITY_BIN=/app/external
+
+## Cromwell
+### Where is the cromwell service? More details: https://cromwell.readthedocs.io/en/stable/
+CROMWELL__URL=http://localhost:8000
+### Maybe you can use basic auth by nginx or httpd, e.g. 'Basic cGd4LWNyb213ZWxsOmxyb2Nr'
+CROMWELL__TOKEN=
+
+## Tasks
+### More details: http://www.quartz-scheduler.org/documentation/quartz-2.3.0/tutorials/crontrigger.html
+### Cron expression for submit-jobs task
+TASKS__SUBMIT_JOBS__CRON=0 */1 * * * ?
+### Cron expression for sync-apps task
+TASKS__SYNC_APPS__CRON=0 */3 * * * ?
+
+# Optional
+DINGTALK_ACCESS_TOKEN=
+DINGTALK_SECRET=
+```
+
 ## Change Log
 1. Database (Model)
 2. Database Handler (Controller)
@@ -67,7 +105,6 @@ Scheduler will help us to do a series of things, such as:
 So we need a plugable implement.
 
 ### [Async Task](core.async)
-
 
 ## License
 

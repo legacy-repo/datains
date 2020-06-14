@@ -62,7 +62,7 @@
   (doseq [ns-symb @u/datains-namespace-symbols
           :when   (.startsWith (name ns-symb) "datains.task.")]
     (try
-      (log/debug "Loading tasks namespace:" (u/format-color 'blue ns-symb))
+      (log/info "Loading tasks namespace:" (u/format-color 'blue ns-symb))
       (classloader/require ns-symb)
       (catch Throwable e
         (log/error e "Error loading tasks namespace {0}" ns-symb)))))

@@ -1,6 +1,7 @@
 (ns datains.task.submit-jobs
   "Tasks related to submit jobs to cromwell instance from workflow table."
   (:require [clojure.tools.logging :as log]
+            [datains.config :refer [env]]
             [clojurewerkz.quartzite
              [jobs :as jobs]
              [triggers :as triggers]]
@@ -68,6 +69,14 @@
 (def ^:private submit-jobs-job-key     "datains.task.submit-jobs.job")
 (def ^:private submit-jobs-trigger-key "datains.task.submit-jobs.trigger")
 
+(defn get-cron-conf
+  []
+  (let [cron (get-in env [:tasks :submit-jobs :cron])]
+    (if cron
+      cron
+      ;; run at the top of every minute
+      "0 */1 * * * ?")))
+
 (defmethod task/init! ::SubmitJobs [_]
   (let [job     (jobs/build
                  (jobs/of-type SubmitJobs)
@@ -77,8 +86,7 @@
                  (triggers/start-now)
                  (triggers/with-schedule
                    (cron/schedule
-                    ;; run at the top of every minute
-                    (cron/cron-schedule "0 */3000 * * * ?")
+                    (cron/cron-schedule (get-cron-conf))
                     ;; If submit-jobs! misfires, don't try to re-submit all the misfired jobs. Retry only the most
                     ;; recent misfire, discarding all others. This should hopefully cover cases where a misfire
                     ;; happens while the system is still running; if the system goes down for an extended period of

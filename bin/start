@@ -7,6 +7,7 @@ set -e
 # For default working directory
 mkdir -p ~/.datains
 
+# General
 if [ -z "$PORT" ]; then
     export PORT=3000
 fi
@@ -22,6 +23,7 @@ else
     export DATAINS_WORKDIR=$WORKDIR
 fi
 
+# App Store
 if [ -z "$APP_STORE_ACCESS_TOKEN" ]; then
     echo "You must specified the access token for accessing app store."
     exit 1
@@ -49,6 +51,7 @@ if [ -z "$APP_STORE_PASSWORD" ]; then
     exit 1
 fi
 
+# Cromwell
 if [ -z "$CROMWELL__URL" ]; then
     echo "You must specified the url of cromwell service."
     exit 1
@@ -59,6 +62,7 @@ if [ -z "$CROMWELL__TOKEN" ]; then
     echo "WARNING: The datains service will access cromwell server without token, maybe cause something wrong."
 fi
 
+# Dingtalk
 if [ -z "$DINGTALK_ACCESS_TOKEN" ]; then
     echo "WARNING: You need to specified a dingtalk access token, if you want to get some notifications"
 fi

@@ -20,13 +20,13 @@
     ns-symb))
 
 (def datains-namespace-symbols
-  "Delay to a vector of symbols of all Metabase namespaces, excluding test namespaces.
+  "Delay to a vector of symbols of all Datains namespaces, excluding test namespaces.
     This is intended for use by various routines that load related namespaces, such as task and events initialization.
     Using `ns-find/find-namespaces` is fairly slow, and can take as much as half a second to iterate over the thousand
-    or so namespaces that are part of the Metabase project; use this instead for a massive performance increase."
+    or so namespaces that are part of the Datains project; use this instead for a massive performance increase."
   ;; We want to give JARs in the ./plugins directory a chance to load. At one point we have this as a future so it
   ;; start looking for things in the background while other stuff is happening but that meant plugins couldn't
-  ;; introduce new Metabase namespaces such as drivers.
+  ;; introduce new Datains namespaces such as drivers.
   (delay (vec (namespace-symbs*))))
 
 (def ^:private ^{:arglists '([color-symb x])} colorize

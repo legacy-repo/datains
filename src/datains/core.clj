@@ -43,13 +43,13 @@
   :stop
   (adapters/reset-app-store))
 
-(mount/defstate ^{:on-reload :noop} event
+(mount/defstate event
   :start
   (events/initialize-events!)
   :stop
   (events/stop-events!))
 
-(mount/defstate ^{:on-reload :noop} scheduler
+(mount/defstate scheduler
   :start
   (task/start-scheduler!)
   :stop

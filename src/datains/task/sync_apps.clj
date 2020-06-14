@@ -32,6 +32,14 @@
 (def ^:private sync-apps-job-key     "datains.task.sync-apps.job")
 (def ^:private sync-apps-trigger-key "datains.task.sync-apps.trigger")
 
+(defn get-cron-conf
+  []
+  (let [cron (get-in env [:tasks :sync-apps :cron])]
+    (if cron
+      cron
+      ;; run at the top of every 3 minutes
+      "0 */3 * * * ?")))
+
 (defmethod task/init! ::SyncApps [_]
   (let [job     (jobs/build
                  (jobs/of-type SyncApps)
@@ -41,8 +49,7 @@
                  (triggers/start-now)
                  (triggers/with-schedule
                    (cron/schedule
-                    ;; run at the top of every five minutes
-                    (cron/cron-schedule "0 */5 * * * ?")
+                    (cron/cron-schedule (get-cron-conf))
                     ;; If sync-apps! misfires, don't try to re-sync all the misfired apps. Retry only the most
                     ;; recent misfire, discarding all others. This should hopefully cover cases where a misfire
                     ;; happens while the system is still running; if the system goes down for an extended period of

@@ -96,7 +96,7 @@
   :main ^:skip-aot datains.core
 
   :profiles
-  {:uberjar       {:omit-source    true
+  {:uberjar       {:omit-source    false  ; You can't set to true, if you want to make the findnamespace valid (for tasks/events).
                    :aot            :all
                    :uberjar-name   "datains.jar"
                    :source-paths   ["env/prod"]

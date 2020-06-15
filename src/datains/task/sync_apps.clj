@@ -9,7 +9,8 @@
             [clj-http.client :as client]
             [datains.adapters.app-store.core :as app-store]
             [datains.db.core :refer [*db*] :as db]
-            [clojure.java.jdbc :as jdbc]))
+            [clojure.java.jdbc :as jdbc]
+            [datains.config :refer [env]]))
 
 ;;; ------------------------------------------------- Syncing Apps ---------------------------------------------------
 (defn- sync-apps! []

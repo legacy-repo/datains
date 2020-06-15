@@ -84,18 +84,14 @@ WHERE id = :id
     1. why we need to use :one as the :result
       Because the result will be ({:count 0}), when we use :raw to replace :one.
 */
-/* :require [clojure.string :as string]
-            [hugsql.parameters :refer [identifier-param-quote]] */
+/* :require [datains.db.sql-helper :as sql-helper] */
 SELECT COUNT(id)
 FROM datains_workflow
 /*~
 ; TODO: May be raise error, when the value of :query-map is unqualified.
-(when (:query-map params) 
- (str "WHERE "
-  (string/join " AND "
-    (for [[field _] (:query-map params)]
-      (str (identifier-param-quote (name field) options)
-        " = :v:query-map." (name field))))))
+(cond
+  (:query-map params) (sql-helper/where-clause (:query-map params) options)
+  (:where-clause params) ":snip:where-clause")
 ~*/
 
 
@@ -115,17 +111,13 @@ FROM datains_workflow
     1. Maybe we need to support OR/LIKE/IS NOT/etc. expressions in WHERE clause.
     2. Maybe we need to use exact field name to replace *.
 */
-/* :require [clojure.string :as string]
-            [hugsql.parameters :refer [identifier-param-quote]] */
+/* :require [datains.db.sql-helper :as sql-helper] */
 SELECT * 
 FROM datains_workflow
 /*~
-(when (:query-map params) 
- (str "WHERE "
-  (string/join " AND "
-    (for [[field _] (:query-map params)]
-      (str (identifier-param-quote (name field) options)
-        " = :v:query-map." (name field))))))
+(cond
+  (:query-map params) (sql-helper/where-clause (:query-map params) options)
+  (:where-clause params) ":snip:where-clause")
 ~*/
 ORDER BY id
 --~ (when (and (:limit params) (:offset params)) "LIMIT :limit OFFSET :offset")
@@ -239,8 +231,7 @@ TRUNCATE datains_workflow;
     1. Maybe we need to support OR/LIKE/IS NOT/etc. expressions in WHERE clause.
     2. Maybe we need to use exact field name to replace *.
 */
-/* :require [clojure.string :as string]
-            [hugsql.parameters :refer [identifier-param-quote]] */
+/* :require [datains.db.sql-helper :as sql-helper] */
 SELECT  datains_workflow.id,
         datains_workflow.project_id,
         datains_workflow.sample_id,
@@ -255,13 +246,9 @@ SELECT  datains_workflow.id,
 FROM datains_workflow
 INNER JOIN datains_project ON datains_workflow.project_id = datains_project.id
 /*~
-(when (:query-map params) 
- (str "WHERE "
-  (string/join " AND "
-    (for [[field _] (:query-map params)]
-      (str "datains_workflow."
-        (identifier-param-quote (name field) options)
-          " = :v:query-map." (name field))))))
+(cond
+  (:query-map params) (sql-helper/where-clause (:query-map params) options "datains_workflow")
+  (:where-clause params) ":snip:where-clause")
 ~*/
 ORDER BY datains_workflow.submitted_time
 --~ (when (and (:limit params) (:offset params)) "LIMIT :limit OFFSET :offset")

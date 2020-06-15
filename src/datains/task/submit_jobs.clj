@@ -19,43 +19,55 @@
             [datains.adapters.dingtalk :as dingtalk]))
 
 ;;; ------------------------------------------------- Submit Jobs ---------------------------------------------------
-(defn- get-submitted-jobs [nums]
-  (:data (db-handler/search-workflows-with-projects {:status "Submitted"} 1 nums)))
+(defn- count-submitted-jobs [query-map]
+  (db/get-workflow-count {:query-map query-map}))
+
+(defn- get-submitted-jobs [page per-page query-map]
+  (:data (db-handler/search-workflows-with-projects query-map page per-page)))
+
+(defn- total-page [total per-page]
+  (if (= (rem total per-page) 0)
+    (quot total per-page)
+    (+ (quot total per-page) 1)))
 
 (defn- submit-jobs! []
-  (let [jobs (get-submitted-jobs 5)]  ; Get five jobs each time
-    (jdbc/with-db-transaction [t-conn *db*]
-      (doseq [job jobs]
-        (let [sample-file (app-store/make-sample-file! (:project_name job) (:sample_id job) (:job_params job))
-              results     (app-store/render-app! (:project_name job) (:app_name job) sample-file)
-              root-dir    (fs/parent sample-file)
-              wdl-file    (str root-dir "/workflow.wdl")
-              inputs      (str root-dir "/inputs")
-              imports-zip (str root-dir "/tasks.zip")
-              options     nil
-              labels      (merge (:labels job) {:app_name  (:app_name job)
-                                                :author    (:author job)
-                                                :group     (:group_name job)
-                                                :sample_id (:sample_id job)})
-              workflow-id (if (= 0 (:exit results))
-                            (cromwell/submit-workflow (io/file wdl-file)
-                                                      (io/file imports-zip)
-                                                      (json/read-str (slurp inputs) :key-fn keyword)
-                                                      options
-                                                      labels)
-                            (log/error results))]
-          (log/debug (merge job {:sample-file sample-file
-                                 :root-dir    root-dir
-                                 :wdl-file    wdl-file
-                                 :inputs      inputs
-                                 :imports-zip imports-zip
-                                 :options     options
-                                 :labels      labels
-                                 :workflow-id workflow-id}))
-          (if workflow-id
-            (db/update-workflow! t-conn {:updates {:workflow_id workflow-id}
-                                         :id      (:id job)})
-            (comment (dingtalk/send-markdown-msg! (:project_name job) "Wrong"))))))))
+  (let [query-map {:status      "Submitted"
+                   :workflow-id nil}
+        per-page 10]
+    (for [which-page (range 1 (+ (total-page (count-submitted-jobs query-map) per-page) 1))]
+      (let [jobs (get-submitted-jobs which-page per-page)]  ; Get five jobs each time
+        (jdbc/with-db-transaction [t-conn *db*]
+          (doseq [job jobs]
+            (let [sample-file (app-store/make-sample-file! (:project_name job) (:sample_id job) (:job_params job))
+                  results     (app-store/render-app! (:project_name job) (:app_name job) sample-file)
+                  root-dir    (fs/parent sample-file)
+                  wdl-file    (str root-dir "/workflow.wdl")
+                  inputs      (str root-dir "/inputs")
+                  imports-zip (str root-dir "/tasks.zip")
+                  options     nil
+                  labels      (merge (:labels job) {:app_name  (:app_name job)
+                                                    :author    (:author job)
+                                                    :group     (:group_name job)
+                                                    :sample_id (:sample_id job)})
+                  workflow-id (if (= 0 (:exit results))
+                                (cromwell/submit-workflow (io/file wdl-file)
+                                                          (io/file imports-zip)
+                                                          (json/read-str (slurp inputs) :key-fn keyword)
+                                                          options
+                                                          labels)
+                                (log/error results))]
+              (log/debug (merge job {:sample-file sample-file
+                                     :root-dir    root-dir
+                                     :wdl-file    wdl-file
+                                     :inputs      inputs
+                                     :imports-zip imports-zip
+                                     :options     options
+                                     :labels      labels
+                                     :workflow-id workflow-id}))
+              (if workflow-id
+                (db/update-workflow! t-conn {:updates {:workflow_id workflow-id}
+                                             :id      (:id job)})
+                (comment (dingtalk/send-markdown-msg! (:project_name job) "Wrong"))))))))))
 
 ;;; ------------------------------------------------------ Task ------------------------------------------------------
 ;; triggers the submitting of all jobs which are scheduled to run in the current minutes

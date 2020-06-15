@@ -49,8 +49,11 @@
     [["/" {:get {:handler (constantly {:status  301
                                        :headers {"Location" "/api/api-docs/index.html"}})}}]
      (service-routes)
+     ;; TODO: Add permission for files, each project/report/app/cromwell instance?
+     ["/apps/*" (-> (ring/create-resource-handler {:path "/"})
+                    (wrap-file (get-workdir)))]  ; <ROOT>/apps/, for App README.md
      ["/reports/*" (-> (ring/create-resource-handler {:path "/"})
-                       (wrap-file (get-workdir)))]  ; <ROOT>/reports/
+                       (wrap-file (get-workdir)))]  ; <ROOT>/reports/, for MultiQC HTML file
      ["/projects/*" (-> (ring/create-resource-handler {:path "/"})
                         (wrap-file (get-workdir)))]  ; <ROOT>/projects/
      ["/cromwell/*" (-> (ring/create-resource-handler {:path "/"})

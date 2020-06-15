@@ -51,7 +51,7 @@ ENV LC_CTYPE en_US.UTF-8
 ENV PATH="/app/external:/app/external/.env/bin:${PATH}"
 
 # dependencies
-RUN apk add --update bash ttf-dejavu fontconfig make python3 python3-dev py-pip
+RUN apk add --update bash ttf-dejavu fontconfig make python3 python3-dev py-pip git
 RUN pip3 install virtualenv
 RUN cd /usr/bin \
     && ln -sf python3 python \

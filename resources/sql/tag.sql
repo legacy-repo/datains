@@ -108,16 +108,16 @@ WHERE title = :title
 -- :result :affected
 /* :doc
   Args: 
-    {:tag-id 1 :entity-id "XXX" :entity-type "choppy-app"}
-    {:entity-id "XXX" :entity-type "choppy-app" :tag-title "XXX"}
+    {:tag_id 1 :entity_id "XXX" :entity_type "choppy-app"}
+    {:entity_id "XXX" :entity_type "choppy-app" :tag_title "XXX"}
   Description:
     Connect an app record with several tag records and then return the number of affected rows.
   Examples: 
-    Clojure: (connect-entity-tag! {:tag-id 1 :entity-id "test" :entity-type "choppy-app"})
+    Clojure: (connect-entity-tag! {:tag_id 1 :entity_id "test" :entity_type "choppy-app"})
 */
 INSERT INTO datains_entity_tag (tag_id, entity_id, entity_type)
 /*~
-(if (and (:tag-id params) (and (:entity-id params) (:entity-type params)))
-  "VALUES (:tag-id, :entity-id, :entity-type)"
-  "SELECT id, :entity-id, :entity-type FROM datains_tag WHERE title = :tag-title;")
+(if (and (:tag_id params) (and (:entity_id params) (:entity_type params)))
+  "VALUES (:tag_id, :entity_id, :entity_type)"
+  "SELECT id, :entity_id, :entity_type FROM datains_tag WHERE title = :tag_title;")
 ~*/

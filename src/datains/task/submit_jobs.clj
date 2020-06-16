@@ -16,14 +16,21 @@
             [datains.adapters.cromwell.core :as cromwell]
             [datains.db.core :refer [*db*] :as db]
             [clojure.java.jdbc :as jdbc]
-            [datains.adapters.dingtalk :as dingtalk]))
+            [datains.adapters.dingtalk :as dingtalk]
+            [honeysql.core :as sql]))
 
 ;;; ------------------------------------------------- Submit Jobs ---------------------------------------------------
-(defn- count-submitted-jobs [query-map]
-  (db/get-workflow-count {:query-map query-map}))
+(def submitted-jobs-condition (sql/format {:where [:and
+                                                   [:= :datains-workflow/status "Submitted"]
+                                                   [:is :datains-workflow/workflow-id nil]]}))
 
-(defn- get-submitted-jobs [page per-page query-map]
-  (:data (db-handler/search-workflows-with-projects query-map page per-page)))
+(defn- count-submitted-jobs []
+  (:count (db/get-workflow-count {:where-clause submitted-jobs-condition})))
+
+(defn- get-submitted-jobs [page per-page]
+  (:data (db/search-workflows-with-projects
+          {:where-clause submitted-jobs-condition}
+          page per-page)))
 
 (defn- total-page [total per-page]
   (if (= (rem total per-page) 0)
@@ -31,10 +38,8 @@
     (+ (quot total per-page) 1)))
 
 (defn- submit-jobs! []
-  (let [query-map {:status      "Submitted"
-                   :workflow-id nil}
-        per-page 10]
-    (for [which-page (range 1 (+ (total-page (count-submitted-jobs query-map) per-page) 1))]
+  (let [per-page  10]
+    (for [which-page (range 1 (+ (total-page (count-submitted-jobs) per-page) 1))]
       (let [jobs (get-submitted-jobs which-page per-page)]  ; Get five jobs each time
         (jdbc/with-db-transaction [t-conn *db*]
           (doseq [job jobs]
@@ -63,7 +68,7 @@
                                      :imports-zip imports-zip
                                      :options     options
                                      :labels      labels
-                                     :workflow-id workflow-id}))
+                                     :workflow_id workflow-id}))
               (if workflow-id
                 (db/update-workflow! t-conn {:updates {:workflow_id workflow-id}
                                              :id      (:id job)})
@@ -73,8 +78,8 @@
 ;; triggers the submitting of all jobs which are scheduled to run in the current minutes
 (jobs/defjob SubmitJobs [_]
   (try
-    (submit-jobs!)
     (log/info "Submit jobs in submitted status...")
+    (submit-jobs!)
     (catch Throwable e
       (log/error e "SubmitJobs task failed"))))
 

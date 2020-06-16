@@ -10,7 +10,7 @@
     :swagger/default     1
     :reason              "The page parameter can't be none."}))
 
-(s/def ::per-page
+(s/def ::per_page
   (st/spec
    {:spec                nat-int?
     :type                :long
@@ -59,7 +59,7 @@
     :swagger/default     ""
     :reason              "Not a valid description."}))
 
-(s/def ::repo-url
+(s/def ::repo_url
   (st/spec
    {:spec                #(some? (re-matches #"[a-zA-z]+://[^\s]*" %))
     :type                :string
@@ -94,13 +94,13 @@
 (def app-params-query
   "A spec for the query parameters."
   (s/keys :req-un []
-          :opt-un [::page ::per-page ::author ::valid ::title]))
+          :opt-un [::page ::per_page ::author ::valid ::title]))
 
 (def app-body
   {:id          ::uuid
    :title       ::title
    :description ::description
-   :repo-url    ::repo-url
+   :repo_url    ::repo_url
    :cover       ::cover
    :icon        ::icon
    :author      ::author

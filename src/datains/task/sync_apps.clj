@@ -25,8 +25,8 @@
 ;; triggers the syncing of all apps which are scheduled to run in the current hour
 (jobs/defjob SyncApps [_]
   (try
-    (sync-apps!)
     (log/info "Sync apps from app store...")
+    (sync-apps!)
     (catch Throwable e
       (log/error e "SyncApps task failed"))))
 

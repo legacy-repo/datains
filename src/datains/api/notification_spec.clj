@@ -10,7 +10,7 @@
     :swagger/default     1
     :reason              "The page parameter can't be none."}))
 
-(s/def ::per-page
+(s/def ::per_page
   (st/spec
    {:spec                nat-int?
     :type                :long
@@ -19,7 +19,7 @@
     :reason              "The per-page parameter can't be none."}))
 
 ;; -------------------------------- Notification Spec --------------------------------
-(s/def ::notification-type
+(s/def ::notification_type
   (st/spec
    {:spec                #(#{"default"} %)
     :description         "Filter results by notification field."
@@ -42,7 +42,7 @@
     :swagger/default     ""
     :reason              "Not a valid description."}))
 
-(s/def ::created-time
+(s/def ::created_time
   (st/spec
    {:spec                nat-int?
     :type                :integer
@@ -60,11 +60,11 @@
 (def notification-params-query
   "A spec for the query parameters."
   (s/keys :req-un []
-          :opt-un [::page ::per-page ::notification-type ::status]))
+          :opt-un [::page ::per_page ::notification_type ::status]))
 
 (def notification-body
-  (s/keys  :req-un [::title ::notification-type ::status]
-           :opt-un [::created-time ::description]))
+  (s/keys  :req-un [::title ::notification_type ::status]
+           :opt-un [::created_time ::description]))
 
 (def notification-put-body
   (s/keys  :req-un [::status]

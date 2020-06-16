@@ -10,7 +10,7 @@
     :swagger/default     1
     :reason              "The page parameter can't be none."}))
 
-(s/def ::per-page
+(s/def ::per_page
   (st/spec
    {:spec                nat-int?
     :type                :long
@@ -27,7 +27,7 @@
     :reason              "Not valid a workflow-id."}))
 
 ;; -------------------------------- Workflow Spec --------------------------------
-(s/def ::project-id
+(s/def ::project_id
   (st/spec
    {:spec                #(some? (re-matches #"[a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8}" %))
     :type                :string
@@ -35,7 +35,7 @@
     :swagger/default     "40644dec-1abd-489f-a7a8-1011a86f40b0"
     :reason              "Not valid a project-id."}))
 
-(s/def ::sample-id
+(s/def ::sample_id
   (st/spec
    {:spec            #(some? (re-matches #"[a-zA-Z0-9-]+" %))
     :type            :string
@@ -43,7 +43,7 @@
     :swagger/default "sample_id"
     :reason          "Not valid a sample-id"}))
 
-(s/def ::submitted-time
+(s/def ::submitted_time
   (st/spec
    {:spec            nat-int?
     :type            :integer
@@ -51,7 +51,7 @@
     :swagger/default 0
     :reason          "Not a valid submitted-time"}))
 
-(s/def ::started-time
+(s/def ::started_time
   (st/spec
    {:spec            nat-int?
     :type            :integer
@@ -59,7 +59,7 @@
     :swagger/default 0
     :reason          "Not a valid started-time"}))
 
-(s/def ::finished-time
+(s/def ::finished_time
   (st/spec
    {:spec            nat-int?
     :type            :integer
@@ -67,7 +67,7 @@
     :swagger/default 0
     :reason          "Not a valid finished-time"}))
 
-(s/def ::job-params
+(s/def ::job_params
   (st/spec
    {:spec            map?
     :type            :map
@@ -107,18 +107,18 @@
 (def workflow-params-query
   "A spec for the query parameters."
   (s/keys :req-un []
-          :opt-un [::page ::per-page ::project-id ::status]))
+          :opt-un [::page ::per_page ::project_id ::status]))
 
 (def workflow-body
-  {:project-id     ::project-id
-   :sample-id      ::sample-id
-   :submitted-time ::submitted-time
-   :started-time   ::started-time
-   :finished-time  ::finished-time
-   :job-params     ::job-params
+  {:project_id     ::project_id
+   :sample_id      ::sample_id
+   :submitted_time ::submitted_time
+   :started_time   ::started_time
+   :finished_time  ::finished_time
+   :job_params     ::job_params
    :labels         ::labels
    :status         ::status})
 
 (def workflow-put-body
   (s/keys :req-un []
-          :opt-un [::status ::percentage ::finished-time]))
+          :opt-un [::status ::percentage ::finished_time]))

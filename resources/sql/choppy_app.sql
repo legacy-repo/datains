@@ -13,14 +13,14 @@
 -- :result :affected
 /* :doc
   Args:
-    {:id "id" :icon "icon" :cover "cover" :title "title" :description "description" :repo-url "repo_url" :author "author" :rate "rate" :valid true}
+    {:id "id" :icon "icon" :cover "cover" :title "title" :description "description" :repo_url "repo_url" :author "author" :rate "rate" :valid true}
   Description:
     Create a new app record and then return the number of affected rows.
   Examples: 
-    Clojure: (create-app! {:id "id" :icon "icon" :cover "cover" :title "title" :description "description" :repo-url "repo_url" :author "author" :rate "rate" :valid true})
+    Clojure: (create-app! {:id "id" :icon "icon" :cover "cover" :title "title" :description "description" :repo_url "repo_url" :author "author" :rate "rate" :valid true})
 */
 INSERT INTO datains_choppy_app (id, icon, cover, title, description, repo_url, author, rate, valid)
-VALUES (:id, :icon, :cover, :title, :description, :repo-url, :author, :rate, :valid)
+VALUES (:id, :icon, :cover, :title, :description, :repo_url, :author, :rate, :valid)
 RETURNING id
 
 

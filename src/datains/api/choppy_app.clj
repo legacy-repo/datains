@@ -18,14 +18,14 @@
             :parameters {:query app-spec/app-params-query}
             :responses  {200 {:body {:total    nat-int?
                                      :page     pos-int?
-                                     :per-page pos-int?
+                                     :per_page pos-int?
                                      :data     any?}}}
             :handler    (fn [{{{:keys [page per-page title valid author]} :query} :parameters}]
                           (let [query-map {:title  title
                                            :valid  valid
                                            :author author}]
                             (log/debug "page: " page, "per-page: " per-page, "query-map: " query-map)
-                            (ok (db-handler/search-apps query-map
+                            (ok (db-handler/search-apps {:query-map query-map}
                                                         page
                                                         per-page))))}
 
@@ -37,7 +37,7 @@
                                    {:message (db-handler/create-app! {:id          id
                                                                       :title       title
                                                                       :description description
-                                                                      :repo-url    repo_url
+                                                                      :repo_url    repo_url
                                                                       :cover       cover
                                                                       :icon        icon
                                                                       :author      author

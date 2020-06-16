@@ -8,4 +8,4 @@
   (-> handler
       wrap-reload
       wrap-error-page
-      (wrap-exceptions {:app-namespaces ['datains]})))
+      (wrap-exceptions {:app_namespaces ['datains]})))

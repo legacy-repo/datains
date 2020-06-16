@@ -17,7 +17,7 @@
             :parameters {:query project-spec/project-params-query}
             :responses  {200 {:body {:total    nat-int?
                                      :page     pos-int?
-                                     :per-page pos-int?
+                                     :per_page pos-int?
                                      :data     any?}}}
             :handler    (fn [{{{:keys [page per-page app-id author status project-name]} :query} :parameters}]
                           (let [query-map {:app_id       app-id
@@ -25,7 +25,7 @@
                                            :author       author
                                            :project_name project-name}]
                             (log/debug "page: " page, "per-page: " per-page, "query-map: " query-map)
-                            (ok (db-handler/search-projects query-map
+                            (ok (db-handler/search-projects {:query-map query-map}
                                                             page
                                                             per-page))))}
 
@@ -35,11 +35,11 @@
             :handler    (fn [{{:keys [body]} :parameters}]
                           (let [body (util/merge-diff-map body {:id            (util/uuid)
                                                                 :description   ""
-                                                                :group-name    "Choppy Team"
+                                                                :group_name    "Choppy Team"
                                                                 :status        "Submitted"
-                                                                :finished-time nil
+                                                                :finished_time nil
                                                                 :percentage    0
-                                                                :started-time  (util/time->int (util/now))})]
+                                                                :started_time  (util/time->int (util/now))})]
                             (log/debug "Create an project: " body)
                             (created (str "/projects/" (:id body))
                                      {:message (db-handler/create-project-workflow! body)})))}}]

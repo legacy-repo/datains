@@ -17,11 +17,11 @@
             :parameters {:query log-spec/log-params-query}
             :responses  {200 {:body {:total    nat-int?
                                      :page     pos-int?
-                                     :per-page pos-int?
+                                     :per_page pos-int?
                                      :data     any?}}}
             :handler    (fn [{{{:keys [page per-page]} :query} :parameters}]
                             (log/debug "page: " page, "per-page: " per-page)
-                            (ok (db-handler/search-logs {} page per-page)))}
+                            (ok (db-handler/search-logs {:query-map {}} page per-page)))}
 
      :post {:summary    "Create a log."
             :parameters {:body log-spec/log-body}

@@ -10,7 +10,7 @@
     :swagger/default     1
     :reason              "The page parameter can't be none."}))
 
-(s/def ::per-page
+(s/def ::per_page
   (st/spec
    {:spec                nat-int?
     :type                :long
@@ -35,7 +35,7 @@
     :swagger/default     ""
     :reason              "Not a valid description."}))
 
-(s/def ::project-id
+(s/def ::project_id
   (st/spec
    {:spec                #(some? (re-matches #"[a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8}" %))
     :type                :string
@@ -43,7 +43,7 @@
     :swagger/default     "40644dec-1abd-489f-a7a8-1011a86f40b0"
     :reason              "Not valid a project-id."}))
 
-(s/def ::report-type
+(s/def ::report_type
   (st/spec
    {:spec                #(#{"multiqc"} %)
     :type                :string
@@ -66,18 +66,18 @@
 (def report-params-query
   "A spec for the query parameters."
   (s/keys :req-un []
-          :opt-un [::page ::per-page ::project-id ::report-type ::status]))
+          :opt-un [::page ::per_page ::project_id ::report_type ::status]))
 
 (def report-body
-  {:report-name   string?
-   :project-id    ::project-id
+  {:report_name   string?
+   :project_id    ::project_id
    :script        string?
    :description   ::description
-   :started-time  nat-int?
-   :finished-time nat-int?
-   :checked-time  nat-int?
-   :archived-time nat-int?
-   :report-path   string?
-   :report-type   ::report-type
+   :started_time  nat-int?
+   :finished_time nat-int?
+   :checked_time  nat-int?
+   :archived_time nat-int?
+   :report_path   string?
+   :report_type   ::report_type
    :status        ::status
    :log           string?})

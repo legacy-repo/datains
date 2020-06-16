@@ -11,15 +11,17 @@
             [datains.adapters.cromwell.core :as cromwell]
             [datains.db.core :refer [*db*] :as db]
             [clojure.java.jdbc :as jdbc]
-            [datains.adapters.dingtalk :as dingtalk]))
+            [datains.adapters.dingtalk :as dingtalk]
+            [honeysql.core :as sql]
+            [datains.util :as util]))
 
 ;;; ------------------------------------------------- Sync Jobs ---------------------------------------------------
 (def incomplete-jobs-condition (sql/format {:where [:and
-                                                    [:in :status ["Submitted" "Aborting" "On Hold" "Running"]]
-                                                    [:<> :workflow-id nil]]}))
+                                                    [:in :datains-workflow.status ["Submitted" "Aborting" "On Hold" "Running"]]
+                                                    [:<> :datains-workflow.workflow-id nil]]}))
 
 (defn- count-incomplete-jobs []
-  (db/get-workflow-count {:where-clause incomplete-jobs-condition}))
+  (:count (db/get-workflow-count {:where-clause incomplete-jobs-condition})))
 
 (defn- get-incomplete-jobs [page per-page]
   (:data (db-handler/search-workflows-with-projects
@@ -31,23 +33,32 @@
     (quot total per-page)
     (+ (quot total per-page) 1)))
 
+(defn- format-record [record]
+  (-> (assoc record 
+             :started_time (util/time->int (:started_time record))
+             :finished_time (util/time->int (:finished_time record)))
+      (dissoc :submitted_time)))
+
 (defn- sync-jobs! []
   (let [per-page 10]  ; Get ten jobs each time
+    (log/debug "Pages: " (+ (total-page (count-incomplete-jobs) per-page) 1))
     (for [which-page (range 1 (+ (total-page (count-incomplete-jobs) per-page) 1))]
       (let [jobs     (get-incomplete-jobs which-page per-page)]
+        (log/debug "Jobs: " jobs)
         (jdbc/with-db-transaction [t-conn *db*]
           (doseq [job jobs]
-            (let [workflow-id (:workflow-id job)
+            (let [workflow-id (:workflow_id job)
                   metadata    (cromwell/workflow-metadata workflow-id)]
-              (db/update-workflow! t-conn {:updates metadata
+              (log/debug "Sync Job: " workflow-id " " metadata)
+              (db/update-workflow! t-conn {:updates (format-record metadata)
                                            :id      (:id job)}))))))))
 
 ;;; ------------------------------------------------------ Task ------------------------------------------------------
 ;; triggers the syncing of all jobs which are scheduled to run in the current minutes
 (jobs/defjob SyncJobs [_]
   (try
-    (sync-jobs!)
     (log/info "Sync jobs' metadata from cromwell instance...")
+    (sync-jobs!)
     (catch Throwable e
       (log/error e "SyncJobs task failed"))))
 

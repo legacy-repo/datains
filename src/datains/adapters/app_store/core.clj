@@ -171,7 +171,7 @@
      :icon        (:avatar_url resp)
      :cover       (get-cover-or-default resp)
      :description (:description resp)
-     :repo-url    (:clone_url resp)
+     :repo_url    (:clone_url resp)
      :author      (:username (:owner resp))
      :rate        (:stars_count resp)
      :valid       (app-is-valid? full_name nil)}))  ; Don't need to check whether the specified version is valid when we fetch all apps

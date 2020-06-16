@@ -10,7 +10,7 @@
     :swagger/default     1
     :reason              "The page parameter can't be none."}))
 
-(s/def ::per-page
+(s/def ::per_page
   (st/spec
    {:spec                nat-int?
     :type                :long
@@ -35,7 +35,7 @@
     :swagger/default "This is a log."
     :reason          "Not a valid content."}))
 
-(s/def ::created-time
+(s/def ::created_time
   (st/spec
    {:spec                nat-int?
     :type                :integer
@@ -43,14 +43,14 @@
     :swagger/default     0
     :reason              "Not a valid created-time."}))
 
-(s/def ::entity-type
+(s/def ::entity_type
   (st/spec
    {:spec            #(#{"Workflow"} %)
     :description     "For filtering log records."
     :swagger/default "Link"
     :reason          "Not valid entity-type, only support Workflow."}))
 
-(s/def ::entity-id
+(s/def ::entity_id
   (st/spec
    {:spec            #(re-find #"^[a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8}$" %)
     :type            :string
@@ -58,7 +58,7 @@
     :swagger/default "40644dec-1abd-489f-a7a8-1011a86f40b0"
     :reason          "Not valid a entity-id."}))
 
-(s/def ::log-type
+(s/def ::log_type
   (st/spec
    {:spec                #(#{"Link" "Content"} %)
     :description         "Specify the type of the content field."
@@ -68,8 +68,8 @@
 (def log-params-query
   "A spec for the query parameters."
   (s/keys :req-un []
-          :opt-un [::page ::per-page ::log-type ::entity-type ::entity-id]))
+          :opt-un [::page ::per_page ::log_type ::entity_type ::entity_id]))
 
 (def log-body
-  (s/keys  :req-un [::title ::content ::log-type ::entity-id ::entity-type]
-           :opt-un [::created-time]))
+  (s/keys  :req-un [::title ::content ::log_type ::entity_id ::entity_type]
+           :opt-un [::created_time]))

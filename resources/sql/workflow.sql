@@ -16,22 +16,22 @@
     | key                | required  | description |
     | -------------------|-----------|-------------|
     | :id                | true/uniq | UUID string
-    | :project-id        | true      | The project id, required, uuid
-    | :workflow-id       | false     | The workflow id from cromwell instance.
-    | :sample-id         | true      | A unique index in the specified project.
-    | :submitted-time    | true      | Bigint
-    | :started-time      | true      | Bigint
-    | :finished-time     | false     | Bigint
-    | :job-params        | true      | JSON string, the parameters be used to render inputs file.
+    | :project_id        | true      | The project id, required, uuid
+    | :workflow_id       | false     | The workflow id from cromwell instance.
+    | :sample_id         | true      | A unique index in the specified project.
+    | :submitted_time    | true      | Bigint
+    | :started_time      | true      | Bigint
+    | :finished_time     | false     | Bigint
+    | :job_params        | true      | JSON string, the parameters be used to render inputs file.
     | :labels            | true      | JSON string, the labels be used to label workflow. default: { sample-id: "", project-name: ""}
     | :status            | true      | Submitted, Running, Failed, Aborting, Aborted, Succeeded, On Hold
   Description:
     Create a new workflow record and then return the number of affected rows.
   Examples: 
-    Clojure: (create-workflow! {:id "id" :project-name "project-name" :sample-id "" :job-params "" :labels "" :status "status"})
+    Clojure: (create-workflow! {:id "id" :project_id "project-id" :sample_id "" :job_params "" :labels "" :status "status"})
 */
 INSERT INTO datains_workflow (id, project_id, workflow_id, sample_id, submitted_time, started_time, finished_time, job_params, labels, status, percentage)
-VALUES (:id, :project-id, :workflow-id, :sample-id, :submitted-time, :started-time, :finished-time, :job-params, :labels, :status, :percentage)
+VALUES (:id, :project_id, :workflow_id, :sample_id, :submitted_time, :started_time, :finished_time, :job_params, :labels, :status, :percentage)
 RETURNING id
 
 
@@ -40,11 +40,11 @@ RETURNING id
 -- :result :affected
 /* :doc
   Args:
-    {:updates {:status "status" :finished-time ""} :id "3"}
+    {:updates {:status "status" :finished_time ""} :id "3"}
   Description: 
     Update an existing workflow record.
   Examples:
-    Clojure: (update-workflow! {:updates {:finished-time "finished-time" :status "status"} :id "3"})
+    Clojure: (update-workflow! {:updates {:finished_time "finished-time" :status "status"} :id "3"})
     HugSQL: UPDATE datains_workflow SET finished_time = :v:query-map.finished-time,status = :v:query-map.status WHERE id = :id
     SQL: UPDATE datains_workflow SET finished_time = "finished_time", status = "status" WHERE id = "3"
   TODO:
@@ -234,15 +234,21 @@ TRUNCATE datains_workflow;
 /* :require [datains.db.sql-helper :as sql-helper] */
 SELECT  datains_workflow.id,
         datains_workflow.project_id,
+        datains_workflow.workflow_id,
         datains_workflow.sample_id,
+        datains_workflow.submitted_time,
+        datains_workflow.started_time,
+        datains_workflow.finished_time,
         datains_workflow.job_params,
         datains_workflow.labels,
         datains_workflow.status,
+        datains_workflow.percentage,
 				datains_project.app_id,
 				datains_project.app_name,
 				datains_project.author,
 				datains_project.group_name,
-				datains_project.project_name
+				datains_project.project_name,
+        datains_project.description
 FROM datains_workflow
 INNER JOIN datains_project ON datains_workflow.project_id = datains_project.id
 /*~

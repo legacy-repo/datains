@@ -1,13 +1,15 @@
 (ns datains.db.core
   (:require
-    [cheshire.core :refer [generate-string parse-string]]
-    [clojure.java.jdbc :as jdbc]
-    [clojure.tools.logging :as log]
-    [conman.core :as conman]
-    [java-time :as jt]
-    [java-time.pre-java8]
-    [datains.config :refer [env]]
-    [mount.core :refer [defstate]])
+   [cheshire.core :refer [generate-string parse-string]]
+   [clojure.java.jdbc :as jdbc]
+   [clojure.tools.logging :as log]
+   [conman.core :as conman]
+   [java-time :as jt]
+   [java-time.pre-java8]
+   [datains.config :refer [env]]
+  ;;  [camel-snake-kebab.extras :refer [transform-keys]]
+  ;;  [camel-snake-kebab.core :refer [->kebab-case-keyword ->snake_case]]
+   [mount.core :refer [defstate]])
   (:import org.postgresql.util.PGobject
            java.sql.Array
            clojure.lang.IPersistentMap
@@ -24,18 +26,17 @@
              *db*))
   :stop (conman/disconnect! *db*))
 
-(conman/bind-connection *db* 
+(conman/bind-connection *db*
                         "sql/choppy_app.sql"
-                        "sql/tag.sql" 
+                        "sql/tag.sql"
                         "sql/report.sql"
-                        "sql/workflow.sql" 
+                        "sql/workflow.sql"
                         "sql/project.sql"
                         "sql/notification.sql"
                         "sql/log.sql")
 
-
 (extend-protocol jdbc/IResultSetReadColumn
-    java.sql.Timestamp
+  java.sql.Timestamp
   (result-set-read-column [v _2 _3]
     (.toLocalDateTime v))
   java.sql.Date
@@ -72,7 +73,7 @@
         (.setObject stmt idx (to-pg-json v))))))
 
 (extend-protocol jdbc/ISQLValue
-    java.util.Date
+  java.util.Date
   (sql-value [v]
     (java.sql.Timestamp. (.getTime v)))
   java.time.LocalTime
@@ -92,3 +93,34 @@
   IPersistentVector
   (sql-value [value] (to-pg-json value)))
 
+;; (defn record-kebab->snake
+;;   [record]
+;;   (->> record
+;;        (transform-keys ->snake_case)))
+
+;; (defn records-kebab->snake
+;;   [records]
+;;   (->> records
+;;        (map #(transform-keys ->snake_case %))))
+
+;; (defn result-one-snake->kebab
+;;   [this result options]
+;;   (->> (hugsql.adapter/result-one this result options)
+;;        (transform-keys ->kebab-case-keyword)))
+
+;; (defn result-many-snake->kebab
+;;   [this result options]
+;;   (->> (hugsql.adapter/result-many this result options)
+;;        (map #(transform-keys ->kebab-case-keyword %))))
+
+;; (defmethod hugsql.core/hugsql-result-fn :1 [sym]
+;;   'datains.db.core/result-one-snake->kebab)
+
+;; (defmethod hugsql.core/hugsql-result-fn :one [sym]
+;;   'datains.db.core/result-one-snake->kebab)
+
+;; (defmethod hugsql.core/hugsql-result-fn :* [sym]
+;;   'datains.db.core/result-many-snake->kebab)
+
+;; (defmethod hugsql.core/hugsql-result-fn :many [sym]
+;;   'datains.db.core/result-many-snake->kebab)

@@ -16,14 +16,14 @@
     | key                | required  | description |
     | -------------------|-----------|-------------|
     | :id                | true/uniq | UUID string
-    | :report-name       | true      | The report name, required, [a-zA-Z0-9]+
-    | :project-id        | false     | The id  of the related project
+    | :report_name       | true      | The report name, required, [a-zA-Z0-9]+
+    | :project_id        | false     | The id  of the related project
     | :script            | false     | Auto generated script for making a report
     | :description       | false     | A description of the report
-    | :started-time      | true      | Bigint
-    | :finished-time     | false     | Bigint
-    | :checked-time      | false     | Bigint
-    | :archived-time     | false     | Bigint
+    | :started_time      | true      | Bigint
+    | :finished_time     | false     | Bigint
+    | :checked_time      | false     | Bigint
+    | :archived_time     | false     | Bigint
     | :report_path       | false     | A relative path of a report based on the report directory
     | :report_type       | true      | multiqc
     | :status            | true      | Started, Finished, Checked, Archived
@@ -33,7 +33,7 @@
     Clojure: (create-report! {})
 */
 INSERT INTO datains_report (id, report_name, project_id, script, started_time, finished_time, checked_time, archived_time, report_path, log, status)
-VALUES (:id, :report-name, :project-id, :script, :started-time, :finished-time, :checked-time, :archived-time, :report-path, :log, :status)
+VALUES (:id, :report_name, :project_id, :script, :started_time, :finished_time, :checked_time, :archived_time, :report_path, :log, :status)
 RETURNING id
 
 
@@ -42,11 +42,11 @@ RETURNING id
 -- :result :affected
 /* :doc
   Args:
-    {:updates {:status "status" :finished-time ""} :id "3"}
+    {:updates {:status "status" :finished_time ""} :id "3"}
   Description: 
     Update an existing report record.
   Examples:
-    Clojure: (update-report! {:updates {:finished-time "finished-time" :status "status"} :id "3"})
+    Clojure: (update-report! {:updates {:finished_time "finished-time" :status "status"} :id "3"})
     HugSQL: UPDATE datains_report SET finished_time = :v:query-map.finished-time,status = :v:query-map.status WHERE id = :id
     SQL: UPDATE datains_report SET finished_time = "finished_time", status = "status" WHERE id = "3"
   TODO:

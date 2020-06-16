@@ -10,7 +10,7 @@
     :swagger/default     1
     :reason              "The page parameter can't be none."}))
 
-(s/def ::per-page
+(s/def ::per_page
   (st/spec
    {:spec                nat-int?
     :type                :long
@@ -27,7 +27,7 @@
     :reason              "Not valid a uuid."}))
 
 ;; -------------------------------- Project Spec --------------------------------
-(s/def ::project-name
+(s/def ::project_name
   (st/spec
    {:spec                #(re-find #"^[a-zA-Z_][a-zA-Z0-9_]{4,63}$" %)  ; 不超过 64 个字符
     :type                :string
@@ -67,7 +67,7 @@
     :swagger/default 0
     :reason          "The percentage parameter can't be negative integer."}))
 
-(s/def ::app-id
+(s/def ::app_id
   (st/spec
    {:spec                #(re-find #"^[a-z0-9]{32}$" %)  ; md5sum Regex
     :type                :string    
@@ -75,7 +75,7 @@
     :swagger/default     "ec5b89dc49c433a9521a13928c032129"
     :reason              "Not valid app-id"}))
 
-(s/def ::app-name
+(s/def ::app_name
   (st/spec
    {:spec                #(re-find #"^[a-zA-Z_][a-zA-Z0-9/_-]{4,255}$" %)
     :type                :string
@@ -83,7 +83,7 @@
     :swagger/default     "huangyechao/annovar"
     :reason              "Not a valid app-name, regex: '^[a-zA-Z_][a-zA-Z0-9/_]{4,255}$'."}))
 
-(s/def ::group-name
+(s/def ::group_name
   (st/spec
    {:spec                #(re-find #"^[a-z0-9A-Z _-]{5,32}$" %)
     :type                :string
@@ -91,7 +91,7 @@
     :swagger/default     "Choppy Team"
     :reason              "Not a valid group-name, regex: '^[a-z0-9A-Z _-]{5,32}$'."}))
 
-(s/def ::started-time
+(s/def ::started_time
   (st/spec
    {:spec                nat-int?
     :type                :integer
@@ -99,7 +99,7 @@
     :swagger/default     0
     :reason              "Not a valid started-time."}))
 
-(s/def ::finished-time
+(s/def ::finished_time
   (st/spec
    {:spec                nat-int?
     :type                :integer
@@ -122,12 +122,12 @@
 (def project-params-query
   "A spec for the query parameters."
   (s/keys :req-un []
-          :opt-un [::page ::per-page ::author ::status ::app-id ::project-name]))
+          :opt-un [::page ::per_page ::author ::status ::app_id ::project_name]))
 
 (def project-body
-  (s/keys :req-un [::project-name ::app-id ::app-name ::author ::samples]
-          :opt-un [::description ::group-name ::started-time ::finished-time ::status]))
+  (s/keys :req-un [::project_name ::app_id ::app_name ::author ::samples]
+          :opt-un [::description ::group_name ::started_time ::finished_time ::status]))
 
 (def project-put-body
   (s/keys :req-un []
-          :opt-un [::finished-time ::status ::percentage]))
+          :opt-un [::finished_time ::status ::percentage]))

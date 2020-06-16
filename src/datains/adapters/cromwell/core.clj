@@ -328,7 +328,7 @@
   [id]
   (let [metadata (all-metadata id)]
     {:status         (:status metadata)
-     :started-time   (:start metadata)
-     :finished-time  (:end metadata)
-     :submitted-time (:submission metadata)
+     :started_time   (:start metadata)
+     :finished_time  (:end metadata)
+     :submitted_time (:submission metadata)
      :percentage     (* 100 (/ (count-finished-task metadata) (* 1.0 (count-task metadata))))}))

@@ -16,23 +16,23 @@
     | key                | required  | description |
     | -------------------|-----------|-------------|
     | :id                | true/uniq | UUID string
-    | :project-name      | true      | The project name, required, [a-zA-Z0-9]+
+    | :project_name      | true      | The project name, required, [a-zA-Z0-9]+
     | :description       | false     | A description of the project
-    | :app-id            | true      | Id of the related app
-    | :app-name          | true      | Name of the related app
+    | :app_id            | true      | Id of the related app
+    | :app_name          | true      | Name of the related app
     | :author            | true      | The author of creating project
-    | :group-name        | false     | The team name
-    | :started-time      | true      | Bigint
-    | :finished-time     | false     | Bigint
+    | :group_name        | false     | The team name
+    | :started_time      | true      | Bigint
+    | :finished_time     | false     | Bigint
     | :samples           | true      | JSON string
     | :status            | true      | Submitted, Running, Failed, Aborting, Aborted, Succeeded, On Hold
   Description:
     Create a new project record and then return the number of affected rows.
   Examples: 
-    Clojure: (create-project! {:id "id" :project-name "project-name" :description "description" :app-id "app-id" :app-name "app-name" :author "author" :group-name "group" :started-time "started-time" :status "status"})
+    Clojure: (create-project! {:id "id" :project_name "project-name" :description "description" :app_id "app-id" :app_name "app-name" :author "author" :group_name "group" :started_time "started-time" :status "status"})
 */
 INSERT INTO datains_project (id, project_name, description, app_id, app_name, author, group_name, started_time, finished_time, samples, status, percentage)
-VALUES (:id, :project-name, :description, :app-id, :app-name, :author, :group-name, :started-time, :finished-time, :samples, :status, :percentage)
+VALUES (:id, :project_name, :description, :app_id, :app_name, :author, :group_name, :started_time, :finished_time, :samples, :status, :percentage)
 RETURNING id
 
 
@@ -41,11 +41,11 @@ RETURNING id
 -- :result :affected
 /* :doc
   Args:
-    {:updates {:status "status" :finished-time ""} :id "3"}
+    {:updates {:status "status" :finished_time ""} :id "3"}
   Description: 
     Update an existing project record.
   Examples:
-    Clojure: (update-project! {:updates {:finished-time "finished-time" :status "status"} :id "3"})
+    Clojure: (update-project! {:updates {:finished_time "finished-time" :status "status"} :id "3"})
     HugSQL: UPDATE datains_project SET finished_time = :v:query-map.finished-time,status = :v:query-map.status WHERE id = :id
     SQL: UPDATE datains_project SET finished_time = "finished_time", status = "status" WHERE id = "3"
   TODO:

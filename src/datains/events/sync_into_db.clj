@@ -19,7 +19,7 @@
 (defn- sync-into-report-table!
   "Create a report record or update it."
   [record]
-  (when-let [{project-id :project-id
+  (when-let [{project-id :project_id
               record-id  :id} record]
     (if project-id
       (db-handler/update-report! record-id record)

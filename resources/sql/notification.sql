@@ -24,13 +24,13 @@
   Description:
     Create a new notification record and then return the number of affected rows.
   Examples: 
-    Clojure: (create-notification! {:title "title" :notification "app-store" :created-time "" :status "Unread"})
+    Clojure: (create-notification! {:title "title" :notification "app-store" :created_time "" :status "Unread"})
   Conditions:
     1. `ON CONFLICT` expression is only support by PostgreSQL
     2. `title` must have an unique or exclusion constrait
 */
 INSERT INTO datains_notification (title, description, notification_type, created_time, status)
-VALUES (:title, :description, :notification-type, :created-time, :status)
+VALUES (:title, :description, :notification_type, :created_time, :status)
 RETURNING id
 
 
@@ -101,11 +101,11 @@ ORDER BY id
 -- :result :affected
 /* :doc
   Args:
-    {:updates {:status "status" :notification-type ""} :id "3"}
+    {:updates {:status "status" :notification_type ""} :id "3"}
   Description: 
     Update an existing notification record.
   Examples:
-    Clojure: (update-notification! {:updates {:notification-type "notification-type" :status "status"} :id "3"})
+    Clojure: (update-notification! {:updates {:notification_type "notification-type" :status "status"} :id "3"})
     HugSQL: UPDATE datains_notification SET notification-type = :v:query-map.notification-type,status = :v:query-map.status WHERE id = :id
     SQL: UPDATE datains_notification SET notification-type = "notification-type", status = "status" WHERE id = "3"
   TODO:

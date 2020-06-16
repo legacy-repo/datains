@@ -1,6 +1,5 @@
 (ns datains.db.handler
   (:require
-   [datains.db.core :as db]
    [clojure.java.jdbc :as jdbc]
    [datains.db.core :refer [*db*] :as db]
    [clojure.tools.logging :as log]
@@ -27,15 +26,16 @@
   ([func-map] (search-entities func-map nil 1 10))
   ([func-map page] (search-entities func-map nil page 10))
   ([func-map page per-page] (search-entities func-map nil page per-page))
-  ([func-map query-map page per-page]
+  ([func-map where-map page per-page]
    (let [page     (if (nil? page) 1 page)
          per-page (if (nil? per-page) 10 per-page)
-         params   {:limit     per-page
-                   :offset    (page->offset page per-page)
-                   :query-map (filter-query-map query-map)}
+         params   {:limit  per-page
+                   :offset (page->offset page per-page)}
+         params   (merge params (-> where-map
+                                    (assoc :query-map (filter-query-map (:query-map where-map)))))
          metadata {:total    (:count ((:count-func func-map) params))
                    :page     page
-                   :per-page per-page}]
+                   :per_page per-page}]
      (log/info "Query db by: " params)
      (merge metadata {:data ((:query-func func-map) params)}))))
 
@@ -49,7 +49,7 @@
 
 (defn- update-entity!
   [func id record]
-  (if-let [record (filter-query-map record)]
+  (if record
     (func {:updates record
            :id      id})))
 
@@ -121,14 +121,14 @@
 
 (defn gen-workflow-record [project-id workflow]
   {:id             (util/uuid)
-   :project-id     project-id
-   :sample-id      (:sample_id workflow)
-   :submitted-time (util/time->int (util/now))
-   :started-time   0
-   :finished-time  nil
-   :workflow-id    nil
+   :project_id     project-id
+   :sample_id      (:sample_id workflow)
+   :submitted_time (util/time->int (util/now))
+   :started_time   0
+   :finished_time  nil
+   :workflow_id    nil
    :percentage     0
-   :job-params     workflow
+   :job_params     workflow
    :labels         {:project_id project-id}
    :status         "Submitted"})
 

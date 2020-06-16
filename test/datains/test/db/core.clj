@@ -29,7 +29,7 @@
              :cover       "Smith"
              :title       "exceRptSmallRNA"
              :description "exceRptSmallRNA"
-             :repo-url    "http://choppy.3steps.cn/chenziyin/exceRptSmallRNA"
+             :repo_url    "http://choppy.3steps.cn/chenziyin/exceRptSmallRNA"
              :author      "chenziyin"
              :rate        "5"
              :valid       true})))
@@ -107,14 +107,14 @@
                 :cover       "Smith"
                 :title       "exceRptSmallRNA"
                 :description "exceRptSmallRNA"
-                :repo-url    "http://choppy.3steps.cn/chenziyin/exceRptSmallRNA"
+                :repo_url    "http://choppy.3steps.cn/chenziyin/exceRptSmallRNA"
                 :author      "chenziyin"
                 :rate        "5"
                 :valid       true})
               (db/create-tag! t-conn {:title "test"})
-              (db/connect-entity-tag! t-conn {:tag-title   "test"
-                                              :entity-id   "1"
-                                              :entity-type "choppy-app"})
+              (db/connect-entity-tag! t-conn {:tag_title   "test"
+                                              :entity_id   "1"
+                                              :entity_type "choppy-app"})
               (db/search-apps-with-tags t-conn {:query-map {:id "1"}
                                                 :limit     1
                                                 :offset    0})))))))

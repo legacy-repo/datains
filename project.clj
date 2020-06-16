@@ -70,6 +70,7 @@
                                org.clojure/clojure]]
                  [selmer "1.12.17" :exclusions [org.clojure/clojure]]
                  [honeysql "1.0.444"]
+                 [camel-snake-kebab "0.4.1"]
                  [clj-jgit "1.0.0-beta3"]
                  [ring-cors "0.1.13"]
                  [ring/ring-headers "0.3.0"]

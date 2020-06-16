@@ -17,13 +17,13 @@
             :parameters {:query workflow-spec/workflow-params-query}
             :responses  {200 {:body {:total    nat-int?
                                      :page     pos-int?
-                                     :per-page pos-int?
+                                     :per_page pos-int?
                                      :data     any?}}}
             :handler    (fn [{{{:keys [page per-page project-id status]} :query} :parameters}]
                           (let [query-map {:project_id project-id
                                            :status     status}]
                             (log/debug "page: " page, "per-page: " per-page, "query-map: " query-map)
-                            (ok (db-handler/search-workflows query-map
+                            (ok (db-handler/search-workflows {:query-map query-map}
                                                              page
                                                              per-page))))}
 

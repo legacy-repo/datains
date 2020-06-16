@@ -17,13 +17,13 @@
             :parameters {:query notification-spec/notification-params-query}
             :responses  {200 {:body {:total    nat-int?
                                      :page     pos-int?
-                                     :per-page pos-int?
+                                     :per_page pos-int?
                                      :data     any?}}}
             :handler    (fn [{{{:keys [page per-page status notification-type]} :query} :parameters}]
                           (let [query-map {:status            status
                                            :notification_type notification-type}]
                             (log/debug "page: " page, "per-page: " per-page, "query-map: " query-map)
-                            (ok (db-handler/search-notifications query-map
+                            (ok (db-handler/search-notifications {:query-map query-map}
                                                                  page
                                                                  per-page))))}
 

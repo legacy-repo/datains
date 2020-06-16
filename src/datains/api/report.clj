@@ -17,14 +17,14 @@
             :parameters {:query report-spec/report-params-query}
             :responses  {200 {:body {:total    nat-int?
                                      :page     pos-int?
-                                     :per-page pos-int?
+                                     :per_page pos-int?
                                      :data     any?}}}
             :handler    (fn [{{{:keys [page per-page project-id status report-type]} :query} :parameters}]
                           (let [query-map {:project_id  project-id
                                            :status      status
                                            :report_type report-type}]
                             (log/debug "page: " page, "per-page: " per-page, "query-map: " query-map)
-                            (ok (db-handler/search-reports query-map
+                            (ok (db-handler/search-reports {:query-map query-map}
                                                            page
                                                            per-page))))}
 

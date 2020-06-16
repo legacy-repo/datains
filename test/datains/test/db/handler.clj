@@ -24,13 +24,13 @@
            :cover       "Smith"
            :title       "exceRptSmallRNA"
            :description "exceRptSmallRNA"
-           :repo-url    "http://choppy.3steps.cn/chenziyin/exceRptSmallRNA"
+           :repo_url    "http://choppy.3steps.cn/chenziyin/exceRptSmallRNA"
            :author      "chenziyin"
            :rate        "5"
            :valid       true})))
   (is (= {:total    1
           :page     1
-          :per-page 10
+          :per_page 10
           :data     [{:id          "1"
                       :icon        "Sam"
                       :cover       "Smith"

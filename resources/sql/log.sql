@@ -25,13 +25,13 @@
   Description:
     Create a new log record and then return the number of affected rows.
   Examples: 
-    Clojure: (create-log! {:title "title" :content "app-store" :created-time "" :log-type "Unread"})
+    Clojure: (create-log! {:title "title" :content "app-store" :created_time "" :log_type "Unread"})
   Conditions:
     1. `ON CONFLICT` expression is only support by PostgreSQL
     2. `title` must have an unique or exclusion constrait
 */
 INSERT INTO datains_log (title, content, created_time, entity_type, entity_id, log_type)
-VALUES (:title, :content, :created-time, :entity-type, :entity-id, :log-type)
+VALUES (:title, :content, :created_time, :entity_type, :entity_id, :log_type)
 RETURNING id
 
 
@@ -102,11 +102,11 @@ ORDER BY id
 -- :result :affected
 /* :doc
   Args:
-    {:updates {:log-type ""} :id "3"}
+    {:updates {:log_type ""} :id "3"}
   Description: 
     Update an existing log record.
   Examples:
-    Clojure: (update-log! {:updates {:log-type "log-type"} :id "3"})
+    Clojure: (update-log! {:updates {:log_type "log-type"} :id "3"})
     HugSQL: UPDATE datains_log SET log-type = :v:query-map.log-type WHERE id = :id
     SQL: UPDATE datains_log SET log-type = "log-type" WHERE id = "3"
   TODO:

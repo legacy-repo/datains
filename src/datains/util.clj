@@ -13,8 +13,10 @@
             [clj-time.format :as f]))
 
 (defn- namespace-symbs* []
-  (for [ns-symb (ns-find/find-namespaces (concat (classpath/system-classpath)
-                                                 (classpath/classpath (classloader/the-classloader))))
+  (for [ns-symb (distinct
+                 (ns-find/find-namespaces 
+                  (concat (classpath/system-classpath)
+                          (classpath/classpath (classloader/the-classloader)))))
         :when   (and (.startsWith (name ns-symb) "datains.")
                      (not (.contains (name ns-symb) "test")))]
     ns-symb))

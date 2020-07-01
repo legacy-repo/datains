@@ -16,6 +16,7 @@ ENV LC_CTYPE en_US.UTF-8
 # make:    backend building
 # gettext: translations
 
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
 RUN apk add --update coreutils bash git wget make gettext
 
 # lein:    backend dependencies and building
@@ -51,7 +52,9 @@ ENV LC_CTYPE en_US.UTF-8
 ENV PATH="/app/external:/app/external/.env/bin:${PATH}"
 
 # dependencies
-RUN apk add --update bash ttf-dejavu fontconfig make python3 python3-dev py-pip git
+## zip for zipping dependencies of workflow
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
+RUN apk add --update bash ttf-dejavu fontconfig make python3 python3-dev py-pip git zip
 RUN pip3 install virtualenv
 RUN cd /usr/bin \
     && ln -sf python3 python \

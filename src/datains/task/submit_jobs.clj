@@ -21,14 +21,14 @@
 
 ;;; ------------------------------------------------- Submit Jobs ---------------------------------------------------
 (def submitted-jobs-condition (sql/format {:where [:and
-                                                   [:= :datains-workflow/status "Submitted"]
-                                                   [:is :datains-workflow/workflow-id nil]]}))
+                                                   [:= :datains-workflow.status "Submitted"]
+                                                   [:is :datains-workflow.workflow-id nil]]}))
 
 (defn- count-submitted-jobs []
   (:count (db/get-workflow-count {:where-clause submitted-jobs-condition})))
 
 (defn- get-submitted-jobs [page per-page]
-  (:data (db/search-workflows-with-projects
+  (:data (db-handler/search-workflows-with-projects
           {:where-clause submitted-jobs-condition}
           page per-page)))
 

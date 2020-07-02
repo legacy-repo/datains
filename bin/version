@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-VERSION="v0.1.1"
+SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+VERSION=`cat $SCRIPT_DIR/../resources/version.edn | tr -d '"'`
 
 # dynamically pull more interesting stuff from latest git commit
 HASH=$(git show-ref --head --hash=7 head)            # first 7 letters of hash should be enough; that's what GitHub uses
@@ -8,5 +10,5 @@ BRANCH=$(git rev-parse --abbrev-ref HEAD)
 DATE=$(git log -1 --pretty=%ad --date=short)
 
 
-# Return the version string used to describe this version of Metabase.
-echo "$VERSION $HASH $BRANCH $DATE"
+# Return the version string used to describe this version of Datains.
+echo "$VERSION, $HASH, $BRANCH, $DATE"

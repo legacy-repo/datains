@@ -1,4 +1,4 @@
-(defproject datains "0.1.1"
+(defproject datains "0.1.2"
 
   :description "FIXME: write description"
   :url "http://datains.3steps.cn/"

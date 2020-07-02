@@ -55,8 +55,9 @@ ENV PATH="/app/external:/app/external/.env/bin:${PATH}"
 ## zip for zipping dependencies of workflow
 RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
 RUN apk add --update bash ttf-dejavu fontconfig make python3 python3-dev py-pip git zip
-RUN pip3 install virtualenv
-RUN cd /usr/bin \
+RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple \
+    && pip3 install virtualenv \
+    && cd /usr/bin \
     && ln -sf python3 python \
     && ln -sf pip3 pip
 

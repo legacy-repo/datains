@@ -19,13 +19,13 @@
                                      :page     pos-int?
                                      :per_page pos-int?
                                      :data     any?}}}
-            :handler    (fn [{{{:keys [page per-page status notification-type]} :query} :parameters}]
+            :handler    (fn [{{{:keys [page per_page status notification_type]} :query} :parameters}]
                           (let [query-map {:status            status
-                                           :notification_type notification-type}]
-                            (log/debug "page: " page, "per-page: " per-page, "query-map: " query-map)
+                                           :notification_type notification_type}]
+                            (log/debug "page: " page, "per-page: " per_page, "query-map: " query-map)
                             (ok (db-handler/search-notifications {:query-map query-map}
                                                                  page
-                                                                 per-page))))}
+                                                                 per_page))))}
 
      :post {:summary    "Create a notification."
             :parameters {:body notification-spec/notification-body}

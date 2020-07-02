@@ -19,15 +19,15 @@
                                      :page     pos-int?
                                      :per_page pos-int?
                                      :data     any?}}}
-            :handler    (fn [{{{:keys [page per-page app-id author status project-name]} :query} :parameters}]
-                          (let [query-map {:app_id       app-id
+            :handler    (fn [{{{:keys [page per_page app_id author status project_name]} :query} :parameters}]
+                          (let [query-map {:app_id       app_id
                                            :status       status
                                            :author       author
-                                           :project_name project-name}]
-                            (log/debug "page: " page, "per-page: " per-page, "query-map: " query-map)
+                                           :project_name project_name}]
+                            (log/debug "page: " page, "per-page: " per_page, "query-map: " query-map)
                             (ok (db-handler/search-projects {:query-map query-map}
                                                             page
-                                                            per-page))))}
+                                                            per_page))))}
 
      :post {:summary    "Create an project."
             :parameters {:body project-spec/project-body}

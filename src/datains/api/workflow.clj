@@ -19,13 +19,13 @@
                                      :page     pos-int?
                                      :per_page pos-int?
                                      :data     any?}}}
-            :handler    (fn [{{{:keys [page per-page project-id status]} :query} :parameters}]
-                          (let [query-map {:project_id project-id
+            :handler    (fn [{{{:keys [page per_page project_id status]} :query} :parameters}]
+                          (let [query-map {:project_id project_id
                                            :status     status}]
-                            (log/debug "page: " page, "per-page: " per-page, "query-map: " query-map)
+                            (log/debug "page: " page, "per-page: " per_page, "query-map: " query-map)
                             (ok (db-handler/search-workflows {:query-map query-map}
                                                              page
-                                                             per-page))))}
+                                                             per_page))))}
 
      :post {:summary    "Create an workflow."
             :parameters {:body workflow-spec/workflow-body}

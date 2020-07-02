@@ -19,9 +19,9 @@
                                      :page     pos-int?
                                      :per_page pos-int?
                                      :data     any?}}}
-            :handler    (fn [{{{:keys [page per-page]} :query} :parameters}]
-                            (log/debug "page: " page, "per-page: " per-page)
-                            (ok (db-handler/search-logs {:query-map {}} page per-page)))}
+            :handler    (fn [{{{:keys [page per_page]} :query} :parameters}]
+                            (log/debug "page: " page, "per-page: " per_page)
+                            (ok (db-handler/search-logs {:query-map {}} page per_page)))}
 
      :post {:summary    "Create a log."
             :parameters {:body log-spec/log-body}

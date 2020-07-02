@@ -19,14 +19,14 @@
                                      :page     pos-int?
                                      :per_page pos-int?
                                      :data     any?}}}
-            :handler    (fn [{{{:keys [page per-page project-id status report-type]} :query} :parameters}]
-                          (let [query-map {:project_id  project-id
+            :handler    (fn [{{{:keys [page per_page project_id status report_type]} :query} :parameters}]
+                          (let [query-map {:project_id  project_id
                                            :status      status
-                                           :report_type report-type}]
-                            (log/debug "page: " page, "per-page: " per-page, "query-map: " query-map)
+                                           :report_type report_type}]
+                            (log/debug "page: " page, "per-page: " per_page, "query-map: " query-map)
                             (ok (db-handler/search-reports {:query-map query-map}
                                                            page
-                                                           per-page))))}
+                                                           per_page))))}
 
      :post {:summary    "Create an report."
             :parameters {:body report-spec/report-body}

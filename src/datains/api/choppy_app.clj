@@ -20,14 +20,14 @@
                                      :page     pos-int?
                                      :per_page pos-int?
                                      :data     any?}}}
-            :handler    (fn [{{{:keys [page per-page title valid author]} :query} :parameters}]
+            :handler    (fn [{{{:keys [page per_page title valid author]} :query} :parameters}]
                           (let [query-map {:title  title
                                            :valid  valid
                                            :author author}]
-                            (log/debug "page: " page, "per-page: " per-page, "query-map: " query-map)
+                            (log/debug "page: " page, "per-page: " per_page, "query-map: " query-map)
                             (ok (db-handler/search-apps {:query-map query-map}
                                                         page
-                                                        per-page))))}
+                                                        per_page))))}
 
      :post {:summary    "Create an app."
             :parameters {:body app-spec/app-body}

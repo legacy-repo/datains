@@ -349,12 +349,25 @@
      :submitted_time (:submission metadata)
      :percentage     (* 100 (/ (count-finished-task metadata) (* 1.0 (count-task metadata))))}))
 
+(defn flatten-msg [coll]
+  (when (some? coll)
+    (if (empty? (:causedBy coll))
+      [(:message coll)]
+      (cons (:message coll) (map flatten-msg (:causedBy coll))))))
+
+(defn format-failure-msg [metadata]
+  (apply str (interpose "\n "
+                        (map #(clojure.string/replace % #"\t|\n" " ")
+                             (flatten (flatten-msg (first (:failures metadata))))))))
+
 (defn list-task-logs
   [id]
-  (let [metadata (all-metadata id)
-        calls    (:calls metadata)
-        root     (re-pattern (get-cromwell-workdir))]
-    (apply merge
-           (map (fn [[key value]]
-                  {key {:stdout (str/replace (:stdout (first value)) root "")
-                        :stderr (str/replace (:stderr (first value)) root "")}}) calls))))
+  (let [metadata  (all-metadata id)
+        calls     (:calls metadata)
+        root      (re-pattern (get-cromwell-workdir))
+        task-logs (apply merge
+                         (map (fn [[key value]]
+                                {key {:stdout (str/replace (:stdout (first value)) root "")
+                                      :stderr (str/replace (:stderr (first value)) root "")}}) calls))]
+    (assoc task-logs :system {:stdout nil
+                              :stderr (format-failure-msg metadata)})))

@@ -41,7 +41,7 @@
 
 (defn- search-entity
   [func-map id]
-  (let [data   (:data (search-entities func-map {:id id} 1 10))
+  (let [data   (:data (search-entities func-map {:query-map {:id id}} 1 10))
         record (first data)]
     (if record
       record

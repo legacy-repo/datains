@@ -6,6 +6,7 @@
    [clojure.tools.logging :as log]
    [datains.api.response :as response]
    [datains.events :as events]
+   [datains.adapters.cromwell.core :as cromwell]
    [datains.util :as util]))
 
 (def workflow
@@ -59,4 +60,13 @@
               :responses  {204 nil}
               :handler    (fn [{{{:keys [id]} :path} :parameters}]
                             (db-handler/delete-workflow! id)
-                            (no-content))}}]])
+                            (no-content))}}]
+
+   ["/workflows/:id/logs"
+    {:get {:summary    "Get all logs by workflow id."
+           :parameters {:path workflow-spec/workflow-id}
+           :responses  {200 {:body map?}}
+           :handler    (fn [{{{:keys [id]} :path} :parameters}]
+                         (log/debug "Get workflow logs: " id)
+                         (let [logs (cromwell/list-task-logs id)]
+                           (ok (if (nil? logs) {:message "Not Found"} logs))))}}]])

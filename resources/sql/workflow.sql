@@ -256,5 +256,5 @@ INNER JOIN datains_project ON datains_workflow.project_id = datains_project.id
   (:query-map params) (sql-helper/where-clause (:query-map params) options "datains_workflow")
   (:where-clause params) ":snip:where-clause")
 ~*/
-ORDER BY datains_workflow.submitted_time
+ORDER BY datains_workflow.submitted_time DESC
 --~ (when (and (:limit params) (:offset params)) "LIMIT :limit OFFSET :offset")

@@ -38,11 +38,15 @@
     (+ (quot total per-page) 1)))
 
 (defn- submit-jobs! []
-  (let [per-page  10]
-    (for [which-page (range 1 (+ (total-page (count-submitted-jobs) per-page) 1))]
+  (let [per-page   10
+        total-page (+ (total-page (count-submitted-jobs) per-page) 1)]
+    (log/debug "Num of Jobs: " per-page " and " total-page)
+    (doseq [which-page (range 1 total-page)]
       (let [jobs (get-submitted-jobs which-page per-page)]  ; Get five jobs each time
+        (log/debug "Jobs: " jobs)
         (jdbc/with-db-transaction [t-conn *db*]
           (doseq [job jobs]
+            (log/debug "Sumitting Job: " job)
             (let [sample-file (app-store/make-sample-file! (:project_name job) (:sample_id job) (:job_params job))
                   results     (app-store/render-app! (:project_name job) (:app_name job) sample-file)
                   root-dir    (fs/parent sample-file)
@@ -61,14 +65,15 @@
                                                           options
                                                           labels)
                                 (log/error results))]
-              (log/debug (merge job {:sample-file sample-file
-                                     :root-dir    root-dir
-                                     :wdl-file    wdl-file
-                                     :inputs      inputs
-                                     :imports-zip imports-zip
-                                     :options     options
-                                     :labels      labels
-                                     :workflow_id workflow-id}))
+              (log/info "Render App: " results)
+              (log/info "Submit Job:" (merge job {:sample-file sample-file
+                                                  :root-dir    root-dir
+                                                  :wdl-file    wdl-file
+                                                  :inputs      inputs
+                                                  :imports-zip imports-zip
+                                                  :options     options
+                                                  :labels      labels
+                                                  :workflow_id workflow-id}))
               (if workflow-id
                 (db/update-workflow! t-conn {:updates {:workflow_id workflow-id}
                                              :id      (:id job)})

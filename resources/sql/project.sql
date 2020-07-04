@@ -120,7 +120,7 @@ FROM datains_project
   (:query-map params) (sql-helper/where-clause (:query-map params) options)
   (:where-clause params) ":snip:where-clause")
 ~*/
-ORDER BY started_time
+ORDER BY started_time DESC
 --~ (when (and (:limit params) (:offset params)) "LIMIT :limit OFFSET :offset")
 
 
@@ -188,7 +188,7 @@ JOIN datains_tag ON datains_entity_tag.tag_id = datains_tag.id
           " = :v:query-map." (name field))))))
 ~*/
 GROUP BY datains_project.id
-ORDER BY datains_project.id
+ORDER BY datains_project.id DESC
 --~ (when (and (:limit params) (:offset params)) "LIMIT :limit OFFSET :offset")
 
 

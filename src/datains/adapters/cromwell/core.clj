@@ -3,11 +3,23 @@
   (:require [clojure.data.json :as json]
             [clojure.string :as str]
             [clojure.walk :as walk]
+            [me.raynes.fs :as fs]
             [clj-http.client :as http]
+            [clojure.tools.logging :as log]
             [datains.adapters.cromwell.debug :as debug]
             [datains.adapters.cromwell.util :as util]
             ; Need to import env environment
             [datains.config :refer [env]]))
+
+(defn get-workdir
+  "Fix bugs: env is null when mount is not evaluated, so need to use function instead of variable."
+  []
+  (let [work-dir (fs/expand-home (get-in env [:datains-workdir]))]
+    (str/replace work-dir #"/$" "")))
+
+(defn get-cromwell-workdir
+  []
+  (str (get-workdir) "/cromwell"))
 
 (def statuses
   "The statuses a Cromwell workflow can have."
@@ -68,10 +80,10 @@
 (defn ok?
   "Check whether the cromwell service is okay."
   []
-  (-> {:method :get
+  (-> {:method       :get
        :content-type :application/json
-       :headers (get-local-auth-header)
-       :url (str (engine) "/version")}
+       :headers      (get-local-auth-header)
+       :url          (str (engine) "/version")}
       (request-json)
       :body))
 
@@ -97,7 +109,11 @@
 (defn get-thing
   "GET the ENVIRONMENT Cromwell THING for the workflow with ID."
   ([thing id query-params]
-   (some-thing :get thing id query-params))
+   (try
+     (some-thing :get thing id query-params)
+     (catch Exception e
+       (log/warn "<" (.getMessage e) ">" "Query Cromwell Instance: " thing id query-params)
+       {})))
   ([thing id]
    (get-thing thing id {})))
 
@@ -332,3 +348,13 @@
      :finished_time  (:end metadata)
      :submitted_time (:submission metadata)
      :percentage     (* 100 (/ (count-finished-task metadata) (* 1.0 (count-task metadata))))}))
+
+(defn list-task-logs
+  [id]
+  (let [metadata (all-metadata id)
+        calls    (:calls metadata)
+        root     (re-pattern (get-cromwell-workdir))]
+    (apply merge
+           (map (fn [[key value]]
+                  {key {:stdout (str/replace (:stdout (first value)) root "")
+                        :stderr (str/replace (:stderr (first value)) root "")}}) calls))))

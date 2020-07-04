@@ -251,7 +251,7 @@
                                                 (get-project-workdir)))
   ([project-name app-name samples base-dir work-dir]
    (if (re-find #"^[a-zA-Z_][a-zA-Z0-9_]+$" project-name)
-     (shell/with-sh-env {:PATH   (app-utility-bin)
+     (shell/with-sh-env {:PATH   (str (app-utility-bin) ":" (System/getenv "PATH"))
                          :LC_ALL "en_US.utf-8"
                          :LANG   "en_US.utf-8"}
        (if (exist-bin? "app-utility")

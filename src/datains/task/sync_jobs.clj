@@ -42,7 +42,7 @@
 (defn- sync-jobs! []
   (let [per-page 10]  ; Get ten jobs each time
     (log/debug "Pages: " (+ (total-page (count-incomplete-jobs) per-page) 1))
-    (for [which-page (range 1 (+ (total-page (count-incomplete-jobs) per-page) 1))]
+    (doseq [which-page (range 1 (+ (total-page (count-incomplete-jobs) per-page) 1))]
       (let [jobs     (get-incomplete-jobs which-page per-page)]
         (log/debug "Jobs: " jobs)
         (jdbc/with-db-transaction [t-conn *db*]

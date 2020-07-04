@@ -66,6 +66,8 @@ RUN mkdir -p bin target/uberjar
 COPY --from=builder /app/source/target/uberjar/datains.jar /app/target/uberjar/
 COPY --from=builder /app/source/external /app/external
 COPY --from=builder /app/source/bin/start /app/bin/
+COPY --from=builder /app/source/bin/lein /app/bin/
+COPY --from=builder /root/.lein/self-installs/leiningen-2.9.3-standalone.jar /root/.lein/self-installs/leiningen-2.9.3-standalone.jar
 
 # build app-utility
 RUN make -f /app/external/Makefile

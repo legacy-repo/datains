@@ -67,4 +67,14 @@
               :responses  {204 nil}
               :handler    (fn [{{{:keys [uuid]} :path} :parameters}]
                             (db-handler/delete-project! uuid)
-                            (no-content))}}]])
+                            (no-content))}}]
+   ["/projects/:uuid/stats"
+    {:get {:summary    "Get a project's stats by id."
+           :parameters {:path project-spec/uuid-spec}
+           :responses  {200 {:body map?}}
+           :handler    (fn [{{{:keys [uuid]} :path} :parameters}]
+                         (log/debug "Get project stats: " uuid)
+                         (ok (let [resp (db-handler/count-workflow-with-status uuid)]
+                               (if (nil? resp)
+                                 {}
+                                 resp))))}}]])

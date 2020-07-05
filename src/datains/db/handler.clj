@@ -5,6 +5,22 @@
    [clojure.tools.logging :as log]
    [datains.util :as util]))
 
+(defn count-workflow-with-status
+  [project-id]
+  (let [results     (db/count-workflow-with-status {:query-map {:project_id project-id}})
+        trans-table {:Failed    :error
+                     :Succeeded :success
+                     :Running   :running
+                     :Submitted :submitted}]
+    (apply merge
+           (map (fn [result]
+                  (assoc {:error     0
+                          :success   0
+                          :running   0
+                          :submitted 0}
+                         ((keyword (:status result)) trans-table) (:count result)))
+                results))))
+
 (defn- filter-query-map
   "Filter unqualified attribute or value.
 

@@ -258,3 +258,20 @@ INNER JOIN datains_project ON datains_workflow.project_id = datains_project.id
 ~*/
 ORDER BY datains_workflow.submitted_time DESC
 --~ (when (and (:limit params) (:offset params)) "LIMIT :limit OFFSET :offset")
+
+
+-- :name count-workflow-with-status
+-- :command :query
+-- :result :many
+/* :doc
+  Args: {:query-map {:project_id "XXX"}}
+*/
+/* :require [datains.db.sql-helper :as sql-helper] */
+SELECT count(*), status
+FROM datains_workflow
+/*~
+(cond
+  (:query-map params) (sql-helper/where-clause (:query-map params) options "datains_workflow")
+  (:where-clause params) ":snip:where-clause")
+~*/
+GROUP BY status

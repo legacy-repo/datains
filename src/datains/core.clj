@@ -31,6 +31,12 @@
   :stop
   (adapters/reset-dingtalk))
 
+(mount/defstate fs-service
+  :start
+  (adapters/setup-fs-service)
+  :stop
+  (adapters/reset-fs-service))
+
 (mount/defstate appstore
   :start
   (adapters/setup-app-store)

@@ -2,15 +2,15 @@
   "Userspace functions you can run by default in your local REPL."
   (:require
    [datains.config :refer [env]]
-    [clojure.pprint]
-    [clojure.spec.alpha :as s]
-    [expound.alpha :as expound]
-    [mount.core :as mount]
-    [datains.core :refer [start-app]]
-    [datains.db.core]
-    [conman.core :as conman]
-    [luminus-migrations.core :as migrations]
-    [clojure.tools.namespace.repl :as tn]))
+   [clojure.pprint]
+   [clojure.spec.alpha :as s]
+   [expound.alpha :as expound]
+   [mount.core :as mount]
+   [datains.core :refer [start-app]]
+   [datains.db.core]
+   [conman.core :as conman]
+   [luminus-migrations.core :as migrations]
+   [clojure.tools.namespace.repl :as tn]))
 
 (alter-var-root #'s/*explain-out* (constantly expound/printer))
 

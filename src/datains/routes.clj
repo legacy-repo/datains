@@ -6,6 +6,7 @@
    [datains.api.workflow :as workflow-route]
    [datains.api.report :as report-route]
    [datains.api.notification :as notification-route]
+   [datains.api.fs :as fs-route]
    [reitit.swagger :as swagger]
    [reitit.swagger-ui :as swagger-ui]
    [reitit.ring.coercion :as coercion]
@@ -54,4 +55,5 @@
    project-route/project
    workflow-route/workflow
    report-route/report
-   notification-route/notification))
+   notification-route/notification
+   fs-route/fs-service))

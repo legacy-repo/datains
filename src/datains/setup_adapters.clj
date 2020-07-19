@@ -1,9 +1,18 @@
 (ns datains.setup-adapters
   (:require [datains.adapters.dingtalk :as dingtalk]
+            [datains.adapters.fs.core :as fs]
             [clojure.tools.logging :as log]
             [datains.adapters.app-store.core :as app-store]
             [datains.config :refer [env]]
             [datains.util :as util]))
+
+(defn setup-fs-service
+  []
+  (fs/setup-connection))
+
+(defn reset-fs-service
+  []
+  (comment (log/info "TODO: reset fs service.")))
 
 (defn setup-dingtalk
   []

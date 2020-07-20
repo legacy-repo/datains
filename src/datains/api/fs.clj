@@ -5,6 +5,7 @@
    [clojure.tools.logging :as log]
    [datains.api.response :as response]
    [datains.adapters.fs.core :as fs]
+   [clojure.string :as str]
    [datains.events :as events])
   (:import [java.io File]))
 
@@ -33,18 +34,21 @@
                                        :page     pos-int?
                                        :per_page pos-int?
                                        :data     any?}}}
-              :handler    (fn [{{{:keys [name]}          :path
-                                 {:keys [page per_page]} :query} :parameters}]
-                            (let [objects  (fs/list-objects name)
+              :handler    (fn [{{{:keys [name]}                 :path
+                                 {:keys [page per_page prefix]} :query} :parameters}]
+                            (let [objects  (fs/list-objects name prefix false)
                                   page     (if (nil? page) 1 page)
-                                  per_page (if (nil? per_page) 10 per_page)]
+                                  per_page (if (nil? per_page) 10 per_page)
+                                  prefix   (if (nil? prefix) "" prefix)]
                               (log/debug "page: " page, "per-page: " per_page)
                               (ok {:data     (fs/format-objects name
                                                                 (->> (drop (* (- page 1) per_page) objects)
                                                                      (take per_page)))
                                    :page     page
                                    :per_page per_page
-                                   :total    (count objects)})))}
+                                   :total    (count objects)
+                                   :bucket   name
+                                   :location (str (fs/get-protocol) name "/" (str/replace prefix #"[^\/]+$" ""))})))}
      :post   {:summary    "Create an directory in a bucket."
               :parameters {:path  fs-spec/bucket-name-spec
                            :query {:key string?}}
@@ -52,7 +56,7 @@
                                        :name   string?}}}
               :handler    (fn [{{{:keys [key]}  :query
                                  {:keys [name]} :path} :parameters}]
-                            (let [key      (str key "/")
+                            (let [key      (str (str/replace key #"\/$" "") "/")
                                   tempfile (.getPath (File/createTempFile "tempfile" "txt"))
                                   object   (fs/put-object! name key tempfile)]
                               (created (str "/buckets/" name "/object-meta" "?key=" key) object)))}

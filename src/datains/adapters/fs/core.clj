@@ -1,6 +1,7 @@
 (ns datains.adapters.fs.core
   (:require [minio-clj.core :as mc]
             [clojure.tools.logging :as log]
+            [clojure.string :as str]
             ; Need to import env environment
             [datains.config :refer [env]]))
 
@@ -23,6 +24,11 @@
            :get-download-url mc/get-download-url
            :get-object-meta  mc/get-object-meta}})
 
+(def ^:private protocol-map
+  {:minio "s3://"
+   :s3    "s3://"
+   :oss   "oss://"})
+
 (defn ^:private get-service
   [service]
   (let [services {:minio "minio"
@@ -35,6 +41,10 @@
 (defn ^:private get-fn
   [fn-keyword]
   (fn-keyword (service-map @service)))
+
+(defn get-protocol
+  []
+  (protocol-map @service))
 
 (defn setup-connection
   []
@@ -61,11 +71,11 @@
 
 (defn list-objects
   ([bucket]
-   (list-objects bucket {}))
-  ([bucket {:keys [prefix]
-            :or   {prefix "second"}}]
-   (filter (fn [object] (re-find (re-pattern (str "^" prefix)) (:Key object)))
-           ((get-fn :list-objects) @conn bucket))))
+   (list-objects bucket))
+  ([bucket prefix]
+   ((get-fn :list-objects) @conn bucket prefix))
+  ([bucket prefix recursive]
+   ((get-fn :list-objects) @conn bucket prefix recursive)))
 
 (defn remove-bucket!
   [bucket]
@@ -91,4 +101,26 @@
   [bucket objects]
   (pmap (fn [object]
           (assoc object
-                 :Path (str (:fs-rootdir env) "/" bucket "/" (:Key object)))) objects))
+                 :Path (str (get-protocol) bucket "/" (:Key object)))) objects))
+
+(defn correct-file-path
+  "When you use minio service, all file paths need to reset as the local path.
+   e.g. s3://bucket-name/object-key --> /datains/minio/bucket-name/object-key
+
+   ; TODO: need to support more types for e's value.
+  "
+  [e]
+  (let [protocol (get-protocol)
+        prefix   (str/replace (:fs-rootdir env) #"([^\/])$" "$1/")
+        pattern  (re-pattern protocol)
+        func     (fn [string] (str/replace string pattern prefix))]
+    (if (= @service :minio)
+      (into {}
+            (map (fn [[key value]]
+                   (vector key
+                           (cond
+                             (map? value) (correct-file-path value)
+                             (vector? value) (map #(func %) value)
+                             (string? value) (func value)
+                             :else value))) e))
+      e)))

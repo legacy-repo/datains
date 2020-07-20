@@ -21,16 +21,24 @@
 ;; -------------------------------- FS Spec --------------------------------
 (s/def ::name
   (st/spec
-   {:spec            #(re-find #"^[a-zA-Z_][a-zA-Z0-9_]{0,63}$" %)  ; 不超过 64 个字符
+   {:spec            (s/and string? #(re-find #"^[a-zA-Z\-][a-zA-Z0-9\-]{2,63}$" %))  ; 不超过 64 个字符
     :type            :string
     :description     "The name of the bucket."
     :swagger/default "test"
-    :reason          "Not a valid bucket name, regex: '^[a-zA-Z_][a-zA-Z0-9_]{0,63}$'."}))
+    :reason          "Not a valid bucket name, regex: '^[a-zA-Z-][a-zA-Z0-9-]{2,63}$'."}))
+
+(s/def ::prefix
+  (st/spec
+   {:spec            (s/and string? #(re-find #"^[a-zA-Z_\/][a-zA-Z0-9_\/]{0,63}$" %))  ; 不超过 64 个字符
+    :type            :string
+    :description     "The prefix of the object."
+    :swagger/default "test"
+    :reason          "Not a valid object prefix, regex: '^[a-zA-Z_][a-zA-Z0-9_/]{0,63}$'."}))
 
 (def bucket-params-query
   "A spec for the query parameters."
   (s/keys :req-un []
-          :opt-un [::page ::per_page]))
+          :opt-un [::page ::per_page ::prefix]))
 
 (def bucket-name-spec
   (s/keys :req-un [::name]

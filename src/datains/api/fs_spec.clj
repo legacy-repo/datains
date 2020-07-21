@@ -25,7 +25,7 @@
     :type            :string
     :description     "The name of the bucket."
     :swagger/default "test"
-    :reason          "Not a valid bucket name, regex: '^[A-Za-z0-9][A-Za-z0-9\.\-\_\:]{1,61}[A-Za-z0-9]$'."}))
+    :reason          "Not a valid bucket name, regex: '^[A-Za-z0-9][A-Za-z0-9.-_:]{1,61}[A-Za-z0-9]$'."}))
 
 (s/def ::prefix
   (st/spec

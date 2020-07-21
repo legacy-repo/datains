@@ -367,7 +367,12 @@
         root      (re-pattern (get-cromwell-workdir))
         task-logs (apply merge
                          (map (fn [[key value]]
-                                {key {:stdout (str/replace (:stdout (first value)) root "")
-                                      :stderr (str/replace (:stderr (first value)) root "")}}) calls))]
+                                (let [stdout (:stdout (first value))
+                                      stderr (:stderr (first value))]
+                                  (if (some? (and stdout stderr))
+                                    {key {:stdout (str/replace stdout root "")
+                                          :stderr (str/replace stderr root "")}}
+                                    {key {:stdout nil
+                                          :stderr nil}}))) calls))]
     (assoc task-logs :system {:stdout nil
                               :stderr (format-failure-msg metadata)})))

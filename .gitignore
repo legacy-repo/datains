@@ -20,3 +20,8 @@ jupyter.ipynb
 .vscode
 dist
 test-config.edn
+pom.xml
+pom.xml.asc
+.settings/
+.project
+.classpath

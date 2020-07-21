@@ -17,7 +17,7 @@
             [datains.db.core :refer [*db*] :as db]
             [clojure.java.jdbc :as jdbc]
             [datains.adapters.dingtalk :as dingtalk]
-            [datains.adapters.fs.core :as fs]
+            [datains.adapters.fs.core :as fs-service]
             [honeysql.core :as sql]))
 
 ;;; ------------------------------------------------- Submit Jobs ---------------------------------------------------
@@ -47,12 +47,12 @@
         (log/debug "Jobs: " jobs)
         (jdbc/with-db-transaction [t-conn *db*]
           (doseq [job jobs]
-            (log/debug "Sumitting Job: " job (fs/correct-file-path (:job_params job)))
+            (log/debug "Sumitting Job: " job (fs-service/correct-file-path (:job_params job)))
             ; when you use minio service, all file paths need to reset as the local path.
             ; e.g. s3://bucket-name/object-key --> /datains/minio/bucket-name/object-key
             (let [sample-file (app-store/make-sample-file! (:project_name job)
                                                            (:sample_id job)
-                                                           (fs/correct-file-path (:job_params job)))
+                                                           (fs-service/correct-file-path (:job_params job)))
                   results     (app-store/render-app! (:project_name job) (:app_name job) sample-file)
                   root-dir    (fs/parent sample-file)
                   wdl-file    (str root-dir "/workflow.wdl")

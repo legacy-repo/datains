@@ -7,6 +7,7 @@
    [datains.api.response :as response]
    [datains.events :as events]
    [datains.adapters.cromwell.core :as cromwell]
+   [datains.adapters.fs.core :as fs]
    [datains.util :as util]))
 
 (def workflow
@@ -43,7 +44,8 @@
               :responses  {200 {:body map?}}
               :handler    (fn [{{{:keys [id]} :path} :parameters}]
                             (log/debug "Get workflow: " id)
-                            (ok (db-handler/search-workflow id)))}
+                            (ok (merge (db-handler/search-workflow id)
+                                       (fs/correct-file-path-reverse (cromwell/workflow-output id)))))}
 
      :put    {:summary    "Modify a workflow record."
               :parameters {:path workflow-spec/workflow-id

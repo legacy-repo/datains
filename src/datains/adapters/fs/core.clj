@@ -124,3 +124,24 @@
                              (string? value) (func value)
                              :else value))) e))
       e)))
+
+(defn correct-file-path-reverse
+  "When you use minio service, all file paths need to reset as the local path.
+   e.g. /datains/minio/bucket-name/object-key --> s3://bucket-name/object-key
+
+   ; TODO: need to support more types for e's value.
+  "
+  [e]
+  (let [protocol (get-protocol)
+        pattern  (re-pattern (str/replace (:fs-rootdir env) #"([^\/])$" "$1/"))
+        func     (fn [string] (str/replace string pattern protocol))]
+    (if (= @service :minio)
+      (into {}
+            (map (fn [[key value]]
+                   (vector key
+                           (cond
+                             (map? value) (correct-file-path value)
+                             (vector? value) (map #(func %) value)
+                             (string? value) (func value)
+                             :else value))) e))
+      e)))

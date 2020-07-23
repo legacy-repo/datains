@@ -349,6 +349,11 @@
      :submitted_time (:submission metadata)
      :percentage     (* 100 (/ (count-finished-task metadata) (* 1.0 (count-task metadata))))}))
 
+(defn workflow-output
+  [id]
+  (let [metadata (all-metadata id)]
+    {:workflow_output (:workflowRoot metadata)}))
+
 (defn flatten-msg [coll]
   (when (some? coll)
     (if (empty? (:causedBy coll))

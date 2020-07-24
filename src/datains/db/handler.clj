@@ -34,8 +34,9 @@
       nil
       query-map)))
 
-(defn- page->offset [page per-page]
+(defn- page->offset 
   "Tranform page to offset."
+  [page per-page]
   (* (- page 1) per-page))
 
 (defn- search-entities
@@ -65,7 +66,7 @@
 
 (defn- update-entity!
   [func id record]
-  (if record
+  (when record
     (func {:updates record
            :id      id})))
 

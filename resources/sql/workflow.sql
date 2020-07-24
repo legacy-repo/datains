@@ -275,3 +275,21 @@ FROM datains_workflow
   (:where-clause params) ":snip:where-clause")
 ~*/
 GROUP BY status
+
+
+-- :name get-finished-project
+-- :command :query
+-- :result :many
+/* :doc
+  Args: nil
+*/
+WITH not_finished AS (
+	SELECT project_id
+	FROM datains_workflow
+	WHERE status IN ('Submitted', 'Aborting', 'On Hold', 'Running')
+)
+SELECT id
+FROM not_finished
+RIGHT JOIN datains_project
+ON not_finished.project_id = datains_project.id
+WHERE not_finished.project_id IS NULL AND datains_project.finished_time IS NULL

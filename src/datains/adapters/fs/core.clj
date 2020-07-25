@@ -1,6 +1,7 @@
 (ns datains.adapters.fs.core
   (:require [minio-clj.core :as mc]
-            [clojure.tools.logging :as log]
+            [oss-clj.core :as oss]
+            ; [clojure.tools.logging :as log]
             [clojure.string :as str]
             ; Need to import env environment
             [datains.config :refer [env]]))
@@ -22,7 +23,18 @@
            :remove-object    mc/remove-object!
            :get-upload-url   mc/get-upload-url
            :get-download-url mc/get-download-url
-           :get-object-meta  mc/get-object-meta}})
+           :get-object-meta  mc/get-object-meta}
+   :oss   {:make-bucket      oss/make-bucket
+           :connect          oss/connect
+           :list-buckets     oss/list-buckets
+           :put-object       oss/put-object
+           :get-object       oss/get-object
+           :list-objects     oss/list-objects
+           :remove-bucket    oss/remove-bucket!
+           :remove-object    oss/remove-object!
+           :get-upload-url   oss/get-upload-url
+           :get-download-url oss/get-download-url
+           :get-object-meta  oss/get-object-meta}})
 
 (def ^:private protocol-map
   {:minio "s3://"

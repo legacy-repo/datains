@@ -6,20 +6,47 @@
              [triggers :as triggers]]
             [clojurewerkz.quartzite.schedule.cron :as cron]
             [datains.task :as task]
-            [clj-http.client :as client]
+            ;; [clj-http.client :as client]
+            [datains.adapters.file-manager.fs :as fs-libs]
             [datains.adapters.app-store.core :as app-store]
-            [datains.db.core :refer [*db*] :as db]
-            [clojure.java.jdbc :as jdbc]
-            [datains.config :refer [env]]))
+            ;; [datains.db.core :refer [*db*] :as db]
+            ;; [clojure.java.jdbc :as jdbc]
+            [clojure.string :as str]
+            [digest :as digest]
+            [clojure.java.io :as io]
+            [clojure.data.json :as json]
+            [datains.config :refer [env]])
+  (:import [java.io FileNotFoundException]))
 
 ;;; ------------------------------------------------- Syncing Apps ---------------------------------------------------
+;; (defn- sync-apps! []
+;;   (let [apps (app-store/get-all-apps "choppy-app")]
+;;     (jdbc/with-db-transaction [t-conn *db*]
+;;       (db/delete-all-apps! t-conn)
+;;       (doseq [app apps]
+;;         (log/info app)
+;;         (db/create-app! t-conn app)))))
+
 (defn- sync-apps! []
-  (let [apps (app-store/get-all-apps "choppy-app")]
-    (jdbc/with-db-transaction [t-conn *db*]
-      (db/delete-all-apps! t-conn)
-      (doseq [app apps]
-        (log/info app)
-        (db/create-app! t-conn app)))))
+  (let [app-workdir (app-store/get-app-workdir)
+        apps (app-store/get-installed-apps app-workdir)
+        all-manifest (fs-libs/join-paths app-workdir "manifest.json")]
+    (io/make-parents all-manifest)
+    (->> (map
+          (fn [app]
+            (try
+              (let [manifest (fs-libs/join-paths app-workdir app "manifest.json")
+                    manifest-str (slurp manifest)]
+                (assoc (json/read-json manifest-str true)
+                       :id (digest/md5 app)
+                       :author (str/replace app #"\/.*" "")
+                       :app_name app))
+              (catch FileNotFoundException _
+                (log/warn (str "Not found " (fs-libs/join-paths app "manifest.json")))
+                nil))) apps)
+         (filter some?)
+         (json/write-str)
+         (spit all-manifest))))
 
 ;;; ------------------------------------------------------ Task ------------------------------------------------------
 ;; triggers the syncing of all apps which are scheduled to run in the current hour

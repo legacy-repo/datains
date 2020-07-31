@@ -6,7 +6,9 @@
    [clojure.tools.logging :as log]
    [datains.api.response :as response]
    [datains.events :as events]
+   [datains.adapters.file-manager.fs :as fs-libs]
    [digest :as digest]
+   [clojure.data.json :as json]
    [datains.adapters.app-store.core :as app-store]))
 
 (def app
@@ -48,7 +50,18 @@
            :parameters {}
            :responses  {200 {:body {:total nat-int?
                                     :data  any?}}}
-           :handler    (fn [parameters]
+           :handler    (fn [_]
                          (let [apps (app-store/get-installed-apps (app-store/get-app-workdir))]
                            (ok {:data  (map #(assoc {} :name % :id (digest/md5 %)) apps)
+                                :total (count apps)})))}}]
+   ["/app-manifest"
+    {:get {:summary    "Get the manifest of all installed apps."
+           :parameters {}
+           :responses  {200 {:body {:total nat-int?
+                                    :data  any?}}}
+           :handler    (fn [_]
+                         (let [manifest (fs-libs/join-paths (app-store/get-app-workdir) "manifest.json")
+                               manifest-str (slurp manifest)
+                               apps (json/read-json manifest-str true)]
+                           (ok {:data  apps
                                 :total (count apps)})))}}]])

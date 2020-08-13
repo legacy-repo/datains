@@ -81,7 +81,8 @@
                  [org.clojure/tools.reader "1.3.2"]                                 ; for :as :clojure
                  [digest "1.4.9"]                                                   ; Digest algorithms (md5, sha1 ...) for Clojure
                  [minio-clj "0.1.0"]
-                 [oss-clj "0.1.0"]]
+                 [oss-clj "0.1.0"]
+                 [com.novemberain/monger "3.1.0"]]
 
   :repositories [["central" "https://maven.aliyun.com/repository/central"]
                  ["jcenter" "https://maven.aliyun.com/repository/jcenter"]
@@ -118,14 +119,14 @@
                                      [ring/ring-mock "0.4.0" :exclusions [org.clojure/clojure]]]
                    :plugins         [[com.jakemccrary/lein-test-refresh "0.24.1"]
                                      [jonase/eastwood "0.3.6"]
-                                     [cider/cider-nrepl "0.22.0"]
+                                     [cider/cider-nrepl "0.25.3"]
                                      [nubank/lein-jupyter "0.1.18"]]
 
                    :jupyter-options {:jupyter-path "jupyter"}
 
                    :source-paths    ["env/dev"]
                    :resource-paths  ["env/dev/resources"]
-                   :repl            {:plugins      [[cider/cider-nrepl "0.21.2-SNAPSHOT"]]
+                   :repl            {:plugins      [[cider/cider-nrepl "0.25.3"]]
                                      :dependencies [[nrepl "0.6.0"]
                                                     [cider/piggieback "0.4.0"]
                                                     [figwheel-sidecar "0.5.18"]]

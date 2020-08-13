@@ -31,6 +31,12 @@
   :stop
   (adapters/reset-dingtalk))
 
+(mount/defstate data-commons
+  :start
+  (adapters/setup-data-commons)
+  :stop
+  (adapters/reset-data-commons))
+
 (mount/defstate fs-service
   :start
   (adapters/setup-fs-service)
@@ -94,8 +100,9 @@
   ; Run handler/destroy when the app is shutdown
   (.addShutdownHook (Runtime/getRuntime) (Thread. handler/destroy)))
 
-(defn -main [& args]
+(defn -main 
   "Launch Datains in standalone mode."
+  [& args]
   (log/info "Starting Datains in STANDALONE mode")
   ; Load configuration from system-props & env
   (mount/start #'datains.config/env)

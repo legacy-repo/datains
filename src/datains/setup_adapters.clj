@@ -3,8 +3,8 @@
             [datains.adapters.fs.core :as fs]
             [clojure.tools.logging :as log]
             [datains.adapters.app-store.core :as app-store]
-            [datains.config :refer [env]]
-            [datains.util :as util]))
+            [datains.adapters.data-commons.core :as dc]
+            [datains.config :refer [env]]))
 
 (defn setup-fs-service
   []
@@ -13,6 +13,14 @@
 (defn reset-fs-service
   []
   (comment (log/info "TODO: reset fs service.")))
+
+(defn setup-data-commons
+  []
+  (dc/setup-connection!))
+
+(defn reset-data-commons
+  []
+  (dc/stop-connection!))
 
 (defn setup-dingtalk
   []

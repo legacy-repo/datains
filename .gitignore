@@ -25,3 +25,4 @@ pom.xml.asc
 .settings/
 .project
 .classpath
+.calva

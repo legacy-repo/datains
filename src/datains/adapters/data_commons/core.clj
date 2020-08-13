@@ -3,8 +3,7 @@
             [monger.query :as q]
             [monger.collection :as mcoll]
             [monger.internal.pagination :as mp]
-            [datains.config :refer [env]])
-  (:import [com.mongodb DB]))
+            [datains.config :refer [env]]))
 
 (defn- connect
   [uri]
@@ -14,28 +13,34 @@
   [conn]
   (mg/disconnect conn))
 
-(defn reset-db-conn!
-  [db-name]
-  (let [db-inst (mg/get-db @conn db-name)]
-    (reset! db db-inst)))
-
 (def ^:private conn
   (atom nil))
 
 (def ^:private db
   (atom nil))
 
+(def ^:private default-collection
+  (atom nil))
+
 (defn setup-connection!
   []
   (let [conn-info (connect (:mongo-uri env))]
     (reset! conn (:conn conn-info))
-    (reset! db (:db conn-info))))
+    (reset! db (:db conn-info))
+    (reset! default-collection (:mongo-collection env))))
 
 (defn stop-connection!
   []
-  (mg/disconnect @conn)
+  (when @conn
+    (mg/disconnect @conn))
   (reset! conn nil)
-  (reset! db nil))
+  (reset! db nil)
+  (reset! default-collection nil))
+
+(defn reset-db-conn!
+  [db-name]
+  (let [db-inst (mg/get-db @conn db-name)]
+    (reset! db db-inst)))
 
 (defn with-collection
   ([coll query-coll]
@@ -46,6 +51,16 @@
          query (apply merge empty-query query-coll)]
      (q/exec query)))
   ([coll] (with-collection coll [])))
+
+(defn query
+  ([query-coll]
+   (with-collection @default-collection query-coll))
+  ([]
+   (with-collection @default-collection)))
+
+(defn count-coll
+  [query-map]
+  (mcoll/count @db @default-collection query-map))
 
 (defn find-coll
   [query]
@@ -84,7 +99,9 @@
   {:snapshot true})
 
 (defn count-group-by
-  [coll group-name]
-  (mcoll/aggregate @db coll [{"$group" {:_id (str "$" group-name)
-                                        :total {"$sum" 1}}}]
-                   :cursor {:batch-size 0}))
+  ([coll group-name]
+   (mcoll/aggregate @db coll [{"$group" {:_id (str "$" group-name)
+                                         :total {"$sum" 1}}}]
+                    :cursor {:batch-size 0}))
+  ([group-name]
+   (count-group-by @default-collection group-name)))

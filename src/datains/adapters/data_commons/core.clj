@@ -1,5 +1,6 @@
 (ns datains.adapters.data-commons.core
-  (:require [monger.core :as mg]
+  (:require [clojure.tools.logging :as log]
+            [monger.core :as mg]
             [monger.query :as q]
             [monger.collection :as mcoll]
             [monger.internal.pagination :as mp]
@@ -99,9 +100,12 @@
   {:snapshot true})
 
 (defn count-group-by
-  ([coll group-name]
-   (mcoll/aggregate @db coll [{"$group" {:_id (str "$" group-name)
+  ([coll query-map group-name]
+   (mcoll/aggregate @db coll [{"$match" query-map}
+                              {"$group" {:_id (str "$" group-name)
                                          :total {"$sum" 1}}}]
                     :cursor {:batch-size 0}))
+  ([query-map group-name]
+   (count-group-by @default-collection query-map group-name))
   ([group-name]
-   (count-group-by @default-collection group-name)))
+   (count-group-by @default-collection {} group-name)))

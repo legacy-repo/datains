@@ -22,3 +22,16 @@
   "A spec for the query parameters."
   (s/keys :req-un []
           :opt-un [::page ::per_page]))
+
+(s/def ::group
+  (st/spec
+   {:spec                string?
+    :type                :string
+    :description         "group name"
+    :swagger/default     10
+    :reason              "The group parameter can't be none."}))
+
+(def count-params-query
+  "A spec for the query parameters."
+  (s/keys :req-un []
+          :opt-un [::group]))

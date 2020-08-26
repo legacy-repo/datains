@@ -1,6 +1,6 @@
 (ns datains.setup-adapters
   (:require [datains.adapters.dingtalk :as dingtalk]
-            [datains.adapters.fs.core :as fs]
+            [clj-filesystem.core :as fs]
             [clojure.tools.logging :as log]
             [datains.adapters.app-store.core :as app-store]
             [datains.adapters.data-commons.core :as dc]
@@ -8,7 +8,7 @@
 
 (defn setup-fs-service
   []
-  (fs/setup-connection))
+  (fs/setup-connection (:fs-service env) (:fs-endpoint env) (:fs-access-key env) (:fs-secret-key env) {}))
 
 (defn reset-fs-service
   []

@@ -3,10 +3,8 @@
    [ring.util.http-response :refer [ok created no-content bad-request not-found]]
    [datains.api.fs-spec :as fs-spec]
    [clojure.tools.logging :as log]
-   [datains.api.response :as response]
-   [datains.adapters.fs.core :as fs]
-   [clojure.string :as str]
-   [datains.events :as events])
+   [clj-filesystem.core :as fs]
+   [clojure.string :as str])
   (:import [java.io File]))
 
 (def fs-service
@@ -17,7 +15,7 @@
     {:get  {:summary    "Get buckets"
             :parameters {}
             :responses  {200 {:body {:data any?}}}
-            :handler    (fn [parameters] (ok {:data (fs/list-buckets)}))}
+            :handler    (fn [_] (ok {:data (fs/list-buckets)}))}
 
      :post {:summary    "Create a bucket."
             :parameters {:body {:name string?}}

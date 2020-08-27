@@ -8,7 +8,7 @@
 
 (defn setup-fs-service
   []
-  (fs/setup-connection (:fs-service env) (:fs-endpoint env) (:fs-access-key env) (:fs-secret-key env) {}))
+  (fs/setup-connection (:fs-service env) (:fs-endpoint env) (:fs-access-key env) (:fs-secret-key env)))
 
 (defn reset-fs-service
   []

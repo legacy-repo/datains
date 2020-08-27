@@ -80,7 +80,7 @@
                  [lambdaisland/uri "1.2.1"]                                         ; https://github.com/dakrone/clj-http#optional-dependencies
                  [org.clojure/tools.reader "1.3.2"]                                 ; for :as :clojure
                  [digest "1.4.9"]                                                   ; Digest algorithms (md5, sha1 ...) for Clojure
-                 [clj-filesystem "0.1.0"]
+                 [clj-filesystem "0.2.6"]
                  [com.novemberain/monger "3.1.0"]]
 
   :repositories [["central" "https://maven.aliyun.com/repository/central"]

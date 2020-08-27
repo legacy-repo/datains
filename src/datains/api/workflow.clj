@@ -7,7 +7,7 @@
    [datains.api.response :as response]
    [datains.events :as events]
    [datains.adapters.cromwell.core :as cromwell]
-   [datains.adapters.fs.core :as fs]
+   [clj-filesystem.core :as fs]
    [datains.util :as util]))
 
 (def workflow

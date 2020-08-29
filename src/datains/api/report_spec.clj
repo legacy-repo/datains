@@ -118,11 +118,19 @@
 
 (s/def ::status
   (st/spec
-   {:spec                #(#{"Started" "Finished" "Submitted" "Archived"} %)
+   {:spec                #(#{"Started" "Finished" "Submitted" "Archived" "Failed"} %)
     :type                :string
     :description         "Filter results by status field."
     :swagger/default     "Started"
-    :reason              "Not valid status, only support Started, Finished, Submitted, Archived."}))
+    :reason              "Not valid status, only support Started, Finished, Submitted, Archived, Failed."}))
+
+(s/def ::report-id
+  (st/spec
+   {:spec                #(some? (re-matches #"[a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8}" %))
+    :type                :string
+    :description         "report-id"
+    :swagger/default     ""
+    :reason              "Not valid a report-id"}))
 
 (def report-id
   (s/keys :req-un [::id]
@@ -136,4 +144,4 @@
 (def report-body
   "A spec for the report body."
   (s/keys :req-un [::report_name ::description ::started_time ::report_type ::status]
-          :opt-un [::archived_time ::checked_time ::finished_time ::log ::report_path ::script ::project_id]))
+          :opt-un [::archived_time ::checked_time ::finished_time ::log ::report_path ::script ::project_id ::report-id]))

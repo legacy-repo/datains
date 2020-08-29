@@ -37,6 +37,7 @@
                                                                 :log nil
                                                                 :report_path nil
                                                                 :script nil
+                                                                :report_id nil
                                                                 :project_id nil})]
                             (log/debug "Create an report: " body)
                             (created (str "/reports/" (:id body))

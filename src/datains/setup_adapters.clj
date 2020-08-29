@@ -4,7 +4,16 @@
             [clojure.tools.logging :as log]
             [datains.adapters.app-store.core :as app-store]
             [datains.adapters.data-commons.core :as dc]
-            [datains.config :refer [env]]))
+            [datains.config :refer [env]]
+            [datains.adapters.tservice.core :as tservice]))
+
+(defn setup-tservice
+  []
+  (tservice/setup-connection (:tservice env)))
+
+(defn reset-tservice
+  []
+  (comment (log/info "TODO: reset tservice.")))
 
 (defn setup-fs-service
   []

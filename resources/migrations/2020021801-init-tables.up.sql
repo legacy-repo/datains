@@ -100,7 +100,7 @@ COMMENT ON COLUMN datains_report.report_path IS 'A relative path of a report bas
 COMMENT ON COLUMN datains_report.report_type IS 'multiqc';
 
 --;;
-COMMENT ON COLUMN datains_report.status IS 'Started, Finished, Submitted, Archived';
+COMMENT ON COLUMN datains_report.status IS 'Started, Finished, Submitted, Archived, Failed';
 
 --;;
 CREATE TABLE IF NOT EXISTS datains_notification (

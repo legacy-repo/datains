@@ -1,5 +1,5 @@
 (ns datains.task.submit-reports
-  "Tasks related to submit jobs to cromwell instance from workflow table."
+  "Tasks related to submit report to tservice."
   (:require [clojure.tools.logging :as log]
             [datains.config :refer [env]]
             [clojurewerkz.quartzite
@@ -15,11 +15,11 @@
 
 ;;; ------------------------------------------------- Submit Jobs ---------------------------------------------------
 (defn- count-submitted-reports []
-  (:count (db/get-report-count {:query-map {:report_type "Submitted"}})))
+  (:count (db/get-report-count {:query-map {:status "Submitted"}})))
 
 (defn- get-submitted-reports [page per-page]
   (:data (db-handler/search-reports
-          {:query-map {:report_type "Submitted"}}
+          {:query-map {:status "Submitted"}}
           page per-page)))
 
 (defn- total-page [total per-page]
@@ -32,22 +32,28 @@
         total-page (+ (total-page (count-submitted-reports) per-page) 1)]
     (log/debug "Num of Reports: " per-page " and " total-page)
     (doseq [which-page (range 1 total-page)]
-      (let [reports (get-submitted-reports which-page per-page)]  ; Get five jobs each time
+      (let [reports (get-submitted-reports which-page per-page)]
         (log/debug "Reports: " reports)
         (jdbc/with-db-transaction [t-conn *db*]
           (doseq [report reports]
             (log/debug "Sumitting Report: " report)
-            (let [report-metadata (json/read-str (:script report))
+            (let [report-metadata (json/read-str (:script report) :key-fn keyword)
                   report-name (:plugin-name report-metadata)
-                  body (:metadata report-metadata)
-                  result (tservice/submit-report report-name body)]
-              (log/info "Running Report: " result)
-              (if (:log_url result)
-                (db/update-report! t-conn {:updates {:log (:log_url result)
-                                                     :report_path (:download_url result)
-                                                     :status "Started"}
-                                           :id      (:id report)})
-                (comment "Add exception handler")))))))))
+                  body (:metadata report-metadata)]
+              (log/info (format "Running Report: %s %s" report-name body))
+              (try
+                (when-let [result (tservice/submit-report report-name body)]
+                  (if (:log_url result)
+                    (db/update-report! t-conn {:updates {:log (:log_url result)
+                                                         :report_path (:download_url result)
+                                                         :report_id (:id result)
+                                                         :status "Started"}
+                                               :id      (:id report)})
+                    (comment "Add exception handler")))
+                (catch Exception e
+                  (db/update-report! t-conn {:updates {:log (.getMessage e)
+                                                       :status "Failed"}})
+                  (log/error (format "Submit Report Failed: %s" (.printStackTrace e))))))))))))
 
 ;;; ------------------------------------------------------ Task ------------------------------------------------------
 ;; triggers the submitting of all reports which are scheduled to run in the current minutes

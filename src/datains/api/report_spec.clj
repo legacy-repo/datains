@@ -27,6 +27,14 @@
     :reason              "Not valid a report-id."}))
 
 ;; -------------------------------- Report Spec --------------------------------
+(s/def ::report_name
+  (st/spec
+   {:spec                string?
+    :type                :string
+    :description         "The name of the record"
+    :swagger/default     ""
+    :reason              "Not a valid report name"}))
+
 (s/def ::description
   (st/spec
    {:spec                string?
@@ -34,6 +42,63 @@
     :description         "Description of the record"
     :swagger/default     ""
     :reason              "Not a valid description."}))
+
+; {"plugin-name": "quartet-rnaseq-report", "metadata": "{}"}
+(s/def ::script
+  (st/spec
+   {:spec                string?
+    :type                :string
+    :description         "Script of the record"
+    :swagger/default     ""
+    :reason              "Not a valid script"}))
+
+(s/def ::report_path
+  (st/spec
+   {:spec                string?
+    :type                :string
+    :description         "Report path of the record"
+    :swagger/default     ""
+    :reason              "Not a valid report_path"}))
+
+(s/def ::log
+  (st/spec
+   {:spec                string?
+    :type                :string
+    :description         "Log of the record"
+    :swagger/default     ""
+    :reason              "Not a valid log"}))
+
+(s/def ::started_time
+  (st/spec
+   {:spec                nat-int?
+    :type                :integer
+    :description         "Started time of the record"
+    :swagger/default     ""
+    :reason              "Not a valid started_time"}))
+
+(s/def ::finished_time
+  (st/spec
+   {:spec                nat-int?
+    :type                :integer
+    :description         "Finished time of the record"
+    :swagger/default     ""
+    :reason              "Not a valid finished_time"}))
+
+(s/def ::checked_time
+  (st/spec
+   {:spec                nat-int?
+    :type                :integer
+    :description         "Checked time of the record"
+    :swagger/default     ""
+    :reason              "Not a valid checked_time"}))
+
+(s/def ::archived_time
+  (st/spec
+   {:spec                nat-int?
+    :type                :integer
+    :description         "Archived time of the record"
+    :swagger/default     ""
+    :reason              "Not a valid archived_time"}))
 
 (s/def ::project_id
   (st/spec
@@ -53,11 +118,11 @@
 
 (s/def ::status
   (st/spec
-   {:spec                #(#{"Started" "Finished" "Checked" "Archived"} %)
+   {:spec                #(#{"Started" "Finished" "Submitted" "Archived"} %)
     :type                :string
     :description         "Filter results by status field."
     :swagger/default     "Started"
-    :reason              "Not valid status, only support Started, Finished, Checked, Archived."}))
+    :reason              "Not valid status, only support Started, Finished, Submitted, Archived."}))
 
 (def report-id
   (s/keys :req-un [::id]
@@ -69,15 +134,6 @@
           :opt-un [::page ::per_page ::project_id ::report_type ::status]))
 
 (def report-body
-  {:report_name   string?
-   :project_id    ::project_id
-   :script        string?
-   :description   ::description
-   :started_time  nat-int?
-   :finished_time nat-int?
-   :checked_time  nat-int?
-   :archived_time nat-int?
-   :report_path   string?
-   :report_type   ::report_type
-   :status        ::status
-   :log           string?})
+  "A spec for the report body."
+  (s/keys :req-un [::report_name ::description ::started_time ::report_type ::status]
+          :opt-un [::archived_time ::checked_time ::finished_time ::log ::report_path ::script ::project_id]))

@@ -4,8 +4,7 @@
    [datains.db.handler :as db-handler]
    [datains.api.workflow-spec :as workflow-spec]
    [clojure.tools.logging :as log]
-   [datains.api.response :as response]
-   [datains.events :as events]
+   [datains.config :refer [env]]
    [datains.adapters.cromwell.core :as cromwell]
    [clj-filesystem.core :as fs]
    [datains.util :as util]))
@@ -47,7 +46,7 @@
                             ;; TODO: Need to fix the bug - cromwell workflow id is not suitable with search-workflow
                             ;;       Add another search-workflow function or just let it go?
                             (ok (merge (db-handler/search-workflow id)
-                                       (fs/correct-file-path-reverse (cromwell/workflow-output id)))))}
+                                       (fs/correct-file-path-reverse (cromwell/workflow-output id) (:fs-rootdir env)))))}
 
      :put    {:summary    "Modify a workflow record."
               :parameters {:path workflow-spec/workflow-id

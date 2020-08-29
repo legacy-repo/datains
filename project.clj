@@ -1,4 +1,4 @@
-(defproject datains "0.2.1"
+(defproject datains "0.2.2"
 
   :description "Datains is an web tool for `Reproducible Omics Pipeline `."
   :url "http://datains.3steps.cn/"
@@ -85,7 +85,8 @@
 
   :repositories [["central" "https://maven.aliyun.com/repository/central"]
                  ["jcenter" "https://maven.aliyun.com/repository/jcenter"]
-                 ["clojars" "https://mirrors.tuna.tsinghua.edu.cn/clojars/"]]
+                 ["clojars" "https://mirrors.tuna.tsinghua.edu.cn/clojars/"]
+                 ["clojars-official" "https://clojars.org/repo/"]]
 
   :plugin-repositories [["central" "https://maven.aliyun.com/repository/central"]
                         ["jcenter" "https://maven.aliyun.com/repository/jcenter"]

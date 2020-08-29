@@ -4,8 +4,6 @@
    [datains.db.handler :as db-handler]
    [datains.api.report-spec :as report-spec]
    [clojure.tools.logging :as log]
-   [datains.api.response :as response]
-   [datains.events :as events]
    [datains.util :as util]))
 
 (def report
@@ -32,7 +30,14 @@
             :parameters {:body report-spec/report-body}
             :responses  {201 {:body {:message report-spec/report-id}}}
             :handler    (fn [{{:keys [body]} :parameters}]
-                          (let [body (merge body {:id (util/uuid)})]
+                          (let [body (util/merge-diff-map body {:id (util/uuid)
+                                                                :archived_time nil
+                                                                :checked_time nil
+                                                                :finished_time nil
+                                                                :log nil
+                                                                :report_path nil
+                                                                :script nil
+                                                                :project_id nil})]
                             (log/debug "Create an report: " body)
                             (created (str "/reports/" (:id body))
                                      {:message (db-handler/create-report! body)})))}}]

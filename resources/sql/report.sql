@@ -26,14 +26,14 @@
     | :archived_time     | false     | Bigint
     | :report_path       | false     | A relative path of a report based on the report directory
     | :report_type       | true      | multiqc
-    | :status            | true      | Started, Finished, Checked, Archived
+    | :status            | true      | Started, Finished, Submitted, Archived
   Description:
     Create a new report record and then return the number of affected rows.
   Examples: 
     Clojure: (create-report! {})
 */
-INSERT INTO datains_report (id, report_name, project_id, script, started_time, finished_time, checked_time, archived_time, report_path, log, status)
-VALUES (:id, :report_name, :project_id, :script, :started_time, :finished_time, :checked_time, :archived_time, :report_path, :log, :status)
+INSERT INTO datains_report (id, report_name, project_id, script, started_time, finished_time, checked_time, archived_time, report_path, report_type, description, log, status)
+VALUES (:id, :report_name, :project_id, :script, :started_time, :finished_time, :checked_time, :archived_time, :report_path, :report_type, :description, :log, :status)
 RETURNING id
 
 

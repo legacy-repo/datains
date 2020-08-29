@@ -49,7 +49,7 @@ WORKDIR /app
 
 ENV FC_LANG en-US
 ENV LC_CTYPE en_US.UTF-8
-ENV PATH="/app/external:/app/external/.env/bin:${PATH}"
+ENV PATH="/app/external:/app/bin:/app/external/.env/bin:${PATH}"
 
 # dependencies
 ## zip for zipping dependencies of workflow

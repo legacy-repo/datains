@@ -43,9 +43,9 @@
               (log/info (format "Running Report: %s %s" report-name body))
               (try
                 (when-let [result (tservice/submit-report report-name body)]
-                  (if (:log_url result)
-                    (db/update-report! t-conn {:updates {:log (:log_url result)
-                                                         :report_path (:download_url result)
+                  (if (:log result)
+                    (db/update-report! t-conn {:updates {:log (:log result)
+                                                         :report_path (:report result)
                                                          :report_id (:id result)
                                                          :status "Started"}
                                                :id      (:id report)})

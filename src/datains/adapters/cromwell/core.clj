@@ -369,14 +369,15 @@
   [id]
   (let [metadata  (all-metadata id)
         calls     (:calls metadata)
-        root      (re-pattern (get-cromwell-workdir))
+        ;; No slash in the end of workdir string, it will make replace function fault
+        root      (re-pattern (str "^" (get-workdir) "/"))
         task-logs (apply merge
                          (map (fn [[key value]]
                                 (let [stdout (:stdout (first value))
                                       stderr (:stderr (first value))]
                                   (if (some? (and stdout stderr))
-                                    {key {:stdout (str/replace stdout root "")
-                                          :stderr (str/replace stderr root "")}}
+                                    {key {:stdout (str/replace stdout root "minio://")
+                                          :stderr (str/replace stderr root "minio://")}}
                                     {key {:stdout nil
                                           :stderr nil}}))) calls))]
     (assoc task-logs :system {:stdout nil

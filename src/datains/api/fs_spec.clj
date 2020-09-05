@@ -1,6 +1,7 @@
 (ns datains.api.fs-spec
   (:require [clojure.spec.alpha :as s]
-            [spec-tools.core :as st]))
+            [spec-tools.core :as st]
+            [clj-filesystem.core :as fs]))
 
 (s/def ::page
   (st/spec
@@ -27,6 +28,14 @@
     :swagger/default "test"
     :reason          "Not a valid bucket name, regex: '^[A-Za-z0-9][A-Za-z0-9.-_:]{1,61}[A-Za-z0-9]$'."}))
 
+(s/def ::service
+  (st/spec
+   {:spec (fn [service] (set (map (fn [[key _]] (name key)) @fs/services)) service)
+    :type :string
+    :description "The name of the service."
+    :swagger/default "minio"
+    :reason "Not a valid service name."}))
+
 (s/def ::prefix
   (st/spec
    {:spec            string?
@@ -41,5 +50,9 @@
           :opt-un [::page ::per_page ::prefix]))
 
 (def bucket-name-spec
-  (s/keys :req-un [::name]
+  (s/keys :req-un [::service ::name]
+          :opt-un []))
+
+(def bucket-spec
+  (s/keys :req-un [::service]
           :opt-un []))

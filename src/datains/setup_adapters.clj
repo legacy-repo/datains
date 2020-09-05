@@ -17,7 +17,17 @@
 
 (defn setup-fs-service
   []
-  (fs/setup-connection (:fs-service env) (:fs-endpoint env) (:fs-access-key env) (:fs-secret-key env)))
+  (doseq [service (:fs-services env)]
+    (log/info (format "Connect %s service" (:fs-service service)))
+    (if (= (:default-fs-service env) (:fs-service service))
+      (fs/setup-connection (:fs-service service)
+                           (:fs-endpoint service)
+                           (:fs-access-key service)
+                           (:fs-secret-key service))
+      (fs/setup-connection (:fs-service service)
+                           (:fs-endpoint service)
+                           (:fs-access-key service)
+                           (:fs-secret-key service)))))
 
 (defn reset-fs-service
   []

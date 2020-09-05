@@ -10,11 +10,12 @@
             [clj-uuid :as uuid]
             [clj-time.coerce :as coerce]
             [clj-time.core :as t]
-            [clj-time.format :as f]))
+            [clj-time.format :as f]
+            [clj-filesystem.core :as fs]))
 
 (defn- namespace-symbs* []
   (for [ns-symb (distinct
-                 (ns-find/find-namespaces 
+                 (ns-find/find-namespaces
                   (concat (classpath/system-classpath)
                           (classpath/classpath (classloader/the-classloader)))))
         :when   (and (.startsWith (name ns-symb) "datains.")
@@ -82,3 +83,14 @@
   ([offset]
    (t/to-time-zone (t/now) (t/time-zone-for-offset offset)))
   ([] (now 0)))
+
+(defn parse-path
+  [path]
+  ;; TODO: Wrong path may to make mistakes?
+  (let [parsed-results (re-find #"([a-zA-Z0-9]+):\/\/([a-zA-Z0-9_\-]+)\/(.*)" path)
+        service-name (nth parsed-results 1)
+        bucket (nth parsed-results 2)
+        object-key (nth parsed-results 3)]
+    {:service service-name
+     :bucket bucket
+     :object-key object-key}))

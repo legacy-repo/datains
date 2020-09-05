@@ -81,10 +81,10 @@
            :responses {200 {:body map?}}
            :handler (fn [{{{:keys [id]} :path
                            {:keys [path]} :query} :parameters}]
-                      (log/debug "Get workflow's log file: " id path)
+                      (log/info "Get workflow's log file: " id path)
                       ;; Need more restricted condition
                       (let [{:keys [service bucket object-key]} (util/parse-path path)]
-                        (log/debug "Parse path: " service bucket object-key)
+                        (log/info "Parse path: " service bucket object-key)
                         (ok
                          (if (and service bucket object-key)
                            {:message (slurp (fs/with-conn service (fs/get-object bucket object-key)))}

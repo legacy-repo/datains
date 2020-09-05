@@ -1,4 +1,4 @@
-(defproject datains "0.2.4"
+(defproject datains "0.2.5"
 
   :description "Datains is an web tool for `Reproducible Omics Pipeline `."
   :url "http://datains.3steps.cn/"

@@ -12,8 +12,8 @@
   :start
   (load-config
    :merge [app-defaults                  ; Priority Lowest
-           (args)
            (source/from-system-props)
+           (args)
            (source/from-env)]))          ; Priority Highest
 
 (def ^Boolean is-dev?  "Are we running in `dev` mode (i.e. in a REPL or via `lein ring server`)?" (= :dev  (:datains-run-mode env)))

@@ -3,17 +3,7 @@
             [clj-filesystem.core :as fs]
             [clojure.tools.logging :as log]
             [datains.adapters.app-store.core :as app-store]
-            [datains.adapters.data-commons.core :as dc]
-            [datains.config :refer [env]]
-            [datains.adapters.tservice.core :as tservice]))
-
-(defn setup-tservice
-  []
-  (tservice/setup-connection (:tservice env)))
-
-(defn reset-tservice
-  []
-  (comment (log/info "TODO: reset tservice.")))
+            [datains.config :refer [env]]))
 
 (defn setup-fs-service
   []
@@ -32,14 +22,6 @@
 (defn reset-fs-service
   []
   (comment (log/info "TODO: reset fs service.")))
-
-(defn setup-data-commons
-  []
-  (dc/setup-connection!))
-
-(defn reset-data-commons
-  []
-  (dc/stop-connection!))
 
 (defn setup-dingtalk
   []

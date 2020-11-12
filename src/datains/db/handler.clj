@@ -92,28 +92,6 @@
 (defn create-app! [record]
   (db/create-app! record))
 
-;; --------------------- Report Record ---------------------
-(def search-reports
-  (partial
-   search-entities
-   {:query-func db/search-reports
-    :count-func db/get-report-count}))
-
-(def search-report
-  (partial
-   search-entity
-   {:query-func db/search-reports
-    :count-func db/get-report-count}))
-
-(defn update-report! [id record]
-  (update-entity! db/update-report! id record))
-
-(defn delete-report! [id]
-  (db/delete-report! {:id id}))
-
-(defn create-report! [record]
-  (db/create-report! record))
-
 ;; --------------------- Project Record ---------------------
 (def search-projects
   (partial

@@ -46,7 +46,8 @@
                             ;; TODO: Need to fix the bug - cromwell workflow id is not suitable with search-workflow
                             ;;       Add another search-workflow function or just let it go?
                             (ok (merge (db-handler/search-workflow id)
-                                       (fs/correct-file-path-reverse (cromwell/workflow-output id) (:fs-rootdir env)))))}
+                                       ; Need to correct filepath when on local mode and datains-workdir must be the same with fs service.
+                                       (fs/correct-file-path-reverse (cromwell/workflow-output id) (:datains-workdir env)))))}
 
      :put    {:summary    "Modify a workflow record."
               :parameters {:path workflow-spec/workflow-id

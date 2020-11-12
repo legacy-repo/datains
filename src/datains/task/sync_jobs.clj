@@ -24,7 +24,7 @@
   (:count (db/get-workflow-count {:where-clause incomplete-jobs-condition})))
 
 (defn- get-incomplete-jobs [page per-page]
-  (:data (db-handler/search-workflows-with-projects
+  (:data (db/search-workflows-with-projects
           {:where-clause incomplete-jobs-condition}
           page per-page)))
 

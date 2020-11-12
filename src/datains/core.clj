@@ -31,18 +31,6 @@
   :stop
   (adapters/reset-dingtalk))
 
-(mount/defstate data-commons
-  :start
-  (adapters/setup-data-commons)
-  :stop
-  (adapters/reset-data-commons))
-
-(mount/defstate tservice
-  :start
-  (adapters/setup-tservice)
-  :stop
-  (adapters/reset-tservice))
-
 (mount/defstate fs-service
   :start
   (adapters/setup-fs-service)

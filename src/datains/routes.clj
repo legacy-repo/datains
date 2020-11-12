@@ -4,10 +4,8 @@
    [datains.api.choppy-app :as app-route]
    [datains.api.project :as project-route]
    [datains.api.workflow :as workflow-route]
-   [datains.api.report :as report-route]
    [datains.api.notification :as notification-route]
    [datains.api.fs :as fs-route]
-   [datains.api.data-commons :as dc-route]
    [reitit.swagger :as swagger]
    [reitit.swagger-ui :as swagger-ui]
    [reitit.ring.coercion :as coercion]
@@ -55,7 +53,5 @@
    app-route/app
    project-route/project
    workflow-route/workflow
-   report-route/report
    notification-route/notification
-   fs-route/fs-service
-   dc-route/data-commons))
+   fs-route/fs-service))

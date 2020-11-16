@@ -1,7 +1,7 @@
 (ns datains.task.submit-jobs
   "Tasks related to submit jobs to cromwell instance from workflow table."
   (:require [clojure.tools.logging :as log]
-            [datains.config :refer [env]]
+            [datains.config :refer [env get-fs-rootdir]]
             [clojurewerkz.quartzite
              [jobs :as jobs]
              [triggers :as triggers]]
@@ -46,12 +46,12 @@
         (log/debug "Jobs: " jobs)
         (jdbc/with-db-transaction [t-conn *db*]
           (doseq [job jobs]
-            (log/debug "Sumitting Job: " job (fs-service/correct-file-path (:job_params job) (:fs-rootdir env)))
+            (log/debug "Sumitting Job: " job (fs-service/correct-file-path (:job_params job) (get-fs-rootdir)))
             ; when you use minio service, all file paths need to reset as the local path.
             ; e.g. minio://bucket-name/object-key --> /datains/minio/bucket-name/object-key
             (let [sample-file (app-store/make-sample-file! (:project_name job)
                                                            (:sample_id job)
-                                                           (fs-service/correct-file-path (:job_params job) (:fs-rootdir env)))
+                                                           (fs-service/correct-file-path (:job_params job) (get-fs-rootdir)))
                   results     (app-store/render-app! (:project_name job) (:app_name job) sample-file)
                   root-dir    (fs/parent sample-file)
                   wdl-file    (str root-dir "/workflow.wdl")

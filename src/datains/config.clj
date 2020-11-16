@@ -19,3 +19,12 @@
 (def ^Boolean is-dev?  "Are we running in `dev` mode (i.e. in a REPL or via `lein ring server`)?" (= :dev  (:datains-run-mode env)))
 (def ^Boolean is-prod? "Are we running in `prod` mode (i.e. from a JAR)?"                         (= :prod (:datains-run-mode env)))
 (def ^Boolean is-test? "Are we running in `test` mode (i.e. via `lein test`)?"                    (= :test (:datains-run-mode env)))
+
+(defn get-fs-rootdir
+  "Based on fs-services and default-fs-service configuration."
+  []
+  (:fs-rootdir
+   (first
+    (filter #(= (:fs-service %) 
+                (:default-fs-service env)) 
+            (:fs-services env)))))

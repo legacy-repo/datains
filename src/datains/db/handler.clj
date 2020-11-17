@@ -12,7 +12,7 @@
                      :Succeeded :success
                      :Running   :running
                      :Submitted :submitted}]
-    (apply merge
+    (apply merge-with +
            (map (fn [result]
                   (assoc {:error     0
                           :success   0

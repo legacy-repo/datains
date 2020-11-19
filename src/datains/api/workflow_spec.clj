@@ -99,6 +99,15 @@
     :swagger/default     "Submitted"
     :reason              "Only support the one of Submitted, Running, Failed, Aborting, Aborted, Succeeded, On Hold"}))
 
+(s/def ::workflow_id
+  (st/spec
+   {:spec                (s/or :undefined nil?
+                               :id #(re-matches #"[a-f0-9]{8}(-[a-f0-9]{4}){4}[a-f0-9]{8}" %))
+    :type                :string
+    :description         "workflow-id"
+    :swagger/default     "40644dec-1abd-489f-a7a8-1011a86f40b0"
+    :reason              "Not valid a workflow-id."}))
+
 (def workflow-id
   "A spec for the query parameters."
   (s/keys :req-un [::id]
@@ -121,4 +130,4 @@
 
 (def workflow-put-body
   (s/keys :req-un []
-          :opt-un [::status ::percentage ::finished_time]))
+          :opt-un [::status ::percentage ::finished_time ::workflow_id]))

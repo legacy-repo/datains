@@ -55,7 +55,9 @@
      ["/projects/*" (-> (ring/create-resource-handler {:path "/"})
                         (wrap-file (get-workdir)))]  ; <ROOT>/projects/
      ["/cromwell/*" (-> (ring/create-resource-handler {:path "/"})
-                        (wrap-file (get-workdir)))]]  ; <ROOT>/cromwell/, for logs
+                        (wrap-file (get-workdir)))]  ; <ROOT>/cromwell/, for logs
+     ["/reports/*" (-> (ring/create-resource-handler {:path "/"})
+                        (wrap-file (get-workdir)))]] ; <ROOT>/reports/, for reports 
     {:validate  rs/validate
      :exception pretty/exception})
    (ring/routes

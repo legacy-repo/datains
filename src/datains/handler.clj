@@ -60,6 +60,7 @@
                         (wrap-file (get-workdir)))]] ; <ROOT>/reports/, for reports 
     {:validate  rs/validate
      :exception pretty/exception})
+
    (ring/routes
     (wrap-content-type (wrap-webjars (constantly nil)))
     (ring/create-default-handler))))

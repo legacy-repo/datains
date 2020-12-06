@@ -4,6 +4,7 @@
    [datains.api.fs-spec :as fs-spec]
    [clojure.tools.logging :as log]
    [clj-filesystem.core :as fs]
+   [datains.config :refer [default-fs-service]]
    [clojure.string :as str])
   (:import [java.io File]))
 
@@ -17,7 +18,7 @@
            :responses {200 {:body {:services coll?
                                    :default_service string?}}}
            :handler (fn [_] (ok {:services (filter some? (map (fn [[key value]] (when value key)) @fs/services))
-                                 :default_service @fs/service}))}}]
+                                 :default_service (default-fs-service)}))}}]
 
    ["/services/:service/buckets"
     {:get  {:summary    "Get buckets"

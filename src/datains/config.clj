@@ -28,3 +28,8 @@
     (filter #(= (:fs-service %) 
                 (:default-fs-service env)) 
             (:fs-services env)))))
+
+(defn default-fs-service
+  "Get default fs service."
+  []
+  (:default-fs-service env))

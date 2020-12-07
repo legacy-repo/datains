@@ -21,6 +21,10 @@
   []
   (str (get-workdir) "/cromwell"))
 
+(defn get-workflow-root
+  []
+  (get-in env [:cromwell :workflow-root]))
+
 (def statuses
   "The statuses a Cromwell workflow can have."
   ["Aborted"
@@ -161,7 +165,7 @@
   (metadata id {:expandSubWorkflows true}))
 
 (defn outputs
-  "GET the metadata for workflow ID."
+  "GET the outputs for workflow ID."
   ([id query-params]
    (get-thing "outputs" id query-params))
   ([id]
@@ -349,10 +353,20 @@
      :submitted_time (:submission metadata)
      :percentage     (* 100 (/ (count-finished-task metadata) (* 1.0 (count-task metadata))))}))
 
+(defn trim-slash
+  [string]
+  (str/replace string #"\/+$" ""))
+
+(defn join-paths
+  [root & paths]
+  (str/join "/" (->> (cons root paths)
+                     (map trim-slash))))
+
 (defn workflow-output
   [id]
   (let [metadata (all-metadata id)]
-    {:workflow_output (:workflowRoot metadata)}))
+    {:workflow_output (join-paths (get-workflow-root) (:workflowName metadata) id)
+     :outputs (:outputs metadata)}))
 
 (defn flatten-msg [coll]
   (when (some? coll)

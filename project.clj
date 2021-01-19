@@ -72,6 +72,7 @@
                  [honeysql "1.0.444"]
                  [camel-snake-kebab "0.4.1"]
                  [clj-jgit "1.0.0-beta3"]
+                 [clinico-omics/clj-antlr "0.2.9-SNAPSHOT"]
                  [ring-cors "0.1.13"]
                  [ring/ring-headers "0.3.0"]
                  [me.raynes/fs "1.4.6"]

@@ -27,3 +27,7 @@ pom.xml.asc
 .classpath
 .calva
 .VSCodeCounter
+.clj-kondo
+.clj-kondo
+.lsp
+.lsp/sqlite.4.db

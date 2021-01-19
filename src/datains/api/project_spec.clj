@@ -77,11 +77,11 @@
 
 (s/def ::app_name
   (st/spec
-   {:spec                #(re-find #"^[a-zA-Z_][a-zA-Z0-9/_-]{4,255}$" %)
+   {:spec                #(re-find #"^[a-zA-Z_][a-zA-Z0-9/_-.]{4,255}$" %)
     :type                :string
     :description         "The name of the app."
     :swagger/default     "huangyechao/annovar"
-    :reason              "Not a valid app-name, regex: '^[a-zA-Z_][a-zA-Z0-9/_]{4,255}$'."}))
+    :reason              "Not a valid app-name, regex: '^[a-zA-Z_][a-zA-Z0-9/_.]{4,255}$'"}))
 
 (s/def ::group_name
   (st/spec

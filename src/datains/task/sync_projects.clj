@@ -17,7 +17,7 @@
   (jdbc/with-db-transaction [t-conn *db*]
     (doseq [project (db/get-finished-project)]
       (log/debug "Sync Project: " project)
-      (db/update-project! t-conn {:updates {:finished_time (util/time->int (util/now))}
+      (db/update-project! t-conn {:updates {:finished_time (util/time->int (util/now)) :status "Succeeded" ::percentage 100}
                                   :id      (:id project)}))))
 
 ;;; ------------------------------------------------------ Task ------------------------------------------------------

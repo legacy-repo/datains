@@ -4,7 +4,7 @@
    [datains.api.fs-spec :as fs-spec]
    [clojure.tools.logging :as log]
    [clj-filesystem.core :as fs]
-   [datains.config :refer [default-fs-service]]
+   [datains.config :refer [default-fs-service filter-by-whitelist filter-by-blacklist]]
    [clojure.string :as str])
   (:import [java.io File]))
 
@@ -24,7 +24,10 @@
     {:get  {:summary    "Get buckets"
             :parameters {:path fs-spec/bucket-spec}
             :responses  {200 {:body {:data any?}}}
-            :handler    (fn [{{{:keys [service]} :path} :parameters}] (ok {:data (fs/with-conn service (fs/list-buckets))}))}
+            :handler    (fn [{{{:keys [service]} :path} :parameters}]
+                          (ok {:data (-> (fs/with-conn service (fs/list-buckets))
+                                         (filter-by-whitelist service)
+                                         (filter-by-blacklist service))}))}
 
      :post {:summary    "Create a bucket."
             :parameters {:body {:name string?}}

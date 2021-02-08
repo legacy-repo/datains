@@ -69,6 +69,11 @@ COPY --from=builder /app/source/bin/start /app/bin/
 COPY --from=builder /app/source/bin/lein /app/bin/
 COPY --from=builder /root/.lein/self-installs/leiningen-2.9.3-standalone.jar /root/.lein/self-installs/leiningen-2.9.3-standalone.jar
 
+# Timezone
+RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone \
+    && apk del tzdata
+
 # build app-utility
 RUN make -f /app/external/Makefile
 

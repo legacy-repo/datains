@@ -82,7 +82,8 @@
                  [org.clojure/tools.reader "1.3.2"]                                 ; for :as :clojure
                  [digest "1.4.9"]                                                   ; Digest algorithms (md5, sha1 ...) for Clojure
                  [clj-filesystem "0.2.7"]
-                 [com.novemberain/monger "3.1.0"]]
+                 [com.novemberain/monger "3.1.0"]
+                 [com.draines/postal "2.0.4"]]
 
   :repositories [["central" "https://maven.aliyun.com/repository/central"]
                  ["jcenter" "https://maven.aliyun.com/repository/jcenter"]

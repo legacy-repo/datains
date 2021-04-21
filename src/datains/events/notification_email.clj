@@ -1,14 +1,13 @@
-(ns datains.events.notification
-  (:require [clojure.core.async :as async]
-            [clojure.set :as set]
+(ns datains.events.notification-email
+  (:require [postal.core :refer [send-message]]
+            [clojure.core.async :as async]
             [clojure.tools.logging :as log]
-            [clj-http.client :as client]
-            [datains.events :as events]
-            [datains.adapters.dingtalk :as dingtalk]))
+            [datains.events :as events]))
 
 (def ^:const notifications-topics
   "The `Set` of event topics which are subscribed to for use in notifications tracking."
-  #{:app-update})
+  #{:request-materials
+    :request-data})
 
 (def ^:private notifications-channel
   "Channel for receiving event notifications we want to subscribe to for notifications events."
@@ -16,9 +15,8 @@
 
 ;;; ------------------------------------------------ Event Processing ------------------------------------------------
 
-(defn- send-notification! [title object]
-  (log/info title object (dingtalk/string-to-sign (System/currentTimeMillis)))
-  (dingtalk/send-markdown-msg! title object))
+(defn- send-notification! [name object]
+  (name object))
 
 (defn- process-notifications-event!
   "Handle processing for a single event notification received on the notifications-channel"
@@ -27,8 +25,9 @@
   (try
     (when-let [{topic :topic object :item} notification-event]
       ;; TODO: only if the definition changed??
-      (case (events/topic->model topic)
-        "app"  (send-notification! "App Synced" object)))
+      (case topic
+        :request-materials (send-notification! "materials" object)
+        :request-data (send-notification! "data" object)))
     (catch Throwable e
       (log/warn (format "Failed to process notifications event. %s" (:topic notification-event)) e))))
 
@@ -38,3 +37,4 @@
   "Automatically called during startup; start event listener for notifications events."
   []
   (events/start-event-listener! notifications-topics notifications-channel process-notifications-event!))
+

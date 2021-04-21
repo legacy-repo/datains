@@ -33,7 +33,8 @@
                         "sql/workflow.sql"
                         "sql/project.sql"
                         "sql/notification.sql"
-                        "sql/log.sql")
+                        "sql/log.sql"
+                        "sql/message.sql")
 
 (extend-protocol jdbc/IResultSetReadColumn
   java.sql.Timestamp

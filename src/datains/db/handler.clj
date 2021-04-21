@@ -206,3 +206,25 @@
 
 (defn create-log! [record]
   (db/create-log! record))
+
+;; --------------------- Message Record ---------------------
+(def search-messages
+  (partial
+   search-entities
+   {:query-func db/search-messages
+    :count-func db/get-message-count}))
+
+(def search-message
+  (partial
+   search-entity
+   {:query-func db/search-messages
+    :count-func db/get-message-count}))
+
+(defn update-message! [id record]
+  (update-entity! db/update-message! id record))
+
+(defn delete-message! [id]
+  (db/delete-message! {:id id}))
+
+(defn create-message! [record]
+  (db/create-message! record))

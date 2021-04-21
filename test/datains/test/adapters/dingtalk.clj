@@ -11,8 +11,8 @@
   (fn [f]
     (mount/start
      #'datains.config/env)
-    (dingtalk/setup-access-token (env :dingtalk-access-token))
-    (dingtalk/setup-secret (env :dingtalk-secret))
+    (dingtalk/setup-access-token (get-in env [:dingtalk :access-token]))
+    (dingtalk/setup-secret (get-in env [:dingtalk :secret]))
     (f)))
 
 (deftest test-apps

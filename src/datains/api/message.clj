@@ -4,6 +4,9 @@
    [datains.db.handler :as db-handler]
    [datains.api.message-spec :as message-spec]
    [clojure.tools.logging :as log]
+   [datains.events :as events]
+   [camel-snake-kebab.core :as csk]
+   [camel-snake-kebab.extras :as cske]
    [datains.util :as util]))
 
 (def message
@@ -33,6 +36,8 @@
                           (let [created-time (util/time->int (util/now))
                                 body (merge body {:created_time created-time})
                                 result (db-handler/create-message! body)]
+                            (events/publish-event! :request-materials 
+                                                   (cske/transform-keys csk/->kebab-case-keyword (:payload body)))
                             (created (str "/messages/" (:id result))
                                      {:message result})))}}]
 

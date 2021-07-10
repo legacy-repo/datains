@@ -68,6 +68,7 @@
               :handler    (fn [{{{:keys [uuid]} :path} :parameters}]
                             (db-handler/delete-project! uuid)
                             (no-content))}}]
+
    ["/projects/:uuid/stats"
     {:get {:summary    "Get a project's stats by id."
            :parameters {:path project-spec/uuid-spec}

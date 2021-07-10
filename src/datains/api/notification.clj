@@ -4,8 +4,6 @@
    [datains.db.handler :as db-handler]
    [datains.api.notification-spec :as notification-spec]
    [clojure.tools.logging :as log]
-   [datains.api.response :as response]
-   [datains.events :as events]
    [datains.util :as util]))
 
 (def notification
@@ -32,8 +30,11 @@
             :responses  {201 {:body {:message {:id pos-int?}}}}
             :handler    (fn [{{:keys [body]} :parameters}]
                           (log/debug "Create a notification: " body)
-                          (created (str "/notifications/" (:id body))
-                                   {:message (db-handler/create-notification! body)}))}}]
+                          (let [created-time (util/time->int (util/now))
+                                id (util/uuid)
+                                body (util/merge-diff-map body {:create_time created-time})]
+                            (created (str "/notifications/" id)
+                                     {:message (db-handler/create-notification! body)})))}}]
 
    ["/notifications/:id"
     {:get    {:summary    "Get a notification by id."

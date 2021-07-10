@@ -31,10 +31,10 @@
             :handler    (fn [{{:keys [body]} :parameters}]
                           (log/debug "Create a message: " body)
                           (let [created-time (util/time->int (util/now))
-                                id (util/uuid)
-                                body (util/merge-diff-map body {:create_time created-time})]
-                            (created (str "/messages/" id)
-                                     {:message (db-handler/create-message! body)})))}}]
+                                body (merge body {:created_time created-time})
+                                result (db-handler/create-message! body)]
+                            (created (str "/messages/" (:id result))
+                                     {:message result})))}}]
 
    ["/messages/:id"
     {:get    {:summary    "Get a message by id."
@@ -42,7 +42,7 @@
               :responses  {200 {:body map?}}
               :handler    (fn [{{{:keys [id]} :path} :parameters}]
                             (log/debug "Get message: " id)
-                            (ok (db-handler/search-messages id)))}
+                            (ok (db-handler/search-messages {:query-map {:id id}} 1 10)))}
 
      :put    {:summary    "Modify a message record."
               :parameters {:path {:id pos-int?}

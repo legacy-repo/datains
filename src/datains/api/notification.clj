@@ -31,10 +31,10 @@
             :handler    (fn [{{:keys [body]} :parameters}]
                           (log/debug "Create a notification: " body)
                           (let [created-time (util/time->int (util/now))
-                                id (util/uuid)
-                                body (util/merge-diff-map body {:create_time created-time})]
-                            (created (str "/notifications/" id)
-                                     {:message (db-handler/create-notification! body)})))}}]
+                                body (merge body {:created_time created-time})
+                                result (db-handler/create-notification! body)]
+                            (created (str "/notifications/" result)
+                                     {:message result})))}}]
 
    ["/notifications/:id"
     {:get    {:summary    "Get a notification by id."
@@ -42,7 +42,7 @@
               :responses  {200 {:body map?}}
               :handler    (fn [{{{:keys [id]} :path} :parameters}]
                             (log/debug "Get notification: " id)
-                            (ok (db-handler/search-notifications id)))}
+                            (ok (db-handler/search-notifications {:query-map {:id id}} 1 10)))}
 
      :put    {:summary    "Modify a notification record."
               :parameters {:path {:id pos-int?}

@@ -3,7 +3,7 @@
 ###################
 
 # Build currently doesn't work on > Java 11 (i18n utils are busted) so build on 8 until we fix this
-FROM adoptopenjdk/openjdk8:alpine as builder
+FROM adoptopenjdk/openjdk8:centos as builder
 
 WORKDIR /app/source
 
@@ -15,9 +15,7 @@ ENV LC_CTYPE en_US.UTF-8
 # git:     ./bin/version
 # make:    backend building
 # gettext: translations
-
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
-RUN apk add --update coreutils bash git wget make gettext
+RUN yum install -y coreutils bash git wget make gettext
 
 # lein:    backend dependencies and building
 ADD ./bin/lein /usr/local/bin/lein
@@ -36,14 +34,16 @@ ADD . .
 # build the app
 RUN bin/build
 
-# install updated cacerts to /etc/ssl/certs/java/cacerts
-RUN apk add --update java-cacerts
+# Install updated cacerts to /etc/ssl/certs/java/cacerts
+# RUN yum install -y java-cacerts
 
 # ###################
 # # STAGE 2: runner
 # ###################
 
-FROM adoptopenjdk/openjdk11:alpine-jre as runner
+FROM adoptopenjdk/openjdk11:centos-jre as runner
+
+LABEL org.opencontainers.image.source https://github.com/clinico-omics/datains
 
 WORKDIR /app
 
@@ -51,15 +51,10 @@ ENV FC_LANG en-US
 ENV LC_CTYPE en_US.UTF-8
 ENV PATH="/app/external:/app/bin:/app/external/.env/bin:${PATH}"
 
-# dependencies
-## zip for zipping dependencies of workflow
-RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tuna.tsinghua.edu.cn/g' /etc/apk/repositories
-RUN apk add --update bash ttf-dejavu fontconfig make python3 python3-dev py-pip git zip
-RUN pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
-RUN pip install virtualenv --ignore-installed \
-    && cd /usr/bin \
-    && ln -sf python3 python \
-    && ln -sf pip3 pip
+# Dependencies
+## Zip for zipping dependencies of workflow
+RUN yum install -y bash ttf-dejavu fontconfig make python3 python3-dev python3-pip git zip
+RUN pip3 install virtualenv --ignore-installed
 
 # add Datains script and uberjar
 RUN mkdir -p bin target/uberjar
@@ -70,9 +65,8 @@ COPY --from=builder /app/source/bin/lein /app/bin/
 COPY --from=builder /root/.lein/self-installs/leiningen-2.9.3-standalone.jar /root/.lein/self-installs/leiningen-2.9.3-standalone.jar
 
 # Timezone
-RUN apk add tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
-    && echo "Asia/Shanghai" > /etc/timezone \
-    && apk del tzdata
+RUN yum install -y tzdata && cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
+    && echo "Asia/Shanghai" > /etc/timezone
 
 # build app-utility
 RUN make -f /app/external/Makefile

@@ -2,6 +2,7 @@
   (:require [postal.core :refer [send-message]]
             [clojure.core.async :as async]
             [datains.config :refer [env]]
+            [selmer.parser :refer [render]]
             [clojure.tools.logging :as log]
             [datains.events :as events]))
 
@@ -11,40 +12,39 @@
 
 (def ^:const notifications-topics
   "The `Set` of event topics which are subscribed to for use in notifications tracking."
-  #{:request-materials
-    :request-data})
+  #{:request-materials})
 
 (def ^:private notifications-channel
   "Channel for receiving event notifications we want to subscribe to for notifications events."
   (async/chan))
 
 ;;; ------------------------------------------------ Event Processing ------------------------------------------------
-(defn format-materials-content
-  [{:keys [requestor-email requestor-title requestor-name organization materials-type tubes notes]}]
-  (str (format "Requestor: %s %s\n" requestor-title requestor-name)
-       (format "Requestor Email: %s\n" requestor-email)
-       (format "Organization: %s\n" organization)
-       (format "Materials Type: %s\n" materials-type)
-       (format "Tubes: %s\n" tubes)
-       (format "Notes: %s\n" notes)))
+(defn get-template
+  []
+  (slurp "http://chinese-quartet.org/email-templates/request-materials.html"))
 
-(defn- send-notification! 
-  "Example:
-   {:requestor-name \"Yang\", 
-    :tubes 2, 
-    :requestor-title \"Dr.\", 
-    :requestor-email \"yjcyxky@163.com\", 
-    :purpose \"This is a test\", 
-    :materials-type \"DNA\", 
-    :organization \"Fudan University\", 
-    :notes \"This is a test\"}"
-  [name object]
+(defn format-email-content
+  [{:keys [requestor-email requestor-title requestor-name organization materials-type tubes notes]}]
+  (render (get-template)
+          {:info {:requestor_email requestor-email
+                  :requestor_title requestor-title
+                  :requestor_name requestor-name
+                  :organization organization
+                  :materials_type materials-type
+                  :tubes tubes
+                  :notes notes}}))
+
+(defn- send-notification!
+  [object & {:keys [quartet-email]
+             :or {quartet-email "quartet@fudan.edu.cn"}}]
   (let [setting (email-setting)]
-    (log/info (format "%s %s %s" name object setting))
-    (send-message setting {:from (:user setting)
-                           :to (:requestor-email object)
-                           :subject (format "[Request %s] %s" name (:purpose object))
-                           :body (format-materials-content object)})))
+    (log/debug (format "%s %s %s" object setting quartet-email))
+    (send-message setting {:from    (:user setting)
+                           :to      (:requestor-email object)
+                           :cc      quartet-email
+                           :subject (format "[Request Materials] %s-%s" (:organization object) (:purpose object))
+                           :body    [{:type "text/html"
+                                      :content (format-email-content object)}]})))
 
 (defn- process-notifications-event!
   "Handle processing for a single event notification received on the notifications-channel"
@@ -54,8 +54,7 @@
     (when-let [{topic :topic object :item} notification-event]
       ;; TODO: only if the definition changed??
       (case topic
-        :request-materials (send-notification! "materials" object)
-        :request-data (send-notification! "data" object)))
+        :request-materials (send-notification! object)))
     (catch Throwable e
       (log/warn (format "Failed to process notifications event. %s" (:topic notification-event)) e))))
 

@@ -34,7 +34,16 @@
       nil
       query-map)))
 
-(defn- page->offset 
+(defn make-where-clause
+  [table-name query-map & more]
+  (let [clauses (map (fn [key] [:is (keyword (str table-name "." (name key))) (get query-map key)])
+                     (keys (filter-query-map query-map)))
+        all (concat clauses more)]
+    (if (> (count all) 1)
+      (cons :and all)
+      (first all))))
+
+(defn- page->offset
   "Tranform page to offset."
   [page per-page]
   (* (- page 1) per-page))

@@ -2,10 +2,11 @@
   (:require
    [ring.util.http-response :refer [ok created no-content]]
    [datains.db.handler :as db-handler]
+   [datains.db.core :as db]
+   [honeysql.core :as sql]
    [datains.api.project-spec :as project-spec]
    [clojure.tools.logging :as log]
-   [datains.api.response :as response]
-   [datains.events :as events]
+   [clojure.string :as clj-str]
    [datains.util :as util]))
 
 (def project
@@ -19,15 +20,23 @@
                                      :page     pos-int?
                                      :per_page pos-int?
                                      :data     any?}}}
-            :handler    (fn [{{{:keys [page per_page app_id author status project_name]} :query} :parameters}]
+            :handler    (fn [{{{:keys [page per_page app_id author status project_name]} :query} :parameters
+                              {:as headers} :headers}]
                           (let [query-map {:app_id       app_id
                                            :status       status
                                            :author       author
-                                           :project_name project_name}]
-                            (log/debug "page: " page, "per-page: " per_page, "query-map: " query-map)
-                            (ok (db-handler/search-projects {:query-map query-map}
-                                                            page
-                                                            per_page))))}
+                                           :project_name project_name}
+                                auth-users (get headers "x-auth-users")
+                                authors (if auth-users (clj-str/split auth-users #",") nil)
+                                where-clause (db-handler/make-where-clause "datains-project"
+                                                                           query-map
+                                                                           [:in :datains-project.author authors])
+                                query-clause (if authors
+                                               {:where-clause
+                                                (sql/format {:where where-clause})}
+                                               {:query-map query-map})]
+                            (log/info "page: " page, "per-page: " per_page, "query-clause: " where-clause)
+                            (ok (db-handler/search-projects query-clause page per_page))))}
 
      :post {:summary    "Create an project."
             :parameters {:body project-spec/project-body}
@@ -36,6 +45,7 @@
                           (let [body (util/merge-diff-map body {:id            (util/uuid)
                                                                 :description   ""
                                                                 :group_name    "Choppy Team"
+                                                                :author        "Choppy"
                                                                 :status        "Submitted"
                                                                 :finished_time nil
                                                                 :percentage    0

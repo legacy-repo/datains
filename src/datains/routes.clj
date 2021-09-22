@@ -24,17 +24,17 @@
      :swagger {:id ::api}
      :middleware [;; query-params & form-params
                   parameters/parameters-middleware
-                 ;; content-negotiation
+                  ;; content-negotiation
                   muuntaja/format-negotiate-middleware
-                 ;; encoding response body
+                  ;; encoding response body
                   muuntaja/format-response-middleware
-                 ;; exception handling
+                  ;; exception handling
                   exception/exception-middleware
-                 ;; decoding request body
+                  ;; decoding request body
                   muuntaja/format-request-middleware
-                 ;; coercing response bodys
+                  ;; coercing response bodys
                   coercion/coerce-response-middleware
-                 ;; coercing request parameters
+                  ;; coercing request parameters
                   coercion/coerce-request-middleware]}
 
    ;; swagger documentation

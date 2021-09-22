@@ -286,7 +286,7 @@ GROUP BY status
 WITH not_finished AS (
 	SELECT project_id
 	FROM datains_workflow
-	WHERE status IN ('Submitted', 'Aborting', 'On Hold', 'Running')
+	WHERE status IN ('Submitted', 'Aborting', 'On Hold', 'Running', 'Failed')
 )
 SELECT id
 FROM not_finished

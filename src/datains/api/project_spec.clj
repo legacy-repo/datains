@@ -45,7 +45,7 @@
 
 (s/def ::author
   (st/spec
-   {:spec                #(re-find #"^[a-zA-Z_][a-zA-Z0-9_]{4,31}$" %)
+   {:spec                #(re-find #"^.*{4,31}$" %)
     :type                :string
     :description         "Author name that you want to query."
     :swagger/default     "huangyechao"

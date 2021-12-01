@@ -43,9 +43,8 @@
   (try
     (when-let [{topic :topic object :item} notification-event]
       ;; TODO: only if the definition changed??
-      (case (events/topic->model topic)
-        "app"  (send-notification! "App Synced" object))
       (case topic
+        :app-update (send-notification! "App Synced" object)
         :request-materials-dingtalk (send-notification! "Request Materials" (format-email-content object))))
     (catch Throwable e
       (log/warn (format "Failed to process notifications event. %s" (:topic notification-event)) e))))

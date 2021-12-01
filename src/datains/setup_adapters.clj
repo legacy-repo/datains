@@ -26,7 +26,7 @@
 (defn setup-dingtalk
   []
   (let [access-token (get-in env [:dingtalk :access-token])
-        secret       [get-in env [:dingtalk :secret]]]
+        secret       (get-in env [:dingtalk :secret])]
     ; Don't setup dingtalk, if user don't set access-token and secret
     (when (and access-token secret)
       (log/info "Setup dingtalk adapter.")

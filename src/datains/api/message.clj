@@ -36,7 +36,9 @@
                           (let [created-time (util/time->int (util/now))
                                 body (merge body {:created_time created-time})
                                 result (db-handler/create-message! body)]
-                            (events/publish-event! :request-materials 
+                            (events/publish-event! :request-materials
+                                                   (cske/transform-keys csk/->kebab-case-keyword (:payload body)))
+                            (events/publish-event! :request-materials-dingtalk
                                                    (cske/transform-keys csk/->kebab-case-keyword (:payload body)))
                             (created (str "/messages/" (:id result))
                                      {:message result})))}}]

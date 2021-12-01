@@ -43,7 +43,7 @@
                            :to      (:requestor-email object)
                            :cc      quartet-email
                            :subject (format "[Request Materials] %s-%s" (:organization object) (:purpose object))
-                           :body    [{:type "text/html"
+                           :body    [{:type "text/html; charset=utf-8"
                                       :content (format-email-content object)}]})))
 
 (defn- process-notifications-event!
